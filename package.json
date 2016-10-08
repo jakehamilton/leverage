@@ -1,0 +1,25 @@
+{
+  "name": "leverage",
+  "version": "1.0.0",
+  "description": "A server platform for Node",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon -L .",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "babel-node": "babel-node --presets=es2015,es2017,stage-0"
+  },
+  "author": "jakehamilton <jehamilton122@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "babel": "*",
+    "nodemon": "*",
+    "babel-register": "*",
+    "express": "*",
+    "babel-preset-es2015": "*",
+    "babel-preset-es2017": "*",
+    "babel-preset-stage-0": "*",
+    "body-parser": "*",
+    "pug": "*"
+  }
+}
