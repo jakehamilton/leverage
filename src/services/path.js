@@ -7,6 +7,11 @@ class S extends Service {
     super()
 
     this.name = 'path'
+
+    // Available by doing the following in a route
+    /*
+      this.path.use(...)
+    */
     this.module = path
   }
 }
