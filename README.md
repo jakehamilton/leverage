@@ -99,3 +99,9 @@ export default new R()
 ```bash
 node index.js
 ```
+
+Roadmap
+-------
+
+Take a look at [the 1.0.0 project](https://github.com/jakehamilton/leverage/projects/1) for what plans to be in the release.
+Otherwise, feel free to open issues with feature suggestions, etc!
