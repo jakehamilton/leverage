@@ -20,8 +20,8 @@ npm install leverage-js
 yarn add leverage-js
 ```
 
-How can I use it?
------------------
+Getting Started
+---------------
 
 ### Create a project and install
 
@@ -39,19 +39,10 @@ npm install --save leverage-js
 ### Create your project structure and open your server's new entrypoint
 
 ```bash
-# Create a routes directory for our routes
-mkdir routes
+# Create a route
+touch get_index.js
 
-# Populate it with a route
-touch routes/get_index.js
-
-# Create a views directory
-mkdir views
-
-# Create a quick html file to test with
-echo "Hello World" > views/index.html
-
-# Open our main JS file
+#Create and open our main JS file
 $EDITOR index.js
 ```
 
@@ -60,9 +51,12 @@ $EDITOR index.js
 ###### index.js
 
 ```js
+// dependencies
 import path from 'path'
-import { router, server } from 'leverage'
-import renderer from './middleware/renderer'
+import { router, server } from 'leverage-js'
+
+// import our route
+import route from './get_index'
 
 // start our server listening on port 3000
 server.listen(3000)
@@ -70,37 +64,38 @@ server.listen(3000)
 // have our router manage routing for our server
 router.connect(server)
 
-// load our routes
-router.add(path.resolve('.', 'routes'))
+// load our route
+router.add(route)
 ```
 
 ### Write your route definition
 
-##### routes/get\_index.js
+##### get\_index.js
 
 ```js
 import path from 'path'
-import { Route } from 'leverage'
+import { Route } from 'leverage-js'
 
+// create a new route, inheriting from the base route definition
 class R extends Route {
     constructor () {
+        // required
         super()
 
         this.path = '/'
     }
 
     callback (req, res) {
-        res.sendFile(path.resolve('..', 'views', 'index.html'))
+        res.end('Hello World!')
     }
 }
+
+// export our route definition
+export default new R()
 ```
 
 ### Start it up
 
 ```bash
-# Either
 node index.js
-
-# Or
-npm start
 ```

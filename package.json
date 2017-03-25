@@ -1,11 +1,11 @@
 {
   "name": "leverage-js",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A highly modular server library!",
-  "main": "./dist/index.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "npm run smoketest",
-    "compile": "babel src --out-dir dist",
+    "compile": "babel src --out-dir dist --no-comments --minify",
     "smoketest": "node test/smoketest/index.js"
   },
   "repository": {
