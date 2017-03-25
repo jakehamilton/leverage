@@ -1,7 +1,7 @@
 Leverage
 ========
 
-The _back_bone of your web app.
+The backbone of your web app.
 
 What is it?
 -----------
