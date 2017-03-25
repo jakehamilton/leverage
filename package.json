@@ -1,10 +1,12 @@
 {
   "name": "leverage-js",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "A highly modular server library!",
-  "main": "dist/leverage.js",
+  "main": "./dist/index.js",
   "scripts": {
-    "test": "echo \"No test specified!\""
+    "test": "npm run smoketest",
+    "compile": "babel src --out-dir dist",
+    "smoketest": "node test/smoketest/index.js"
   },
   "repository": {
     "type": "git",
@@ -20,5 +22,12 @@
   "bugs": {
     "url": "https://github.com/jakehamilton/leverage/issues"
   },
-  "homepage": "https://github.com/jakehamilton/leverage#readme"
+  "homepage": "https://github.com/jakehamilton/leverage#readme",
+  "dependencies": {
+    "express": "^4.15.2"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.24.0",
+    "babel-preset-latest": "^6.24.0"
+  }
 }

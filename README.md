@@ -13,7 +13,11 @@ Install it!
 -----------
 
 ```bash
-npm install leverage
+# npm
+npm install leverage-js
+
+# Or yarn
+yarn add leverage-js
 ```
 
 How can I use it?
@@ -26,10 +30,10 @@ How can I use it?
 mkdir my-project && cd my-project
 
 # Initialize the project with npm
-npm init
+npm init -y
 
 # Install leverage from npm (or yarn)
-npm install --save leverage
+npm install --save leverage-js
 ```
 
 ### Create your project structure and open your server's new entrypoint
@@ -45,7 +49,7 @@ touch routes/get_index.js
 mkdir views
 
 # Create a quick html file to test with
-echo "<html><head><title>Hello World</title></head><body>Hello World</body></html>" > views/index.html
+echo "Hello World" > views/index.html
 
 # Open our main JS file
 $EDITOR index.js
@@ -67,7 +71,7 @@ server.listen(3000)
 router.connect(server)
 
 // load our routes
-router.addRoutes(path.resolve('.', 'routes'))
+router.add(path.resolve('.', 'routes'))
 ```
 
 ### Write your route definition
