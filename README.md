@@ -1,45 +1,102 @@
-# leverage
-A server module... kinda
+Leverage
+========
 
-# Development Status
-This project is in _very_ early development and should not be considered stable. The
-API is almost guaranteed to change so don't count on it.
+The _back_bone of your web app.
 
-# What is it?
-This is my attempt at creating a server module that is very extensible. The idea being
-that each and every middleware, route, service, etc is easily addable and removable
-from the project.
+What is it?
+-----------
 
-# How can I use it?
-Currently, you can clone this repository and use it as a boilerplate or use [nimble](http://github.com/jakehamilton/nimble), though
-it is in early development. I am in the process of turning this into an npm module for
-simple consumption.
+Leverage is a highly modular, fast server library designed from
+the ground up to be easy to work with!
 
-As for _using_ it, you can just drop a route into the `src/routes` directory like:
+Install it!
+-----------
 
-```javascript
-import Route from '../lib/route'
-
-class R extends Route {
-  constructor () {
-    super()
-    
-    this.name = 'index'
-    this.path = '/'
-    this.method = 'get'
-  }
-  
-  callback (req, res) {
-    res.render('index')
-  }
-}
-
-module.exports = new R()
+```bash
+npm install leverage
 ```
 
-Welcome Contributions:
-- [ ] Refactor dependencies to reflect [this blog post](http://bytesize.xyz/how-i-simplified-the-server-with-dependency-injection/)
-- [ ] Separate route/service/middleware loading logic from the server
-- [ ] Allow for like-named dependencies to be loaded
-- [ ] General improvements to the server
-- [ ] Support for an external socket.io instance without having to write boilerplate every time
+How can I use it?
+-----------------
+
+### Create a project and install
+
+```bash
+# Create a project directory and enter it
+mkdir my-project && cd my-project
+
+# Initialize the project with npm
+npm init
+
+# Install leverage from npm (or yarn)
+npm install --save leverage
+```
+
+# Create your project structure and open your server's new entrypoint
+
+```bash
+# Create a routes directory for our routes
+mkdir routes
+
+# Populate it with a route
+touch routes/get_index.js
+
+# Create a views directory
+mkdir views
+
+# Create a quick html file to test with
+echo "<html><head><title>Hello World</title></head><body>Hello World</body></html>" > views/index.html
+
+# Open our main JS file
+$EDITOR index.js
+```
+
+### Configure your server to find your views/services/middleware (more info in docs)
+
+###### index.js
+
+```js
+import path from 'path'
+import { router, server } from 'leverage'
+import renderer from './middleware/renderer'
+
+// start our server listening on port 3000
+server.listen(3000)
+
+// have our router manage routing for our server
+router.connect(server)
+
+// load our routes
+router.addRoutes(path.resolve('.', 'routes'))
+```
+
+### Write your route definition
+
+##### routes/get\_index.js
+
+```js
+import path from 'path'
+import { Route } from 'leverage'
+
+class R extends Route {
+    constructor () {
+        super()
+
+        this.path = '/'
+    }
+
+    callback (req, res) {
+        res.sendFile(path.resolve('..', 'views', 'index.html'))
+    }
+}
+```
+
+### Start it up
+
+```bash
+# Either
+node index.js
+
+# Or
+npm start
+```
