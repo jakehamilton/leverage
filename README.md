@@ -32,7 +32,7 @@ npm init
 npm install --save leverage
 ```
 
-# Create your project structure and open your server's new entrypoint
+### Create your project structure and open your server's new entrypoint
 
 ```bash
 # Create a routes directory for our routes
