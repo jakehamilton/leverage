@@ -70,7 +70,7 @@ router.add(route)
 
 ### Write your route definition
 
-##### get\_index.js
+###### get\_index.js
 
 ```js
 import path from 'path'
