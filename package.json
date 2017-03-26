@@ -6,7 +6,8 @@
   "scripts": {
     "test": "npm run smoketest",
     "compile": "babel src --out-dir dist --no-comments --minify",
-    "smoketest": "node test/smoketest/index.js"
+    "smoketest": "node test/smoketest/index.js",
+    "prepublish": "npm run compile"
   },
   "repository": {
     "type": "git",
