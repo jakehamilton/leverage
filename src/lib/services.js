@@ -25,7 +25,6 @@ class Services {
      */
     load (service) {
         if (this.services.hasOwnProperty(service.name)) {
-            console.log(`[Services] Error, already loaded service ${service}`)
             return
         }
 
@@ -55,7 +54,6 @@ class Services {
                 // it's a path
                 if (/\.js$/.exec(services)) {
                     // a single service file
-                    console.log(`[Services] Requiring service ${services}`)
 
                     const service = require(services)
 
@@ -66,16 +64,13 @@ class Services {
                 } else {
                     fs.lstat(services, (err, stats) => {
                         if (err) {
-                            console.log(`[Services] Error statting directory ${services}`)
                             reject()
                         }
 
                         if (stats.isDirectory()) {
                             // a whole directory
-                            console.log(`[Services] Reading directory ${services}`)
                             fs.readdir(services, (err, files) => {
                                 if (err) {
-                                    console.log(`[Services] Error reading directory ${services}`)
                                     reject()
                                 }
 
@@ -84,7 +79,6 @@ class Services {
                                 )
                             })
                         } else {
-                            console.log(`[Services] Failed loading ${services}, not a directory or JavaScript file`)
                             resolve()
                         }
                     })
@@ -107,10 +101,8 @@ class Services {
      * @void
      */
     patch (router) {
-        console.log(`[Services] Patching router...`)
         router.routes.forEach(route => {
             if (route.dependencies.services) {
-                console.log(`[Services] Patching route ${route.name}`)
                 // we have services to require
                 route.dependencies.services.forEach(service => {
                     if (this.services.hasOwnProperty(service)) {
@@ -120,12 +112,8 @@ class Services {
                             set: _ => null,
                             configurable: false
                         })
-                    } else {
-                        console.log(`[Services] Could not load service "${service}" for route "${route.name}"`)
                     }
                 })
-            } else {
-                console.log(`[Services] Skipping route ${route.name}, no services required`)
             }
         })
     }

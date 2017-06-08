@@ -51,8 +51,6 @@ var Router = function () {
                 }
 
                 if (_this.server) {
-                    console.log('[Router] Loading route ' + route.name + ' at ' + route.path);
-
                     _this.server.verb(route.method, route.path, route.callback.bind(route));
                 }
 
@@ -74,8 +72,6 @@ var Router = function () {
                     });
                 }
 
-                console.log('[Router] Added route: ' + route.name);
-
                 resolve();
             });
         }
@@ -87,22 +83,18 @@ var Router = function () {
             return new Promise(function (resolve, reject) {
                 if (typeof routes === 'string') {
                     if (/\.js$/.exec(routes)) {
-                        console.log('[Router] Requiring route ' + routes);
-
                         var route = require(routes);
 
                         resolve(_this2.load.call(_this2, route.__esModule ? route.default : route));
                     } else {
                         _fs2.default.lstat(routes, function (err, stats) {
                             if (err) {
-                                console.log('[Router] Error statting directory ' + routes, err);
                                 reject();
                             }
 
                             if (stats.isDirectory()) {
                                 _fs2.default.readdir(routes, function (err, files) {
                                     if (err) {
-                                        console.log('[Router] Error reading directory ' + routes + ': ', err);
                                         reject();
                                     }
 
@@ -111,7 +103,6 @@ var Router = function () {
                                     })));
                                 });
                             } else {
-                                console.log('[Router] Failed loading ' + routes + ', not a directory or JavaScript file');
                                 resolve();
                             }
                         });

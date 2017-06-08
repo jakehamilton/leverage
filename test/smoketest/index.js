@@ -1,7 +1,10 @@
 const path = require('path')
 const { server, router, services } = require('../../dist/')
+const middleware = require('./middleware/test')
 
 server.listen(3000)
+
+server.load(middleware)
 
 router.connect(server)
 

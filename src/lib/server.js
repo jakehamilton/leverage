@@ -74,8 +74,6 @@ class Server {
      */
     listen (port) {
         this.__server__.listen(port)
-
-        console.log(`[Server] Listening on port ${port}`)
     }
 
     /**
@@ -101,31 +99,18 @@ class Server {
     load (middleware, ...args) {
         if (args.length > 0 || typeof middleware === 'function') {
             // load an express middleware
-
-            console.log(`[Server] Loading normal express middleware...`)
-
             this.__app__.use.apply(this.__app__, [middleware, ...args])
         } else {
             // load a middleware object
             
             if (middleware.middleware && typeof middleware.middleware === 'function') {
                 // load express middleware
-                
-                console.log(`[Server] Loading ${middleware.name} as express middleware...`)
-
                 this.__app__.use.apply(this.__app__, middleware.middleware())
-
-                console.log(`[Server] Done loading ${middleware.name} as express middleware...`)
             }
 
             if (middleware.custom && typeof middleware.custom === 'function') {
                 // load custom middleware
-
-                console.log(`[Server] Loading ${middleware.name} as custom middleware...`)
-
                 middleware.custom(this.__app__, this.__server__)
-
-                console.log(`[Server] Done loading ${middleware.name} as custom middleware...`)
             }
         }
     }

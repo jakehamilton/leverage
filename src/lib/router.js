@@ -69,8 +69,6 @@ class Router {
 
             // provision the server
             if (this.server) {
-                console.log(`[Router] Loading route ${route.name} at ${route.path}`)
-
                 // setup request handling
                 this.server.verb(route.method, route.path, route.callback.bind(route))
             }
@@ -89,15 +87,6 @@ class Router {
                     }
                 })
             }
-
-            /*route.dependencies.forEach(dependency => {
-                if (this.dependencies.hasOwnProperty(dependency)) {
-                    route.load(dependency)
-                }
-            })
-            */
-
-            console.log(`[Router] Added route: ${route.name}`)
 
             resolve()
         })
@@ -118,8 +107,6 @@ class Router {
                 // it's a path
                 if (/\.js$/.exec(routes)) {
                     // a single route file
-                    console.log(`[Router] Requiring route ${routes}`)
-                    
                     const route = require(routes)
 
                     // load the module
@@ -129,7 +116,6 @@ class Router {
                 } else {
                     fs.lstat(routes, (err, stats) => {
                         if (err) {
-                            console.log(`[Router] Error statting directory ${routes}`, err)
                             reject()
                         }
 
@@ -137,7 +123,6 @@ class Router {
                             // a whole directory
                             fs.readdir(routes, (err, files) => {
                                 if (err) {
-                                    console.log(`[Router] Error reading directory ${routes}: `, err)
                                     reject()
                                 }
 
@@ -146,7 +131,6 @@ class Router {
                                 )
                             })
                         } else {
-                            console.log(`[Router] Failed loading ${routes}, not a directory or JavaScript file`)
                             resolve()
                         }
                     })

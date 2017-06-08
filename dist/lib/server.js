@@ -44,8 +44,6 @@ var Server = function () {
     key: 'listen',
     value: function listen(port) {
       this.__server__.listen(port);
-
-      console.log('[Server] Listening on port ' + port);
     }
   }, {
     key: 'load',
@@ -55,28 +53,15 @@ var Server = function () {
       }
 
       if (args.length > 0 || typeof middleware === 'function') {
-
-        console.log('[Server] Loading normal express middleware...');
-
         this.__app__.use.apply(this.__app__, [middleware].concat(args));
       } else {
 
         if (middleware.middleware && typeof middleware.middleware === 'function') {
-
-          console.log('[Server] Loading ' + middleware.name + ' as express middleware...');
-
           this.__app__.use.apply(this.__app__, middleware.middleware());
-
-          console.log('[Server] Done loading ' + middleware.name + ' as express middleware...');
         }
 
         if (middleware.custom && typeof middleware.custom === 'function') {
-
-          console.log('[Server] Loading ' + middleware.name + ' as custom middleware...');
-
           middleware.custom(this.__app__, this.__server__);
-
-          console.log('[Server] Done loading ' + middleware.name + ' as custom middleware...');
         }
       }
     }

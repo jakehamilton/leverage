@@ -10,8 +10,8 @@ var Route = function Route() {
     _classCallCheck(this, Route);
 
     this.name = 'unnamed-route';
-    this.path = '';
-    this.method = '';
+    this.path = '/';
+    this.method = 'get';
     this.dependencies = null;
     this.services = {};
 };

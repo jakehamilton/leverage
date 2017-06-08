@@ -29,7 +29,6 @@ var Services = function () {
         key: 'load',
         value: function load(service) {
             if (this.services.hasOwnProperty(service.name)) {
-                console.log('[Services] Error, already loaded service ' + service);
                 return;
             }
 
@@ -43,7 +42,6 @@ var Services = function () {
             return new Promise(function (resolve, reject) {
                 if (typeof services === 'string') {
                     if (/\.js$/.exec(services)) {
-                        console.log('[Services] Requiring service ' + services);
 
                         var service = require(services);
 
@@ -51,15 +49,12 @@ var Services = function () {
                     } else {
                         _fs2.default.lstat(services, function (err, stats) {
                             if (err) {
-                                console.log('[Services] Error statting directory ' + services);
                                 reject();
                             }
 
                             if (stats.isDirectory()) {
-                                console.log('[Services] Reading directory ' + services);
                                 _fs2.default.readdir(services, function (err, files) {
                                     if (err) {
-                                        console.log('[Services] Error reading directory ' + services);
                                         reject();
                                     }
 
@@ -68,7 +63,6 @@ var Services = function () {
                                     })));
                                 });
                             } else {
-                                console.log('[Services] Failed loading ' + services + ', not a directory or JavaScript file');
                                 resolve();
                             }
                         });
@@ -85,11 +79,8 @@ var Services = function () {
         value: function patch(router) {
             var _this2 = this;
 
-            console.log('[Services] Patching router...');
             router.routes.forEach(function (route) {
                 if (route.dependencies.services) {
-                    console.log('[Services] Patching route ' + route.name);
-
                     route.dependencies.services.forEach(function (service) {
                         if (_this2.services.hasOwnProperty(service)) {
                             Object.defineProperty(route.services, service, {
@@ -101,12 +92,8 @@ var Services = function () {
                                 },
                                 configurable: false
                             });
-                        } else {
-                            console.log('[Services] Could not load service "' + service + '" for route "' + route.name + '"');
                         }
                     });
-                } else {
-                    console.log('[Services] Skipping route ' + route.name + ', no services required');
                 }
             });
         }
