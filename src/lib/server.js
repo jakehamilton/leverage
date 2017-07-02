@@ -1,120 +1,163 @@
+/*
+ * @TODO: Create documentation for ExpressInstance and HTTPServerInstance
+ */
+
+/*
+ * Import dependencies
+ */
 import http from 'http'
 import express from 'express'
 
 /**
  * @class Server
- * @description The HTTP server driver based on Express
+ * @description The Leverage server
  */
 class Server {
+  /**
+   * @constructor
+   */
+  constructor () {
     /**
-     * @constructor
+     * @private {ExpressInstance} __app__ Our express app instance
      */
-    constructor () {
-        /**
-         * @private
-         * @member {Object} __app__ The super secret express app instance
-         */
-        this.__app__ = express()
-
-        /**
-         * @private
-         * @member {Object} __server__ The super secret http server instance
-         */
-        this.__server__ = http.createServer(this.__app__)
-
-        // curry common verbs
-        /**
-         * @method get
-         * @description The equivalent of `server.verb('get', ...)`
-         */
-        this.get = this.verb.bind(this, 'get')
-
-        /**
-         * @method put
-         * @description The equivalent of `server.verb('put', ...)`
-         */
-        this.put = this.verb.bind(this, 'put')
-
-        /**
-         * @method post
-         * @description The equivalent of `server.verb('post', ...)`
-         */
-        this.post = this.verb.bind(this, 'post')
-
-        /**
-         * @method delete
-         * @description The equivalent of `server.verb('delete', ...)`
-         */
-        this.delete = this.verb.bind(this, 'delete')
-    }
+    this.__app__ = express()
 
     /**
-     * @method verb
-     * @description Listen for an HTTP request on a path and run a callback when it happens
-     * @param {String} method The HTTP method to use
-     * @param {String} path The path to use
-     * @param {Function} callback A callback function ready to accept the request
-     * 
-     * @example
-     * // The callback function takes two args, request and response
-     * verb('get', '/users', (request, response) => {
-     *  response.json({ users: [ { name: 'John' } ] })
-     * })
-     * 
-     * @void
+     * @private {HTTPServerInstance} __http_server__ Our http server instance
      */
-    verb (method, path, callback) {
-        this.__app__[method.toLowerCase()](path, callback)
+    this.__http_server__ = http.createServer(this.__app__)
+  }
+
+  /**
+   * @method verb
+   * @description Add a handler to the server on http request
+   *
+   * @param {String} method The http method to use
+   * @param {String} path The path to add a handler to
+   * @param {Function} callback The callback for the handler
+   *
+   * @void
+   */
+  verb (method, path, callback) {
+    if (this.__app__[method]) {
+      this.__app__[method.toLowerCase()](path, callback)
+    }
+  }
+
+  /**
+   * @method listen
+   * @description Have the server listen on a port
+   *
+   * @param {Number} port The port to listen on
+   *
+   * @void
+   */
+  listen (port) {
+    /*
+     * Ensure the port is a number
+     */
+    if (typeof port !== 'number') {
+      /*
+       * Throw an error so our user knows
+       */
+      throw new Error(`[Leverage/lib/server] Error setting port, expected a number but got ${typeof port}`)
+
+      /*
+       * Get out of here before things really break
+       */
+      return
     }
 
-    /**
-     * @method listen
-     * @description Set the server to listen on a specific port
-     * @param {Number} port The port to listen on
+    /*
+     * If we've gotten here, everything must be okay so we
+     *  can have the server listen on the given port.
      */
-    listen (port) {
-        this.__server__.listen(port)
+    this.__http_server__.listen(port)
+
+    /*
+     * Add a handler to stop the server when our process
+     *  is closed.
+     */
+    process.on('exit', () => {
+      if (this.__http_server__.close) {
+        this.__http_server__.close()
+      }
+    })
+
+    process.on('SIGINT', () => {
+      if (this.__http_server__.close) {
+        this.__http_server__.close()
+      }
+    })
+  }
+
+  /**
+   * @method extend
+   * @description Extend the server with a plugin
+   *
+   * @param {Function|Object} plugin The plugin function or object to use
+   * @param {Function} plugin.extend The extend method if you used a plugin object
+   *
+   * @void
+   */
+  extend (plugin) {
+    /*
+     * If we were given a function, call that function with the
+     *  express app and http server instances.
+     */
+    if (typeof plugin === 'function') {
+      plugin(this, this.__app__, this.__http_server__)
     }
 
-    /**
-     * @method load
-     * @description Load a custom or Express middleware
-     * @param {Object} middleware The middleware to load
-     * @param [...<Any>] args All other arguments are passed to the Express middleware function
-     * 
-     * @example
-     * // Using Express middleware
-     * import parser from 'body-parser'
-     * 
-     * server.load(parser.json())
-     * 
-     * @example
-     * // Using custom middleware
-     * import middleware from 'my-middleware'
-     * 
-     * server.load(middleware)
-     * 
-     * @void
+    /*
+     * If we were given an object, call its `extend method`
      */
-    load (middleware, ...args) {
-        if (args.length > 0 || typeof middleware === 'function') {
-            // load an express middleware
-            this.__app__.use.apply(this.__app__, [middleware, ...args])
-        } else {
-            // load a middleware object
-            
-            if (middleware.middleware && typeof middleware.middleware === 'function') {
-                // load express middleware
-                this.__app__.use.apply(this.__app__, middleware.middleware())
-            }
+    else if (typeof plugin === 'object') {
+      /*
+       * Check that the object has an `extend` method
+       */
+      if (plugin.extend && typeof plugin.extend === 'function') {
+        /*
+         * Call the extend method with the express app and http
+         *  server instances.
+         */
+        plugin.extend(this, this.__app__, this.__http_server__)
+      }
 
-            if (middleware.custom && typeof middleware.custom === 'function') {
-                // load custom middleware
-                middleware.custom(this.__app__, this.__server__)
-            }
-        }
+      /*
+       * If it doesn't, then we can't use it
+       */
+      else {
+        /*
+         * Throw an error so the user knows
+         */
+        throw new Error(`[Leverage/lib/server] Error extending server, was given an object but it has no method "extend"`)
+
+        /*
+         * Get out of here before things really break
+         */
+        return
+      }
     }
+
+    /*
+     * Otherwise, we're not sure what we have
+     */
+    else {
+      /*
+       * Throw an error to let our user know
+       */
+      throw new Error(`[Leverage/lib/server] Error extending server, expected a function or object bug got ${typeof plugin}`)
+
+      /*
+       * Get out of here before things really break
+       */
+      return
+    }
+  }
 }
 
-// export a server instance
+/*
+ * Export a new instance of the server
+ */
 export default new Server()

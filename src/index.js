@@ -1,29 +1,31 @@
-// library
-import server from './lib/server'
-import router from './lib/router'
-import services from './lib/services'
-
-// definitions
+/*
+ * Import definitions
+ */
 import Route from './definitions/route'
+import Plugin from './definitions/plugin'
 import Service from './definitions/service'
 import Middleware from './definitions/middleware'
 
-// exports
+/*
+ * Import library files
+ */
+import server from './lib/server'
+import router from './lib/router'
+
+/*
+ * Export definitions
+ */
 export {
-    server,
-    router,
-    services,
-    Route,
-    Service,
-    Middleware
+  Route,
+  Plugin,
+  Service,
+  Middleware
 }
 
-// default export everything
-export default {
-    server,
-    router,
-    services,
-    Route,
-    Service,
-    Middleware
+/*
+ * Export library files
+ */
+export {
+  server,
+  router
 }

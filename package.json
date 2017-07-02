@@ -1,12 +1,12 @@
 {
   "name": "leverage-js",
-  "version": "0.1.0",
+  "version": "1.0.0-beta",
   "description": "A highly modular server library!",
   "main": "dist/index.js",
   "scripts": {
-    "test": "npm run smoketest",
+    "test": "mocha --recursive --reporter list --colors --compilers js:babel-core/register",
+    "start": "nodemon --exec babel-node --presets=latest -- example/index.js",
     "compile": "babel src --out-dir dist --no-comments --minify",
-    "smoketest": "node test/smoketest/index.js",
     "prepublish": "npm run compile"
   },
   "repository": {
@@ -25,10 +25,20 @@
   },
   "homepage": "https://github.com/jakehamilton/leverage#readme",
   "dependencies": {
-    "express": "^4.15.2"
+    "express": "^4.15.2",
+    "klaw": "*"
   },
   "devDependencies": {
+    "chai": "*",
+    "mocha": "*",
+    "chai-spies": "git://github.com/chaijs/chai-spies.git#b11aeebf",
+    "proxyquire": "*",
+    "babel-core": "*",
     "babel-cli": "^6.24.0",
-    "babel-preset-latest": "^6.24.0"
+    "babel-preset-latest": "^6.24.0",
+    "eslint": "^4.1.1",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-promise": "^3.5.0",
+    "eslint-plugin-standard": "^3.0.1"
   }
 }

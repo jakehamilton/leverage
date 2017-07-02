@@ -1,8 +1,6 @@
 Leverage
 ========
 
-The backbone of your web app.
-
 What is it?
 -----------
 
@@ -20,88 +18,73 @@ npm install leverage-js
 yarn add leverage-js
 ```
 
-Getting Started
----------------
+First Steps (Hello World)
+-------------------------
 
-### Create a project and install
+1\. Create a new project (if not done already):
 
 ```bash
-# Create a project directory and enter it
 mkdir my-project && cd my-project
 
-# Initialize the project with npm
 npm init -y
+```
 
-# Install leverage from npm (or yarn)
+2\. Install Leverage:
+
+```bash
 npm install --save leverage-js
 ```
 
-### Create your project structure and open your server's new entrypoint
+3\. Create an `index.js` file with the following:
 
-```bash
-# Create a route
-touch get_index.js
-
-#Create and open our main JS file
-$EDITOR index.js
-```
-
-### Configure your server to find your views/services/middleware (more info in docs)
-
-###### index.js
-
+##### index.js
 ```js
-// dependencies
-import path from 'path'
-import { router, server } from 'leverage-js'
+// Import the server, router, and Route definition from leverage.
+// Note:
+//      If you are not transpiling, then you should use the
+//      `require` syntax here.
+import { server, router } from 'leverage-js'
 
-// import our route
-import route from './get_index'
+// Have the server listen on a port
+server.listen(8080)
 
-// start our server listening on port 3000
-server.listen(3000)
-
-// have our router manage routing for our server
+// Have the router manage routes for the server
 router.connect(server)
 
-// load our route
-router.add(route)
-```
-
-### Write your route definition
-
-###### get\_index.js
-
-```js
-import path from 'path'
-import { Route } from 'leverage-js'
-
-// create a new route, inheriting from the base route definition
-class R extends Route {
+// Create a route
+class MyRoute extends Route {
     constructor () {
-        // required
+        // Required
         super()
 
-        this.path = '/'
+        // Configure route
+        this.config = {
+            http: {
+                path: '/'
+            }
+        }
     }
 
-    callback (req, res) {
-        res.end('Hello World!')
+    // This is called when an http request is received
+    http (request, response) {
+        response.send('Hello World!')
     }
 }
 
-// export our route definition
-export default new R()
+// Add our route to the router
+router.add(new MyRoute())
 ```
 
-### Start it up
+4\. Run the `index.js` file in node
 
 ```bash
 node index.js
 ```
 
-Roadmap
--------
+5\. Browse to [localhost:8080](http://localhost:8080)
 
-Take a look at [the 1.0.0 project](https://github.com/jakehamilton/leverage/projects/1) for what plans to be in the release.
-Otherwise, feel free to open issues with feature suggestions, etc!
+More Information
+----------------
+
+Please checkout the `docs` directory in the project, it should
+explain all the pieces of Leverage.

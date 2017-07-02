@@ -1,29 +1,27 @@
 /*
- * @TODO: Documentation for the MiddlewareConfig object
+ * @TODO: Documentation for the PluginConfig object
  */
 
 /**
- * @class Middleware
- * @description The base middleware definition
+ * @class Plugin
+ * @description The base plugin definition
  */
-export default class Middleware {
+export default class Plugin {
   /**
    * @constructor
    */
   constructor () {
     /**
-     * @private {MiddlewareConfig} __config__ The private middleware configuration object
+     * @private {PluginConfig} __config__ The private plugin configuration object
      */
-    this.__config__ = {
-      type: ['http']
-    }
+    this.__config__ = {}
   }
 
   /**
    * @setter config
-   * @description Set the middleware's config
+   * @description Set the plugin's config
    *
-   * @param {Middleware} config The middleware configuration object to use
+   * @param {PluginConfig} config The plugin configuration object to use
    */
   set config (config) {
     /*
@@ -35,7 +33,8 @@ export default class Middleware {
        */
       if (key === 'type') {
         /*
-         * Middleware type must be an array of types
+         * The internal type value is an array of
+         *  strings.
          */
         this.__config__[key] = [].concat(config[key])
       }

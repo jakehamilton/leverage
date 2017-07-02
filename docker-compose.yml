@@ -1,0 +1,34 @@
+version: '2'
+
+services:
+  test:
+    command: nodemon --exec "npm test"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: leverage/unit
+    volumes:
+      - /opt/app/node_modules/
+      - .:/opt/app
+  leverage:
+    command: "npm start"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: leverage/unit
+    volumes:
+      - /opt/app/node_modules/
+      - .:/opt/app
+    ports:
+      - 3000:8080
+    environment:
+      PORT: 8080
+  compile:
+    command: "npm run compile"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: leverage/unit
+    volumes:
+      - /opt/app/node_modules/
+      - .:/opt/app

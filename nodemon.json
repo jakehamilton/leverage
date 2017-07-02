@@ -1,0 +1,12 @@
+{
+    "ignore": [
+        ".git",
+        "node_modules"
+    ],
+    "verbose": true,
+    "watch": [
+        "src/**/*",
+        "test/**/*",
+        "example/**/*"
+    ]
+}
