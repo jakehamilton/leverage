@@ -1,12 +1,12 @@
 /*
- * Import the base route definition
+ * Import the base component definition
  */
-import Route from '../../src/definitions/route'
+import { Component } from '../../src'
 
 /*
- * Create our route
+ * Create our component
  */
-class R extends Route {
+class C extends Component {
   constructor () {
     super()
 
@@ -25,6 +25,6 @@ class R extends Route {
 }
 
 /*
- * Export a new instance of our route
+ * Export a new instance of our component
  */
-export default new R()
+export default new C()

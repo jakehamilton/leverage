@@ -28,9 +28,9 @@ let unit
 let klaw
 
 /*
- * A plain route object
+ * A plain component object
  */
-let route = {
+let component = {
   __config__: {
     type: ['http'],
     http: {
@@ -45,11 +45,11 @@ let route = {
 /*
  * Start by describing the file we are testing
  */
-describe('lib/router', function () {
+describe('lib/manager', function () {
   /*
-   * Testing the `router` object
+   * Testing the `manager` object
    */
-  describe('router', function () {
+  describe('manager', function () {
 
     /*
      * Get a clean copy of the unit before each test
@@ -63,26 +63,26 @@ describe('lib/router', function () {
       /*
        * Require the unit
        */
-      unit = proxyquire('../../src/lib/router', {
+      unit = proxyquire('../../src/lib/manager', {
         'klaw': klaw,
-        'MOCK_KLAW_PATH.js': route
+        'MOCK_KLAW_PATH.js': component
       }).default
     })
 
     /*
-     * The router manages routes by storing them in
-     *  a private `routes` object.
+     * The manager manages components by storing them in
+     *  a private `components` object.
      */
-    it('Should initialize with an empty routes map', function () {
+    it('Should initialize with an empty components map', function () {
       /*
        * The object should exist
        */
-      should.exist(unit.__routes__)
+      should.exist(unit.__components__)
 
       /*
        * The object should start as an empty object
        */
-      unit.__routes__.should.deep.equal({})
+      unit.__components__.should.deep.equal({})
     })
 
     it('Should load plugins', function () {
@@ -94,7 +94,7 @@ describe('lib/router', function () {
           type: ['http'],
           identifier: 'path'
         },
-        http (route) {
+        http (component) {
 
         }
       }
@@ -115,7 +115,7 @@ describe('lib/router', function () {
       should.exist(unit.__plugins__.http)
     })
 
-    it('Should load routes once a plugin is available', function () {
+    it('Should load components once a plugin is available', function () {
       /*
        * Create a basic plugin object to test with
        */
@@ -124,15 +124,15 @@ describe('lib/router', function () {
           type: ['http'],
           identifier: 'path'
         },
-        http (route) {
+        http (component) {
 
         }
       }
 
       /*
-       * Create a basic route object to test with
+       * Create a basic component object to test with
        */
-      const route = {
+      const component = {
         __config__: {
           type: ['http'],
           http: {
@@ -145,15 +145,15 @@ describe('lib/router', function () {
       }
 
       /*
-       * Spy on the plugin and route callbacks
+       * Spy on the plugin and component callbacks
        */
       plugin.http = chai.spy(plugin.http.bind(plugin))
-      route.http = chai.spy(route.http.bind(route))
+      component.http = chai.spy(component.http.bind(component))
 
       /*
-       * Load the route
+       * Load the component
        */
-      unit.add(route)
+      unit.add(component)
 
       /*
        * Load the plugin
@@ -161,14 +161,14 @@ describe('lib/router', function () {
       unit.plugin(plugin)
 
       /*
-       * The route should now exist in the loaded routes map
+       * The component should now exist in the loaded components map
        */
-      should.exist(unit.__routes__.http['/'])
+      should.exist(unit.__components__.http['/'])
     })
 
-    it('Should allow adding a route object', function () {
+    it('Should allow adding a component object', function () {
       /*
-       * Configure a barebones plugin object so the route is loaded
+       * Configure a barebones plugin object so the component is loaded
        */
       unit.__plugins__.http = {
         __config__: {
@@ -181,26 +181,26 @@ describe('lib/router', function () {
       }
 
       /*
-       * Add a simple, mock route
+       * Add a simple, mock component
        */
-      unit.add(route)
+      unit.add(component)
 
       /*
-       * Ensure the mock route was added to the map of routes
+       * Ensure the mock component was added to the map of components
        */
 
       /*
-       * The route's type should now have a map
+       * The component's type should now have a map
        */
-      should.exist(unit.__routes__.http)
+      should.exist(unit.__components__.http)
 
       /*
-       * The route should exist in the map
+       * The component should exist in the map
        */
-      should.exist(unit.__routes__.http['/'])
+      should.exist(unit.__components__.http['/'])
     })
 
-    it('Should allow adding a route directory', function () {
+    it('Should allow adding a component directory', function () {
       /*
        * Create a basic plugin object to test with
        */
@@ -209,7 +209,7 @@ describe('lib/router', function () {
           type: ['http'],
           identifier: 'path'
         },
-        http (route) {
+        http (component) {
 
         }
       }
@@ -225,12 +225,12 @@ describe('lib/router', function () {
       unit.add('/a/b/c')
 
       /*
-       * Our mock route should have been loaded in
+       * Our mock component should have been loaded in
        */
-      unit.__routes__.http[route.__config__.http.path].should.deep.equal(route)
+      unit.__components__.http[component.__config__.http.path].should.deep.equal(component)
     })
 
-    it('Should allow adding a route file', function () {
+    it('Should allow adding a component file', function () {
       /*
        * Create a basic plugin object to test with
        */
@@ -239,7 +239,7 @@ describe('lib/router', function () {
           type: ['http'],
           identifier: 'path'
         },
-        http (route) {
+        http (component) {
 
         }
       }
@@ -250,14 +250,14 @@ describe('lib/router', function () {
       unit.plugin(plugin)
 
       /*
-       * Load a mock route file
+       * Load a mock component file
        */
       unit.add('/a/b/c.js')
 
       /*
-       * Our mock route should have been loaded in
+       * Our mock component should have been loaded in
        */
-      unit.__routes__.http[route.__config__.http.path].should.deep.equal(route)
+      unit.__components__.http[component.__config__.http.path].should.deep.equal(component)
     })
 
     it('Should allow creating a service', function () {
@@ -276,11 +276,11 @@ describe('lib/router', function () {
       unit.service(service)
     })
 
-    it('Should patch routes with services', function () {
+    it('Should patch components with services', function () {
       /*
-       * Create a basic route object to test with
+       * Create a basic component object to test with
        */
-      const route = {
+      const component = {
         __config__: {
           type: ['http'],
           http: {
@@ -309,7 +309,7 @@ describe('lib/router', function () {
           type: ['http'],
           identifier: 'path'
         },
-        http (route) {
+        http (component) {
 
         }
       }
@@ -319,9 +319,9 @@ describe('lib/router', function () {
        */
 
       /*
-       * Add the route
+       * Add the component
        */
-      unit.add(route)
+      unit.add(component)
 
       /*
        * Add the service
@@ -336,18 +336,18 @@ describe('lib/router', function () {
       /*
        * The services map should have been created
        */
-      should.exist(unit.__routes__.http['/'].services)
+      should.exist(unit.__components__.http['/'].services)
 
       /*
        * Our service should exist
        */
-      should.exist(unit.__routes__.http['/'].services.a)
+      should.exist(unit.__components__.http['/'].services.a)
 
       /*
-       * The route's service should be the same service
+       * The component's service should be the same service
        *  object we passed in earlier.
        */
-      unit.__routes__.http['/'].services.a.should.deep.equal(service)
+      unit.__components__.http['/'].services.a.should.deep.equal(service)
     })
   })
 })

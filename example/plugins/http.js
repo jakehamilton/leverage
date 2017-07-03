@@ -6,7 +6,7 @@ import { server } from '../../src'
 /*
  * Import the base plugin definition
  */
-import Plugin from '../../src/definitions/plugin'
+import { Plugin } from '../../src'
 
 /*
  * Create our plugin

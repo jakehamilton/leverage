@@ -6,7 +6,7 @@ import path from 'path'
 /*
  * Import leverage dependencies
  */
-import { router } from '../dist'
+import { manager } from '../src'
 
 /*
  * Import http plugin
@@ -14,23 +14,23 @@ import { router } from '../dist'
 import http from './plugins/http'
 
 /*
- * Configure the router to support http routes
+ * Configure the manager to support http routes
  */
-router.plugin(http)
+manager.plugin(http)
 
 /*
- * Add all our routes to the router
+ * Add all our routes to the manager
  */
-const routes = path.resolve(__dirname, 'routes')
-router.add(routes)
+const components = path.resolve(__dirname, 'components')
+manager.add(components)
 
 /*
  * Add our middleware
  */
 const middleware = path.resolve(__dirname, 'middleware')
-router.middleware(middleware)
+manager.middleware(middleware)
 
 /*
  * Listen to port 8080 in the http server
  */
-http.listen(3000)
+http.listen(8080)

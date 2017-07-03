@@ -1,18 +1,18 @@
 /*
- * @TODO: Documentation for the RouteConfig object
+ * @TODO: Documentation for the ComponentConfig object
  */
 
 /**
- * @class Route
- * @description The base route definition
+ * @class Component
+ * @description The base component definition
  */
-export default class Route {
+export default class Component {
   /**
    * @constructor
    */
   constructor () {
     /**
-     * @private {RouteConfig} __config__ The private route configuration object
+     * @private {ComponentConfig} __config__ The private component configuration object
      */
     this.__config__ = {
       type: ['http']
@@ -21,9 +21,9 @@ export default class Route {
 
   /**
    * @setter config
-   * @description Set the route's config
+   * @description Set the component's config
    *
-   * @param {RouteConfig} config The route configuration object to use
+   * @param {ComponentConfig} config The component configuration object to use
    */
   set config (config) {
     /*
@@ -35,7 +35,7 @@ export default class Route {
        */
       if (key === 'type') {
         /*
-         * Route type must be an array of types
+         * Component type must be an array of types
          */
         this.__config__[key] = [].concat(config[key])
       }

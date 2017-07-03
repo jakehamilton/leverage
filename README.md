@@ -29,10 +29,10 @@ Create our server:
 ##### index.js
 
 ```js
-import { router, Route } from 'leverage-js'
+import { manager, Component } from 'leverage-js'
 import http from 'leverage-plugin-http'
 
-class MyRoute extends Route {
+class MyComponent extends Component {
   constructor () {
     super()
 
@@ -50,9 +50,9 @@ class MyRoute extends Route {
   }
 }
 
-router.plugin(http)
+manager.plugin(http)
 
-router.add(new MyRoute())
+manager.add(new MyRoute())
 
 http.listen(3000)
 ```

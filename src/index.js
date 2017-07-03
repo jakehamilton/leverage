@@ -1,7 +1,7 @@
 /*
  * Import definitions
  */
-import Route from './definitions/route'
+import Component from './definitions/component'
 import Plugin from './definitions/plugin'
 import Service from './definitions/service'
 import Middleware from './definitions/middleware'
@@ -10,13 +10,13 @@ import Middleware from './definitions/middleware'
  * Import library files
  */
 import server from './lib/server'
-import router from './lib/router'
+import manager from './lib/manager'
 
 /*
  * Export definitions
  */
 export {
-  Route,
+  Component,
   Plugin,
   Service,
   Middleware
@@ -27,5 +27,5 @@ export {
  */
 export {
   server,
-  router
+  manager
 }

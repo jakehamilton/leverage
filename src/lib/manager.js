@@ -1,5 +1,5 @@
 /*
- * @TODO: Documentation for Route object
+ * @TODO: Documentation for Component object
  * @TODO: Documentation for Plugin object
  * @TODO: Documentation for Service object
  * @TODO: Documentation for Middleware object
@@ -12,15 +12,15 @@ import path from 'path'
 import klaw from 'klaw'
 
 /**
- * @class Router
- * @description The Leverage router
+ * @class Manager
+ * @description The Leverage manager
  */
-class Router {
+class Manager {
   /**
    * @constructor
    */
   constructor () {
-    this.__routes__ = {}
+    this.__components__ = {}
     this.__plugins__ = {}
     this.__services__ = {}
     this.__middleware__ = {}
@@ -28,17 +28,17 @@ class Router {
 
   /**
    * @method add
-   * @description Add a route
+   * @description Add a component
    *
-   * @param {String|Route} route The route object or path to a route file or directory of route files
+   * @param {String|Component} component The component object or path to a component file or directory of component files
    *
    * @void
    */
-  add (route) {
+  add (component) {
     /*
      * If the argument given is a path
      */
-    if (typeof route === 'string') {
+    if (typeof component === 'string') {
       /*
        * Store all files found in an array
        */
@@ -47,7 +47,7 @@ class Router {
       /*
        * Read the file/directory's information
        */
-      klaw(route)
+      klaw(component)
         .on('data', file => {
           /*
            * Add each file to our array
@@ -78,44 +78,44 @@ class Router {
              */
             .forEach(file => {
               /*
-               * Get the route object
+               * Get the component object
                */
-              const route = require(file.path)
+              const component = require(file.path)
 
               /*
                * Attempt to load it
                */
-              this.add(route)
+              this.add(component)
             })
         })
     }
 
     /*
-     * Load a route object
+     * Load a component object
      */
-    else if (typeof route === 'object') {
+    else if (typeof component === 'object') {
       /*
        * Correct for ECMAScript modules
        */
-      if (!route.__config__ && route.default) {
+      if (!component.__config__ && component.default) {
         /*
          * Use the default export
          */
-        route = route.default
+        component = component.default
       }
 
       /*
-       * Verify the object is a valid route object
+       * Verify the object is a valid component object
        */
 
       /*
-       * Route objects must have a private config property with a type
+       * Component objects must have a private config property with a type
        */
-      if (!route.__config__) {
+      if (!component.__config__) {
         /*
          * Throw an error so our user knows
          */
-        throw new Error(`[Leverage/lib/router] Error adding route, expected route object to have an "__config__" property`)
+        throw new Error(`[Leverage/lib/manager] Error adding component, expected component object to have an "__config__" property`)
 
         /*
          * Get out of here before things really break
@@ -126,11 +126,11 @@ class Router {
       /*
        * If we have a config object, but no type that is also an error
        */
-      if (route.__config__ && !route.__config__.type) {
+      if (component.__config__ && !component.__config__.type) {
         /*
          * Throw an error so our user knows
          */
-        throw new Error(`[Leverage/lib/router] Error adding route, expected route object to a type`)
+        throw new Error(`[Leverage/lib/manager] Error adding component, expected component object to a type`)
 
         /*
          * Get out of here before things really break
@@ -141,11 +141,11 @@ class Router {
       /*
        * If the type array is empty, that is also an error
        */
-      if (route.__config__ && route.__config__.type && route.__config__.type.length === 0) {
+      if (component.__config__ && component.__config__.type && component.__config__.type.length === 0) {
         /*
          * Throw an error so our user knows
          */
-        throw new Error(`[Leverage/lib/router] Error adding route, expected route object to a type`)
+        throw new Error(`[Leverage/lib/manager] Error adding component, expected component object to a type`)
 
         /*
          * Get out of here before things really break
@@ -154,60 +154,60 @@ class Router {
       }
 
       /*
-       * If we have gotten here, the route must be valid
+       * If we have gotten here, the component must be valid
        */
-      for (let type of route.__config__.type) {
+      for (let type of component.__config__.type) {
         /*
-         * If we don't yet have a plugin which supports this route,
+         * If we don't yet have a plugin which supports this component,
          *  save it for later to be loaded.
          */
         if (!this.__plugins__[type]) {
           /*
-           * Save the route to be loaded later
+           * Save the component to be loaded later
            */
 
           /*
-           * Create the route map for this type if needed
+           * Create the component map for this type if needed
            */
-          if (!this.__routes__[type]) {
-            this.__routes__[type] = {}
+          if (!this.__components__[type]) {
+            this.__components__[type] = {}
           }
 
           /*
-           * Create the unitialized routes array if needed
+           * Create the unitialized components array if needed
            */
-          if (!this.__routes__[type].__unitialized__) {
-            this.__routes__[type].__unitialized__ = []
+          if (!this.__components__[type].__unitialized__) {
+            this.__components__[type].__unitialized__ = []
           }
 
           /*
-           * Push this route to the unitialized routes array
+           * Push this component to the unitialized components array
            */
-          this.__routes__[type].__unitialized__.push(route)
+          this.__components__[type].__unitialized__.push(component)
         }
 
         /*
-         * If a plugin supports this route, load it
+         * If a plugin supports this component, load it
          */
         else {
           /*
-           * Get the plugin that can load this route
+           * Get the plugin that can load this component
            */
           const plugin = this.__plugins__[type]
 
           /*
-           * Get the identifier for this kind of route
+           * Get the identifier for this kind of component
            */
           const identifier = plugin.__config__.identifier
 
           /*
-           * Check if the route already exists
+           * Check if the component already exists
            */
-          if (this.__routes__[type] && this.__routes__[type][identifier]) {
+          if (this.__components__[type] && this.__components__[type][identifier]) {
             /*
-             * Tell the user that this route already exists
+             * Tell the user that this component already exists
              */
-            throw new Error(`[Leverage/lib/router] Error adding route, route already exists: ${type}@${identifier}`)
+            throw new Error(`[Leverage/lib/manager] Error adding component, component already exists: ${type}@${identifier}`)
 
             /*
              * Get out of here before something really breaks
@@ -216,67 +216,67 @@ class Router {
           }
 
           /*
-           * Ensure the route's type has a map
+           * Ensure the component's type has a map
            */
-          if (!this.__routes__[type]) {
-            this.__routes__[type] = {}
+          if (!this.__components__[type]) {
+            this.__components__[type] = {}
           }
 
           /*
-           * If we've gotten here, then our route should be added
+           * If we've gotten here, then our component should be added
            */
-          this.__routes__[type][route.__config__[type][identifier]] = route
+          this.__components__[type][component.__config__[type][identifier]] = component
 
           /*
-           * Load the route in the plugin
+           * Load the component in the plugin
            */
-          plugin[type](route)
+          plugin[type](component)
         }
 
         /*
-         * Add any dependencies to the route that are needed
+         * Add any dependencies to the component that are needed
          */
-        if (route.__config__.dependencies && route.__config__.dependencies.services) {
-          for (let service of route.__config__.dependencies.services) {
+        if (component.__config__.dependencies && component.__config__.dependencies.services) {
+          for (let service of component.__config__.dependencies.services) {
             /*
              * Check to see if the needed service is loaded
              */
 
             /*
              * The service is loaded, so we can patch the
-             *  route.
+             *  component.
              */
             if (this.__services__[service]) {
               /*
-               * Create the route's service object if needed
+               * Create the component's service object if needed
                */
-              if (!route.services) {
-                route.services = {}
+              if (!comopnent.services) {
+                comopnent.services = {}
               }
 
-              route.services[service] = this.__services__[service]
+              comopnent.services[service] = this.__services__[service]
             }
 
             /*
              * The service is not loaded, we must add this
-             *  route to the waiting queue.
+             *  Component to the waiting queue.
              */
             else {
               /*
                * Create the queue if needed
                */
-              if (!this.__routes__.__waiting__) {
-                this.__routes__.__waiting__ = {}
+              if (!this.__components__.__waiting__) {
+                this.__components__.__waiting__ = {}
               }
 
-              if (!this.__routes__.__waiting__[service]) {
-                this.__routes__.__waiting__[service] = []
+              if (!this.__components__.__waiting__[service]) {
+                this.__components__.__waiting__[service] = []
               }
 
               /*
-               * Add the route to the waiting queue
+               * Add the component to the waiting queue
                */
-              this.__routes__.__waiting__[service].push(route)
+              this.__components__.__waiting__[service].push(component)
             }
           }
         }
@@ -374,7 +374,7 @@ class Router {
           /*
            * We can't load more than one plugin for a type
            */
-          throw new Error(`[Leverage/lib/router] Error loading plugin, a plugin is already defined for type ${type}`)
+          throw new Error(`[Leverage/lib/manager] Error loading plugin, a plugin is already defined for type ${type}`)
 
           /*
            * Get out of here before more things break
@@ -389,29 +389,29 @@ class Router {
         this.__plugins__[type] = plugin
 
         /*
-         * If we have any routes that haven't been initialized
+         * If we have any components that haven't been initialized
          *  yet, then we should load them right now.
          */
-        if (this.__routes__[type] && this.__routes__[type].__unitialized__ && this.__routes__[type].__unitialized__.length > 0) {
+        if (this.__components__[type] && this.__components__[type].__unitialized__ && this.__components__[type].__unitialized__.length > 0) {
           /*
-           * Load each route
+           * Load each component
            */
-          for (let route of this.__routes__[type].__unitialized__) {
+          for (let component of this.__components__[type].__unitialized__) {
             /*
-             * Load the route into the route map
+             * Load the component into the component map
              */
-            this.__routes__[type][route.__config__[type][plugin.__config__.identifier]] = route
+            this.__components__[type][component.__config__[type][plugin.__config__.identifier]] = component
 
             /*
-             * Pass the route to the plugin
+             * Pass the component to the plugin
              */
-            this.__plugins__[type][type](route)
+            this.__plugins__[type][type](component)
           }
 
           /*
-           * Clear the uninitialized routes array
+           * Clear the uninitialized components array
            */
-          this.__routes__[type].__unitialized__.length = 0
+          this.__components__[type].__unitialized__.length = 0
         }
 
         /*
@@ -438,7 +438,7 @@ class Router {
       /*
        * Throw an error so the user knows
        */
-      throw new Error(`[Leverage/lib/router] Error loading plugin, expected string or object but got ${typeof plugin}`)
+      throw new Error(`[Leverage/lib/manager] Error loading plugin, expected string or object but got ${typeof plugin}`)
     }
   }
 
@@ -513,11 +513,11 @@ class Router {
       /*
        * Correct for ECMAScript modules
        */
-      if (!service.__config__ && route.default) {
+      if (!service.__config__ && service.default) {
         /*
          * Use the default export
          */
-        service = route.default
+        service = service.default
       }
 
       /*
@@ -528,7 +528,7 @@ class Router {
         /*
          * Services can't share names
          */
-        throw new Error(`[Leverage/lib/router] Error adding service, service ${service.name} already exists`)
+        throw new Error(`[Leverage/lib/manager] Error adding service, service ${service.name} already exists`)
 
         /*
          * Get out of here before something really breaks
@@ -549,35 +549,35 @@ class Router {
       /*
        * Create the waiting map if needed
        */
-      if (!this.__routes__.__waiting__) {
-        this.__routes__.__waiting__ = {}
+      if (!this.__components__.__waiting__) {
+        this.__components__.__waiting__ = {}
       }
 
       /*
-       * Check to see if any routes are waiting on this service
+       * Check to see if any components are waiting on this service
        */
-      if (this.__routes__.__waiting__[service.__config__.name]) {
+      if (this.__components__.__waiting__[service.__config__.name]) {
         /*
-         * Patch the routes waiting for this service
+         * Patch the components waiting for this service
          */
-        for (let route of this.__routes__.__waiting__[service.__config__.name]) {
+        for (let component of this.__components__.__waiting__[service.__config__.name]) {
           /*
-           * Create the route's services map if needed
+           * Create the component's services map if needed
            */
-          if (!route.services) {
-            route.services = {}
+          if (!component.services) {
+            component.services = {}
           }
 
           /*
-           * Patch the route
+           * Patch the component
            */
-          route.services[service.__config__.name] = service
+          component.services[service.__config__.name] = service
         }
 
         /*
          * Remove the service name from the map
          */
-        delete this.__routes__.__waiting__[service.__config__.name]
+        delete this.__components__.__waiting__[service.__config__.name]
       }
     }
 
@@ -588,7 +588,7 @@ class Router {
       /*
        * Throw an error so the user knows
        */
-      throw new Error(`[Leverage/lib/router] Error loading service, expected a string or object but got ${typeof service}`)
+      throw new Error(`[Leverage/lib/manager] Error loading service, expected a string or object but got ${typeof service}`)
 
       /*
        * Get out of here
@@ -728,7 +728,7 @@ class Router {
       /*
        * Throw an error so our user knows
        */
-      throw new Error(`[Leverage/lib/router] Error loading middleware, expected string or object but got ${typeof middleware}`)
+      throw new Error(`[Leverage/lib/manager] Error loading middleware, expected string or object but got ${typeof middleware}`)
 
       /*
        * Get out of here
@@ -739,6 +739,6 @@ class Router {
 }
 
 /*
- * Export a new instance of the router
+ * Export a new instance of the manager
  */
-export default new Router()
+export default new Manager()

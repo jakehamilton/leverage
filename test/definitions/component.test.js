@@ -14,18 +14,18 @@ const should = chai.should()
 let unit
 
 /*
- * Instance of a Route
+ * Instance of a Component
  */
 let instance
 
 /*
  * Start by describing the file we are testing
  */
-describe('definitions/route', function () {
+describe('definitions/component', function () {
   /*
-   * Testing the `Route` class
+   * Testing the `Component` class
    */
-  describe('Route', function () {
+  describe('Component', function () {
 
     /*
      * Get a clean copy of the unit before each test
@@ -34,7 +34,7 @@ describe('definitions/route', function () {
       /*
        * Require the unit
        */
-      unit = require('../../src/definitions/route').default
+      unit = require('../../src/definitions/component').default
     })
 
     /*
@@ -43,18 +43,18 @@ describe('definitions/route', function () {
      */
     it('Should extendable', function () {
       /*
-       * Create a Route definition
+       * Create a Component definition
        */
-      class R extends unit {
+      class C extends unit {
         constructor () {
           super()
         }
       }
 
       /*
-       * Create an instance of the custom route
+       * Create an instance of the custom component
        */
-      instance = new R()
+      instance = new C()
 
       /*
        * The instance should exist
@@ -62,21 +62,21 @@ describe('definitions/route', function () {
       should.exist(instance)
 
       /*
-       * Should be an instance of both R and unit
+       * Should be an instance of both C and unit
        */
-      instance.should.be.an.instanceof(R)
+      instance.should.be.an.instanceof(C)
       instance.should.be.an.instanceof(unit)
     })
 
     /*
-     * The base route definition should provide a basic
+     * The base component definition should provide a basic
      *  configuration out of the box.
      */
     it('Should come with a default config', function () {
       /*
-       * Create a Route definition
+       * Create a Component definition
        */
-      class R extends unit {
+      class C extends unit {
         constructor () {
           super()
         }
@@ -85,7 +85,7 @@ describe('definitions/route', function () {
       /*
        * Create an instance of the custom route
        */
-      instance = new R()
+      instance = new C()
 
       /*
        * A default config should exist
@@ -93,16 +93,16 @@ describe('definitions/route', function () {
       should.exist(instance.__config__)
 
       /*
-       * Should default to a HTTP route type
+       * Should default to a HTTP component type
        */
       instance.__config__.type.should.deep.equal(['http'])
     })
 
-    it('Should allow setting route type as a string', function () {
+    it('Should allow setting component type as a string', function () {
       /*
-       * Create a Route definition
+       * Create a Component definition
        */
-      class R extends unit {
+      class C extends unit {
         constructor () {
           super()
 
@@ -113,9 +113,9 @@ describe('definitions/route', function () {
       }
 
       /*
-       * Create an instance of the custom route
+       * Create an instance of the custom component
        */
-      instance = new R()
+      instance = new C()
 
       /*
        * Make sure the config is updated to match the
@@ -124,11 +124,11 @@ describe('definitions/route', function () {
       instance.__config__.type.should.deep.equal(['http'])
     })
 
-    it('Should allow setting route type as an array of strings', function () {
+    it('Should allow setting component type as an array of strings', function () {
       /*
        * Create a Route definition
        */
-      class R extends unit {
+      class C extends unit {
         constructor () {
           super()
 
@@ -139,22 +139,22 @@ describe('definitions/route', function () {
       }
 
       /*
-       * Create an instance of the custom route
+       * Create an instance of the custom component
        */
-      instance = new R()
+      instance = new C()
 
       /*
        * Make sure the config is updated to match the
-       *  following route type array.
+       *  following component type array.
        */
       instance.__config__.type.should.deep.equal(['http', 'socket'])
     })
 
     it('Should allow setting dependencies', function () {
       /*
-       * Create a Route definition
+       * Create a Component definition
        */
-      class R extends unit {
+      class C extends unit {
         constructor () {
           super()
 
@@ -167,9 +167,9 @@ describe('definitions/route', function () {
       }
 
       /*
-       * Create an instance of the custom route
+       * Create an instance of the custom component
        */
-      instance = new R()
+      instance = new C()
 
       /*
        * The dependency map should be copied over to

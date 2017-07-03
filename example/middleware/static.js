@@ -13,7 +13,7 @@ import express from 'express'
 /*
  * Import the base middleware definition
  */
-import Middleware from '../../src/definitions/middleware'
+import { Middleware } from '../../src'
 
 /*
  * Create our middleware
