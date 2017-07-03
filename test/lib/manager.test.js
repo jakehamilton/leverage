@@ -200,6 +200,51 @@ describe('lib/manager', function () {
       should.exist(unit.__components__.http['/'])
     })
 
+    it('Should support identifier callbacks', function () {
+      /*
+       * Create a basic plugin object to test with
+       */
+      const plugin = {
+        __config__: {
+          type: ['http'],
+          identifier (component) {
+            return `${component.__config__.http.method}@${component.__config__.http.path}`
+          }
+        },
+        http (component) {
+
+        }
+      }
+
+      /*
+       * Create a basic component object to test with
+       */
+      const component = {
+        __config__: {
+          type: ['http'],
+          http: {
+            path: '/',
+            method: 'get'
+          }
+        }
+      }
+
+      /*
+       * Load the plugin
+       */
+      unit.plugin(plugin)
+
+      /*
+       * Load the component
+       */
+      unit.add(component)
+
+      /*
+       * The loaded component should be located at the custom identifier
+       */
+      should.exist(unit.__components__.http['get@/'])
+    })
+
     it('Should allow adding a component directory', function () {
       /*
        * Create a basic plugin object to test with

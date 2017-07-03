@@ -198,7 +198,22 @@ class Manager {
           /*
            * Get the identifier for this kind of component
            */
-          const identifier = plugin.__config__.identifier
+          let identifier
+
+          /*
+           * If the identifier is a plugin, pass the component to it to
+           *  retrieve the identifier.
+           */
+          if (typeof plugin.__config__.identifier === 'function') {
+            identifier = plugin.__config__.identifier(component)
+          }
+
+          /*
+           * Otherwise, use the identifier value
+           */
+          else {
+            identifier = component.__config__[type][plugin.__config__.identifier]
+          }
 
           /*
            * Check if the component already exists
@@ -225,7 +240,7 @@ class Manager {
           /*
            * If we've gotten here, then our component should be added
            */
-          this.__components__[type][component.__config__[type][identifier]] = component
+          this.__components__[type][identifier] = component
 
           /*
            * Load the component in the plugin
@@ -370,7 +385,6 @@ class Manager {
          * Check to see if plugin is already loaded for type
          */
         if (this.__plugins__[type]) {
-          console.log(this.__plugins__)
           /*
            * We can't load more than one plugin for a type
            */
@@ -398,9 +412,28 @@ class Manager {
            */
           for (let component of this.__components__[type].__unitialized__) {
             /*
+             * Get the identifier
+             */
+            let identifier
+
+            /*
+             * If the identifier is a callback, call it to get the identifier string
+             */
+            if (typeof plugin.__config__.identifier === 'function') {
+              identifier = plugin.__config__.identifier(component)
+            }
+
+            /*
+             * Otherwise, just use the value as the identifier
+             */
+            else {
+              identifier = component.__config__[type][plugin.__config__.identifier]
+            }
+
+            /*
              * Load the component into the component map
              */
-            this.__components__[type][component.__config__[type][plugin.__config__.identifier]] = component
+            this.__components__[type][identifier] = component
 
             /*
              * Pass the component to the plugin
