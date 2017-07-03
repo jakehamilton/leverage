@@ -57,6 +57,8 @@ router.add(new MyRoute())
 http.listen(3000)
 ```
 
+Run it and head over to [localhost:3000](http://localhost:3000) to see the result!
+
 Documentation and Tutorials
 ---------------------------
 
