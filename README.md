@@ -4,7 +4,7 @@ Leverage
 What is it?
 -----------
 
-👩‍💻 A super fast, super customizable server library
+👩‍💻 A super fast, super customizable server*-ish* library
 
 What can you use it for?
 ------------------------
@@ -12,7 +12,8 @@ What can you use it for?
 + A HTTP server
 + A realtime socket server
 + An IRC server
-+ 👨💭 Anything else you can imagine!
++ A MIDI interface
++ 👩💭 Anything else you can imagine!
 
 Creating your first server
 --------------------------
@@ -59,4 +60,4 @@ http.listen(3000)
 Documentation and Tutorials
 ---------------------------
 
-For more information, please see [the project's wiki](https://github.com/jakehamilton/leverage/wiki).
+For more information, please see [the project's wiki](https://github.com/jakehamilton/leverage/wiki) 🚀.
