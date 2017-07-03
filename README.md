@@ -4,7 +4,7 @@ Leverage
 What is it?
 -----------
 
-👩‍💻 A super fast, super customizable server*-ish* library
+👩‍💻 A super fast, super customizable library to orchestrate your next application.
 
 What can you use it for?
 ------------------------
