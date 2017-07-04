@@ -10,3 +10,4 @@ Dockerfile
 nodemon.json
 README.md
 *.swp
+markdown-assets/
