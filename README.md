@@ -1,3 +1,5 @@
+![Leverage Logo](/markdown-assets/leverage.png)
+
 Leverage
 ========
 
