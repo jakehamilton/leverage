@@ -1,7 +1,4 @@
-![Leverage Logo](/markdown-assets/leverage.png)
-
-Leverage
-========
+<img src="/markdown-assets/leverage.png" width="80" height="80">
 
 What is it?
 -----------
