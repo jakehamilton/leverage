@@ -9,51 +9,272 @@ What can you use it for?
 ------------------------
 
 + A HTTP server
-+ A realtime socket server
++ A chat bot
++ A realtime websocket server
 + An IRC server
 + A MIDI interface
 + 👩💭 Anything else you can imagine!
 
-Creating your first server
---------------------------
-
-Install Leverage and an HTTP plugin:
+Install it
+----------
 
 ```bash
-npm i -S leverage-js leverage-plugin-http
+npm i -S leverage-js
 ```
 
-Create our server:
+API
+---
 
-##### index.js
+### Leverage.Component
+
+The `Component` class lets you create your own components. You can extend it
+using the `class` syntax or use `Component.of` to extend using a normal object.
+
+Example (with class syntax):
+
+```js
+import { Component } from 'leverage-js'
+
+class MyComponent extends Component {
+    constructor () {
+        super()
+
+        this.config = {
+            type: 'http'
+        }
+    }
+}
+```
+
+##### Component.config
+
+The `config` object is a component's special configuration object and defines
+how the component should be used.
+
+##### Component.of()
+
+You can create a component instance by calling this method with component
+definition object.
+
+Example:
+
+```js
+import { Component } from 'leverage-js'
+
+Component.of({
+    config: {
+        type: 'http'
+    }
+})
+```
+
+### Leverage.Middleware
+
+The `Middleware` class lets you create your own middleware. You can extend it
+using the `class` syntax or use `Middleware.of` to extend using a normal object.
+
+Example (with class syntax):
+
+```js
+import { Middleware } from 'leverage-js'
+
+class MyComponent extends Middleware {
+    constructor () {
+        super()
+
+        this.config = {
+            type: 'http'
+        }
+    }
+}
+```
+
+##### Middleware.config
+
+The `config` object is a middleware's special configuration object and defines
+how the middleware should be used.
+
+##### Middleware.of()
+
+You can create a middleware instance by calling this method with middleware
+definition object.
+
+Example:
+
+```js
+import { Middleware } from 'leverage-js'
+
+Middleware.of({
+    config: {
+        type: 'http'
+    }
+})
+```
+
+### Leverage.Service
+
+The `Service` class lets you create your own service. You can extend it
+using the `class` syntax or use `Service.of` to extend using a normal object.
+
+Example (with class syntax):
+
+```js
+import { Service } from 'leverage-js'
+
+class MyComponent extends Service {
+    constructor () {
+        super()
+
+        this.config = {
+            name: 'myService'
+        }
+    }
+}
+```
+
+##### Service.config
+
+The `config` object is a service's special configuration object and defines
+how the service should be used.
+
+##### Service.of()
+
+You can create a service instance by calling this method with service
+definition object.
+
+Example:
+
+```js
+import { Service } from 'leverage-js'
+
+Service.of({
+    config: {
+        name: 'myService'
+    }
+})
+```
+
+### Leverage.Plugin
+
+The `Plugin` class lets you create your own plugin. You can extend it
+using the `class` syntax or use `Plugin.of` to extend using a normal object.
+
+Example (with class syntax):
+
+```js
+import { Plugin } from 'leverage-js'
+
+class MyComponent extends Plugin {
+    constructor () {
+        super()
+
+        this.config = {
+            type: 'http'
+        }
+    }
+}
+```
+
+##### Plugin.config
+
+The `config` object is a plugin's special configuration object and defines
+how the plugin should be used.
+
+##### Plugin.of()
+
+You can create a plugin instance by calling this method with plugin
+definition object.
+
+Example:
+
+```js
+import { Plugin } from 'leverage-js'
+
+Plugin.of({
+    config: {
+        type: 'http'
+    }
+})
+```
+
+### Leverage.manager
+
+Leverage's manager handles loading components, plugins, middleware, and services.
+
+##### manager.add()
+
+`manager.add` will load a component instance.
+
+Example:
 
 ```js
 import { manager, Component } from 'leverage-js'
-import http from 'leverage-plugin-http'
 
-class MyComponent extends Component {
-  constructor () {
-    super()
-
-    this.config = {
-      type: 'http',
-      http: {
-        path: '/',
-        method: 'get'
-      }
+const component = Component.of({
+    config: {
+        type: 'http'
     }
-  }
+})
 
-  http (request, response) {
-    response.send('Hello World')
-  }
-}
+manager.add(component)
+```
 
-manager.plugin(http)
+##### manager.plugin()
 
-manager.add(new MyComponent())
+`manager.plugin` will load a plugin instance.
 
-http.listen(3000)
+Example:
+
+```js
+import { manager, Plugin } from 'leverage-js'
+
+const plugin = Plugin.of({
+    config: {
+        type: 'http',
+        identifier: 'path'
+    },
+    http (component) {
+
+    }
+})
+
+manager.plugin(plugin)
+```
+
+##### manager.service()
+
+`manager.service` will load a service instance.
+
+Example:
+
+```js
+import { manager, Service } from 'leverage-js'
+
+const service = Service.of({
+    config: {
+        name: 'myService'
+    }
+})
+
+manager.service(service)
+```
+
+##### manager.middleware()
+
+`manager.middleware` will load a middleware instance
+
+Example:
+
+```js
+import { manager, Middleware } from 'leverage-js'
+
+const middleware = Middleware.of({
+    config: {
+        type: 'http'
+    }
+})
+
+manager.middleware(middleware)
 ```
 
 Run it and head over to [localhost:3000](http://localhost:3000) to see the result!
