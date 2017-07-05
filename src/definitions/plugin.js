@@ -17,6 +17,22 @@ export default class Plugin {
     this.__config__ = {}
   }
 
+  /*
+   * @static
+   * @method of Extend the base Plugin with your own
+   *
+   * @param {Plugin} object Your plugin definition
+   *
+   * @return {Plugin} plugin A plugin instance
+   */
+  static of (object) {
+    /*
+     * Create a new plugin and copy over everything from
+     *  the provided object
+     */
+    return Object.assign(new Plugin(), object)
+  }
+
   /**
    * @setter config
    * @description Set the plugin's config

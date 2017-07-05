@@ -19,6 +19,22 @@ export default class Component {
     }
   }
 
+  /*
+   * @static
+   * @method of Extend the base component with your own
+   *
+   * @param {Component} object Your component definition
+   *
+   * @return {Component} component A component instance
+   */
+  static of (object) {
+    /*
+     * Create a new component and copy over everything from the
+     *  provided object.
+     */
+    return Object.assign(new Component(), object)
+  }
+
   /**
    * @setter config
    * @description Set the component's config

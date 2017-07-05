@@ -17,6 +17,22 @@ export default class Service {
     this.__config__ = {}
   }
 
+  /*
+   * @static
+   * @method of Extend the base Service with your own
+   *
+   * @param {Service} object Your service definition
+   *
+   * @return {Service} service A service instance
+   */
+  static of (object) {
+    /*
+     * Create a new service and copy over everything from
+     *  the provided object
+     */
+    return Object.assign(new Service(), object)
+  }
+
   /**
    * @setter config
    * @description Set the service's config

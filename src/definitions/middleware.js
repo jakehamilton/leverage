@@ -19,6 +19,22 @@ export default class Middleware {
     }
   }
 
+  /*
+   * @static
+   * @method of Extend the base middleware with your own
+   *
+   * @param {Middleware} object Your middleware definition
+   *
+   * @return {Middleware} middleware A middleware instance
+   */
+  static of (object) {
+    /*
+     * Create a new middleware and copy over everything from
+     *  the provided object
+     */
+    return Object.assign(new Middleware(), object)
+  }
+
   /**
    * @setter config
    * @description Set the middleware's config
