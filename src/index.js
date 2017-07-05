@@ -29,3 +29,38 @@ export {
   server,
   manager
 }
+
+/*
+ * Export aliases
+ */
+export const createComponent = Component.of
+export const createPlugin = Plugin.of
+export const createService = Service.of
+export const createMiddleware = Middleware.of
+
+/*
+ * Default export
+ */
+export default {
+  /*
+   * Definitions
+   */
+  Component,
+  Plugin,
+  Service,
+  Middleware,
+
+  /*
+   * Library files
+   */
+  server,
+  manager,
+
+  /*
+   * Aliases
+   */
+  createComponent: Component.of,
+  createPlugin: Plugin.of,
+  createService: Service.of,
+  createMiddleware: Middleware.of
+}

@@ -69,6 +69,74 @@ Please see [the project's wiki](https://github.com/jakehamilton/leverage/wiki) ð
 API
 ---
 
+### Leverage.createComponent()
+
+This is an alias for `Component.of` and allows you to create a
+component instance by passing this method a component definition.
+
+Example:
+
+```js
+import { createComponent } from 'leverage-js'
+
+const component = createComponent({
+    config: {
+        type: 'http'
+    }
+})
+```
+
+### Leverage.createMiddleware()
+
+This is an alias for `Middleware.of` and allows you to create a
+middleware instance by passing this method a middleware definition.
+
+Example:
+
+```js
+import { createMiddleware } from 'leverage-js'
+
+const component = createMiddleware({
+    config: {
+        type: 'http'
+    }
+})
+```
+
+### Leverage.createService()
+
+This is an alias for `Service.of` and allows you to create a
+service instance by passing this method a service definition.
+
+Example:
+
+```js
+import { createService } from 'leverage-js'
+
+const component = createService({
+    config: {
+        type: 'http'
+    }
+})
+```
+
+### Leverage.createPlugin()
+
+This is an alias for `Plugin.of` and allows you to create a
+plugin instance by passing this method a plugin definition.
+
+Example:
+
+```js
+import { createPlugin } from 'leverage-js'
+
+const component = createPlugin({
+    config: {
+        type: 'http'
+    }
+})
+```
+
 ### Leverage.Component
 
 The `Component` class lets you create your own components. You can extend it
