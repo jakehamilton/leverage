@@ -96,7 +96,7 @@ Example:
 ```js
 import { createMiddleware } from 'leverage-js'
 
-const component = createMiddleware({
+const middleware = createMiddleware({
     config: {
         type: 'http'
     }
@@ -113,7 +113,7 @@ Example:
 ```js
 import { createService } from 'leverage-js'
 
-const component = createService({
+const service = createService({
     config: {
         type: 'http'
     }
@@ -130,7 +130,7 @@ Example:
 ```js
 import { createPlugin } from 'leverage-js'
 
-const component = createPlugin({
+const plugin = createPlugin({
     config: {
         type: 'http'
     }
