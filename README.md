@@ -320,5 +320,3 @@ const middleware = Middleware.of({
 
 manager.middleware(middleware)
 ```
-
-Run it and head over to [localhost:3000](http://localhost:3000) to see the result!
