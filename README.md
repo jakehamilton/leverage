@@ -51,7 +51,7 @@ class MyComponent extends Component {
 
 manager.plugin(http)
 
-manager.add(new MyRoute())
+manager.add(new MyComponent())
 
 http.listen(3000)
 ```
