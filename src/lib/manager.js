@@ -265,11 +265,11 @@ class Manager {
               /*
                * Create the component's service object if needed
                */
-              if (!comopnent.services) {
-                comopnent.services = {}
+              if (!component.services) {
+                component.services = {}
               }
 
-              comopnent.services[service] = this.__services__[service]
+              component.services[service] = this.__services__[service]
             }
 
             /*
