@@ -204,15 +204,15 @@ class Manager {
            * If the identifier is a plugin, pass the component to it to
            *  retrieve the identifier.
            */
-          if (typeof plugin.__config__.identifier === 'function') {
-            identifier = plugin.__config__.identifier(component)
+          if (typeof plugin.__config__[type].identifier === 'function') {
+            identifier = plugin.__config__[type].identifier(component)
           }
 
           /*
            * Otherwise, use the identifier value
            */
           else {
-            identifier = component.__config__[type][plugin.__config__.identifier]
+            identifier = component.__config__[type][plugin.__config__[type].identifier]
           }
 
           /*
@@ -419,7 +419,7 @@ class Manager {
             /*
              * If the identifier is a callback, call it to get the identifier string
              */
-            if (typeof plugin.__config__.identifier === 'function') {
+            if (typeof plugin.__config__[type].identifier === 'function') {
               identifier = plugin.__config__[type].identifier(component)
             }
 
@@ -427,7 +427,7 @@ class Manager {
              * Otherwise, just use the value as the identifier
              */
             else {
-              identifier = component.__config__[type][plugin.__config__.identifier]
+              identifier = component.__config__[type][plugin.__config__[type].identifier]
             }
 
             /*

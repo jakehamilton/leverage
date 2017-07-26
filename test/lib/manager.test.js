@@ -122,7 +122,9 @@ describe('lib/manager', function () {
       const plugin = {
         __config__: {
           type: ['http'],
-          identifier: 'path'
+          http: {
+            identifier: 'path'
+          }
         },
         http (component) {
 
@@ -173,7 +175,9 @@ describe('lib/manager', function () {
       unit.__plugins__.http = {
         __config__: {
           type: ['http'],
-          identifier: 'path'
+          http: {
+            identifier: 'path'
+          }
         },
         http () {
 
@@ -207,8 +211,10 @@ describe('lib/manager', function () {
       const plugin = {
         __config__: {
           type: ['http'],
-          identifier (component) {
-            return `${component.__config__.http.method}@${component.__config__.http.path}`
+          http: {
+            identifier (component) {
+              return `${component.__config__.http.method}@${component.__config__.http.path}`
+            }
           }
         },
         http (component) {
@@ -252,7 +258,9 @@ describe('lib/manager', function () {
       const plugin = {
         __config__: {
           type: ['http'],
-          identifier: 'path'
+          http: {
+            identifier: 'path'
+          }
         },
         http (component) {
 
@@ -282,7 +290,9 @@ describe('lib/manager', function () {
       const plugin = {
         __config__: {
           type: ['http'],
-          identifier: 'path'
+          http: {
+            identifier: 'path'
+          }
         },
         http (component) {
 
@@ -352,7 +362,9 @@ describe('lib/manager', function () {
       const plugin = {
         __config__: {
           type: ['http'],
-          identifier: 'path'
+          http: {
+            identifier: 'path'
+          }
         },
         http (component) {
 
