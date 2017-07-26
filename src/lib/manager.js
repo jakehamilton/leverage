@@ -420,7 +420,7 @@ class Manager {
              * If the identifier is a callback, call it to get the identifier string
              */
             if (typeof plugin.__config__.identifier === 'function') {
-              identifier = plugin.__config__.identifier(component)
+              identifier = plugin.__config__[type].identifier(component)
             }
 
             /*
