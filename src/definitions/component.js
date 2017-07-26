@@ -66,7 +66,7 @@ export default class Component {
         for (let type in config[key]) {
           /*
            * Check to see if the value is not an array
-           *  (it should be)
+           *  (it should be).
            */
           if (!Array.isArray(config[key][type])) {
             /*
@@ -81,7 +81,7 @@ export default class Component {
           }
 
           /*
-           * If we've gotten here, then all our dependency is
+           * If we've gotten here, then all our dependencies are
            *  in the correct format. Now we copy it to the
            *  internal configuration object.
            */

@@ -580,10 +580,17 @@ class Manager {
       this.__services__[service.__config__.name] = service
 
       /*
-       * Create the waiting map if needed
+       * Create the component waiting map if needed
        */
       if (!this.__components__.__waiting__) {
         this.__components__.__waiting__ = {}
+      }
+
+      /*
+       * Create the service waiting map if needed
+       */
+      if (!this.__services__.__waiting__) {
+        this.__services__.__waiting__ = {}
       }
 
       /*
@@ -611,6 +618,81 @@ class Manager {
          * Remove the service name from the map
          */
         delete this.__components__.__waiting__[service.__config__.name]
+      }
+
+      /*
+       * Load any dependencies the service needs
+       */
+      if (service.__config__.dependencies && service.__config__.dependencies.services) {
+        for (let item of service.__config__.dependencies.services) {
+          /*
+           * Check to see if the needed service is loaded
+           */
+
+          /*
+           * The item is loaded, so we can patch the
+           *  service.
+           */
+          if (this.__services__[item]) {
+            /*
+             * Create the service's service map if needed
+             */
+            if (!service.services) {
+              service.services = {}
+            }
+
+            service.services[item] = this.__services__[item]
+          }
+
+          /*
+           * The item is not loaded, we must add this
+           *  service to the waiting queue
+           */
+          else {
+            /*
+             * Create the queue if needed
+             */
+            if (!this.__services__.__waiting__) {
+              this.__services__.__waiting__ = {}
+            }
+
+            if (!this.__services__.__waiting__[item]) {
+              this.__services__.__waiting__[item] = []
+            }
+
+            /*
+             * Add the service to the waiting queue
+             */
+            this.__services__.__waiting__[item].push(service)
+          }
+        }
+      }
+
+      /*
+       * Check to see if any services are waiting on this service
+       */
+      if (this.__services__.__waiting__[service.__config__.name]) {
+        /*
+         * Patch the services map if needed
+         */
+        for (let item of this.__services__.__waiting__[service.__config__.name]) {
+          /*
+           * Create the service's services map if needed
+           */
+          if (!item.services) {
+            item.services = {}
+          }
+
+          /*
+           * Patch the service
+           */
+          item.services[service.__config__.name] = service
+        }
+
+        /*
+         * Remove the service name from the map
+         */
+        delete this.__services__.__waiting__[service.__config__.name]
       }
     }
 

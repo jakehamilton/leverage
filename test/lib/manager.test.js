@@ -331,6 +331,41 @@ describe('lib/manager', function () {
       unit.service(service)
     })
 
+    it('Should patch services with services', function () {
+      /*
+       * Create a basic service object to test with
+       */
+      const a = {
+        __config__: {
+          name: 'a',
+          dependencies: {
+            services: ['b']
+          }
+        }
+      }
+
+      /*
+       * Create another service that will be patched in
+       */
+      const b = {
+        __config__: {
+          name: 'b'
+        }
+      }
+
+      /*
+       * Load the services
+       */
+      unit.service(a)
+      unit.service(b)
+
+      /*
+       * Service 'a' should have had service 'b' patched in
+       */
+      should.exist(unit.__services__.a.services.b)
+      unit.__services__.a.services.b.should.deep.equal(b)
+    })
+
     it('Should patch components with services', function () {
       /*
        * Create a basic component object to test with
