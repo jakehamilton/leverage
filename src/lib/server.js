@@ -26,6 +26,11 @@ class Server {
      * @private {HTTPServerInstance} __http_server__ Our http server instance
      */
     this.__http_server__ = http.createServer(this.__app__)
+
+    /**
+     * @private {Boolean} __listening__ If the server is listening or not
+     */
+    this.__listening__ = false
   }
 
   /**
@@ -69,6 +74,15 @@ class Server {
     }
 
     /*
+     * If we are already listening, don't do it again
+     */
+    if (this.__listening__) {
+      return;
+    }
+
+    this.__listening__ = true
+
+    /*
      * If we've gotten here, everything must be okay so we
      *  can have the server listen on the given port.
      */
@@ -81,12 +95,14 @@ class Server {
     process.on('exit', () => {
       if (this.__http_server__.close) {
         this.__http_server__.close()
+        process.exit()
       }
     })
 
     process.on('SIGINT', () => {
       if (this.__http_server__.close) {
         this.__http_server__.close()
+        process.exit()
       }
     })
   }
