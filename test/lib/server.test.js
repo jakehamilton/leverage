@@ -89,14 +89,6 @@ describe('lib/server', function () {
        * A `listen` method should exist
        */
       should.exist(unit.listen)
-
-      /*
-       * Should throw an error on bad input
-       */
-      should.throw(unit.listen.bind(unit.listen, 'a'))
-      should.throw(unit.listen.bind(unit.listen, {}))
-      should.throw(unit.listen.bind(unit.listen, function () {}))
-
       /*
        * Should have the http server listen on valid input
        */
