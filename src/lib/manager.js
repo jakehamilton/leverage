@@ -54,6 +54,8 @@ class Manager {
          */
         const files = []
 
+        console.log(arg)
+
         klaw(arg)
           .on('data', file => {
             files.push(file)
@@ -65,11 +67,11 @@ class Manager {
 
                 return /\.js$/.exec(basename)
               })
-          })
-          .forEach(file => {
-            const instance = require(file.path)
+            .forEach(file => {
+              const instance = require(file.path)
 
-            this.add(instance)
+              this.add(instance)
+            })
           })
       }
 
