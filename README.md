@@ -52,9 +52,7 @@ const component = Component.of({
     }
 })
 
-manager.plugin(http)
-
-manager.add(component)
+manager.add(component, http)
 
 http.listen(3000)
 ```
@@ -315,7 +313,24 @@ Leverage's manager handles loading components, plugins, middleware, and services
 
 ##### manager.add()
 
-`manager.add` will load a component instance.
+`manager.add` will load leverage modules from arguments, arrays, or directory path.
+
+Example:
+
+```js
+import { manager, Component, Plugin, Service, Middleware } from 'leverage-js'
+
+manager.add(
+    Component.of({ config: { type: 'some-type' } }),
+    Plugin.of({ config: { type: 'some-type', identifier: 'some-id' } }),
+    Service.of({ config: { name: 'some-name' } }),
+    Middleware.of({ config: { type: 'some-type' } })
+)
+```
+
+##### manager.component()
+
+`manager.component` will load a component instance.
 
 Example:
 
@@ -328,7 +343,7 @@ const component = Component.of({
     }
 })
 
-manager.add(component)
+manager.component(component)
 ```
 
 ##### manager.plugin()
