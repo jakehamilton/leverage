@@ -54,8 +54,6 @@ class Manager {
          */
         const files = []
 
-        console.log(arg)
-
         klaw(arg)
           .on('data', file => {
             files.push(file)
