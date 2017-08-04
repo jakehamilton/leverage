@@ -27,6 +27,30 @@ let unit
  */
 let klaw
 
+class DummyPlugin {
+  constructor () {
+    this.__is_dummy__ = true
+  }
+}
+
+class DummyService {
+  constructor () {
+    this.__is_dummy__ = true
+  }
+}
+
+class DummyComponent {
+  constructor () {
+    this.__is_dummy__ = true
+  }
+}
+
+class DummyMiddleware {
+  constructor () {
+    this.__is_dummy__ = true
+  }
+}
+
 /*
  * A plain component object
  */
@@ -65,6 +89,10 @@ describe('lib/manager', function () {
        */
       unit = proxyquire('../../src/lib/manager', {
         'klaw': klaw,
+        '../definitions/plugin': DummyPlugin,
+        '../definitions/service': DummyService,
+        '../definitions/component': DummyComponent,
+        '../definitions/middleware': DummyMiddleware,
         'MOCK_KLAW_PATH.js': component
       }).default
     })
@@ -155,7 +183,7 @@ describe('lib/manager', function () {
       /*
        * Load the component
        */
-      unit.add(component)
+      unit.component(component)
 
       /*
        * Load the plugin
@@ -187,7 +215,7 @@ describe('lib/manager', function () {
       /*
        * Add a simple, mock component
        */
-      unit.add(component)
+      unit.component(component)
 
       /*
        * Ensure the mock component was added to the map of components
@@ -243,7 +271,7 @@ describe('lib/manager', function () {
       /*
        * Load the component
        */
-      unit.add(component)
+      unit.component(component)
 
       /*
        * The loaded component should be located at the custom identifier
@@ -275,7 +303,7 @@ describe('lib/manager', function () {
       /*
        * Load our mock "directory"
        */
-      unit.add('/a/b/c')
+      unit.component('/a/b/c')
 
       /*
        * Our mock component should have been loaded in
@@ -307,7 +335,7 @@ describe('lib/manager', function () {
       /*
        * Load a mock component file
        */
-      unit.add('/a/b/c.js')
+      unit.component('/a/b/c.js')
 
       /*
        * Our mock component should have been loaded in
@@ -413,7 +441,7 @@ describe('lib/manager', function () {
       /*
        * Add the component
        */
-      unit.add(component)
+      unit.component(component)
 
       /*
        * Add the service
@@ -440,6 +468,125 @@ describe('lib/manager', function () {
        *  object we passed in earlier.
        */
       unit.__components__.http['/'].services.a.should.deep.equal(service)
+    })
+
+    describe('add', function () {
+      it('Should allow dynamically adding plugins', function () {
+        /*
+         * Create a plugin, extending the dummy definition
+         */
+        class Plugin extends DummyPlugin {
+          constructor () {
+            super()
+
+            this.__config__ = {
+              type: ['test'],
+              test: {
+                identifier: () => ''
+              }
+            }
+          }
+
+          test () {
+
+          }
+        }
+
+        /*
+         * Add a new instance of the plugin
+         */
+        const plugin = new Plugin()
+        unit.add(plugin)
+
+        /*
+         * The plugin should have been added to the manager
+         */
+        should.exist(unit.__plugins__.test)
+        unit.__plugins__.test.should.deep.equal(plugin)
+      })
+
+      it('Should allow dynamically adding services', function () {
+        /*
+         * Create a service, extending the dummy definition
+         */
+        class Service extends DummyService {
+          constructor () {
+            super()
+
+            this.__config__ = {
+              name: 'test'
+            }
+          }
+        }
+
+        /*
+         * Add a new instance of the service
+         */
+        const service = new Service()
+        unit.add(service)
+
+        /*
+         * The plugin should have been added to the manager
+         */
+        should.exist(unit.__services__.test)
+        unit.__services__.test.should.deep.equal(service)
+      })
+
+      it('Should allow dynamically adding components', function () {
+        /*
+         * Create a component, extending the dummy definition
+         */
+        class Component extends DummyComponent {
+          constructor () {
+            super()
+
+            this.__config__ = {
+              type: ['test'],
+              test: {}
+            }
+          }
+
+          test () {}
+        }
+
+        /*
+         * Add a new instance of the component
+         */
+        const component = new Component()
+        unit.add(component)
+
+        /*
+         * The plugin should have been added to the manager
+         */
+        should.exist(unit.__components__.test)
+        should.exist(unit.__components__.test.__uninitialized__)
+        should.exist(unit.__components__.test.__uninitialized__[0])
+        unit.__components__.test.__uninitialized__[0].should.deep.equal(component)
+      })
+
+      it('Should allow dynamically adding middleware', function () {
+        /*
+         * Create a middleware, extending the dummy definition
+         */
+        class Middleware extends DummyMiddleware {
+          constructor () {
+            super()
+
+            this.__config__ = {
+              type: ['test'],
+              test: {}
+            }
+          }
+
+          test () {}
+        }
+
+        /*
+         * Add a new instance of the middleware
+         */
+        const middleware = new Middleware()
+        unit.add(middleware)
+      })
     })
   })
 })

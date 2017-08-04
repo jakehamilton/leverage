@@ -6,6 +6,14 @@
  */
 
 /*
+ * Import definitions
+ */
+import Plugin from '../definitions/plugin'
+import Service from '../definitions/service'
+import Component from '../definitions/component'
+import Middleware from '../definitions/middleware'
+
+/*
  * Import dependencies
  */
 import path from 'path'
@@ -28,13 +36,61 @@ class Manager {
 
   /**
    * @method add
+   * @description Add any leverage definition
+   *
+   * @param {[String|Component|Service|Module|Plugin]} args The definition you want to add
+   *
+   * @void
+   */
+  add (...args) {
+    for (let arg of args) {
+      if (Array.isArray(arg)) {
+        this.add(...arg)
+      }
+
+      else if (typeof arg === 'string') {
+        /*
+         * Store all files found in an array
+         */
+        const files = []
+
+        klaw(arg)
+          .on('data', file => {
+            files.push(file)
+          })
+          .on('end', () => {
+            files
+              .filter(file => {
+                const basename = path.basename(file.path)
+
+                return /\.js$/.exec(basename)
+              })
+          })
+          .forEach(file => {
+            const instance = require(file.path)
+
+            this.add(instance)
+          })
+      }
+
+      else {
+        if (arg instanceof Plugin) this.plugin(arg)
+        else if (arg instanceof Service) this.service(arg)
+        else if (arg instanceof Component) this.component(arg)
+        else if (arg instanceof Middleware) this.middleware(arg)
+      }
+    }
+  }
+
+  /**
+   * @method component
    * @description Add a component
    *
    * @param {String|Component} component The component object or path to a component file or directory of component files
    *
    * @void
    */
-  add (component) {
+  component (component) {
     /*
      * If the argument given is a path
      */
@@ -85,7 +141,7 @@ class Manager {
               /*
                * Attempt to load it
                */
-              this.add(component)
+              this.component(component)
             })
         })
     }
@@ -174,16 +230,16 @@ class Manager {
           }
 
           /*
-           * Create the unitialized components array if needed
+           * Create the uninitialized components array if needed
            */
-          if (!this.__components__[type].__unitialized__) {
-            this.__components__[type].__unitialized__ = []
+          if (!this.__components__[type].__uninitialized__) {
+            this.__components__[type].__uninitialized__ = []
           }
 
           /*
-           * Push this component to the unitialized components array
+           * Push this component to the uninitialized components array
            */
-          this.__components__[type].__unitialized__.push(component)
+          this.__components__[type].__uninitialized__.push(component)
         }
 
         /*
@@ -406,11 +462,11 @@ class Manager {
          * If we have any components that haven't been initialized
          *  yet, then we should load them right now.
          */
-        if (this.__components__[type] && this.__components__[type].__unitialized__ && this.__components__[type].__unitialized__.length > 0) {
+        if (this.__components__[type] && this.__components__[type].__uninitialized__ && this.__components__[type].__uninitialized__.length > 0) {
           /*
            * Load each component
            */
-          for (let component of this.__components__[type].__unitialized__) {
+          for (let component of this.__components__[type].__uninitialized__) {
             /*
              * Get the identifier
              */
@@ -444,7 +500,7 @@ class Manager {
           /*
            * Clear the uninitialized components array
            */
-          this.__components__[type].__unitialized__.length = 0
+          this.__components__[type].__uninitialized__.length = 0
         }
 
         /*
