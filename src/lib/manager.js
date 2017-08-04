@@ -171,7 +171,7 @@ class Manager {
         /*
          * Throw an error so our user knows
          */
-        throw new Error(`[Leverage/lib/manager] Error adding component, expected component object to have an "__config__" property`)
+        console.error(`[Leverage/lib/manager] Error adding component, expected component object to have an "__config__" property`)
 
         /*
          * Get out of here before things really break
@@ -186,7 +186,7 @@ class Manager {
         /*
          * Throw an error so our user knows
          */
-        throw new Error(`[Leverage/lib/manager] Error adding component, expected component object to a type`)
+        console.error(`[Leverage/lib/manager] Error adding component, expected component object to a type`)
 
         /*
          * Get out of here before things really break
@@ -201,7 +201,7 @@ class Manager {
         /*
          * Throw an error so our user knows
          */
-        throw new Error(`[Leverage/lib/manager] Error adding component, expected component object to a type`)
+        console.error(`[Leverage/lib/manager] Error adding component, expected component object to a type`)
 
         /*
          * Get out of here before things really break
@@ -278,7 +278,7 @@ class Manager {
             /*
              * Tell the user that this component already exists
              */
-            throw new Error(`[Leverage/lib/manager] Error adding component, component already exists: ${type}@${identifier}`)
+            console.error(`[Leverage/lib/manager] Error adding component, component already exists: ${type}@${identifier}`)
 
             /*
              * Get out of here before something really breaks
@@ -444,7 +444,7 @@ class Manager {
           /*
            * We can't load more than one plugin for a type
            */
-          throw new Error(`[Leverage/lib/manager] Error loading plugin, a plugin is already defined for type ${type}`)
+          console.error(`[Leverage/lib/manager] Error loading plugin, a plugin is already defined for type ${type}`)
 
           /*
            * Get out of here before more things break
@@ -527,7 +527,7 @@ class Manager {
       /*
        * Throw an error so the user knows
        */
-      throw new Error(`[Leverage/lib/manager] Error loading plugin, expected string or object but got ${typeof plugin}`)
+      console.error(`[Leverage/lib/manager] Error loading plugin, expected string or object but got ${typeof plugin}`)
     }
   }
 
@@ -617,7 +617,7 @@ class Manager {
         /*
          * Services can't share names
          */
-        throw new Error(`[Leverage/lib/manager] Error adding service, service ${service.name} already exists`)
+        console.error(`[Leverage/lib/manager] Error adding service, service ${service.name} already exists`)
 
         /*
          * Get out of here before something really breaks
@@ -759,7 +759,7 @@ class Manager {
       /*
        * Throw an error so the user knows
        */
-      throw new Error(`[Leverage/lib/manager] Error loading service, expected a string or object but got ${typeof service}`)
+      console.error(`[Leverage/lib/manager] Error loading service, expected a string or object but got ${typeof service}`)
 
       /*
        * Get out of here
@@ -899,7 +899,7 @@ class Manager {
       /*
        * Throw an error so our user knows
        */
-      throw new Error(`[Leverage/lib/manager] Error loading middleware, expected string or object but got ${typeof middleware}`)
+      console.error(`[Leverage/lib/manager] Error loading middleware, expected string or object but got ${typeof middleware}`)
 
       /*
        * Get out of here

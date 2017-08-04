@@ -55,7 +55,7 @@ export default class Service {
           /*
            * Uh oh, we only support strings right now
            */
-          throw new Error(`[Leverage definitions/service] Error updating service configuration, expected a String but got ${typeof config[key]}`)
+          console.error(`[Leverage definitions/service] Error updating service configuration, expected a String but got ${typeof config[key]}`)
 
           /*
            * Let's get out of here before things really break!
@@ -87,7 +87,7 @@ export default class Service {
             /*
              * Uh oh, we only support arrays right now
              */
-            throw new Error(`[Leverage/definitions/service] Error updating service configuration, expected an Array but got ${typeof config[key][type]}`)
+            console.error(`[Leverage/definitions/service] Error updating service configuration, expected an Array but got ${typeof config[key][type]}`)
 
             /*
              * Let's get out of here before things really break!

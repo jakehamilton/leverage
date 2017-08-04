@@ -72,7 +72,7 @@ export default class Component {
             /*
              * Uh oh, we only support arrays right now
              */
-            throw new Error(`[Leverage/definitions/route] Error updating route configuration, expected an Array but got ${typeof config[key][type]}`)
+            console.error(`[Leverage/definitions/route] Error updating route configuration, expected an Array but got ${typeof config[key][type]}`)
 
             /*
              * Let's get out of here before things really break!

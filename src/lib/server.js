@@ -65,7 +65,7 @@ class Server {
       /*
        * Throw an error so our user knows
        */
-      throw new Error(`[Leverage/lib/server] Error setting port, expected a number but got ${typeof port}`)
+      console.error(`[Leverage/lib/server] Error setting port, expected a number but got ${typeof port}`)
 
       /*
        * Get out of here before things really break
@@ -147,7 +147,7 @@ class Server {
         /*
          * Throw an error so the user knows
          */
-        throw new Error(`[Leverage/lib/server] Error extending server, was given an object but it has no method "extend"`)
+        console.error(`[Leverage/lib/server] Error extending server, was given an object but it has no method "extend"`)
 
         /*
          * Get out of here before things really break
@@ -163,7 +163,7 @@ class Server {
       /*
        * Throw an error to let our user know
        */
-      throw new Error(`[Leverage/lib/server] Error extending server, expected a function or object bug got ${typeof plugin}`)
+      console.error(`[Leverage/lib/server] Error extending server, expected a function or object bug got ${typeof plugin}`)
 
       /*
        * Get out of here before things really break
