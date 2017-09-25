@@ -434,6 +434,51 @@ class Manager {
       }
 
       /*
+       * Only load the plugin if all of its dependencies exist
+       */
+      if (plugin.__config__.dependencies && plugin.__config__.dependencies.plugins) {
+        for (let dependency of plugin.__config__.dependencies.plugins) {
+          if (!this.__plugins__[dependency]) {
+            /*
+             * Cannot load the plugin yet, we must first load
+             *  its dependency.
+             */
+
+            /*
+             * Add the plugin to the unitialized queue
+             */
+            if (!this.__plugins__.__waiting__) {
+              this.__plugins__.__waiting__ = {}
+            }
+
+            if (!this.__plugins__.__waiting__[dependency]) {
+              this.__plugins__.__waiting__[dependency] = []
+            }
+
+            this.__plugins__.__waiting__[dependency].push(plugin)
+
+            /*
+             * Get out of here!
+             */
+            return
+          }
+        }
+      }
+
+      /*
+       * Load plugins we depend on
+       */
+      if (plugin.__config__.dependencies && plugin.__config__.dependencies.plugins) {
+        if (!plugin.plugins) {
+          plugin.plugins = {}
+        }
+
+        for (let dependency of plugin.__config__.dependencies.plugins) {
+          plugin.plugins[dependency] = this.__plugins__[dependency]
+        }
+      }
+
+      /*
        * Load plugin for each type that it handles
        */
       for (let type of plugin.__config__.type) {
@@ -515,6 +560,27 @@ class Manager {
             if (plugin.middleware) {
               plugin.middleware(middleware)
             }
+          }
+        }
+
+        /*
+         * Load any waiting plugins
+         */
+        if (this.__plugins__.__waiting__ && this.__plugins__.__waiting__[type]) {
+          for (let [index, plugin] of this.__plugins__.__waiting__[type].entries()) {
+            /*
+             * Remove the plugin from the waiting queue
+             */
+            this.__plugins__.__waiting__[type].splice(index, 1)
+
+            /*
+             * Try to load the plugin
+             */
+            this.plugin(plugin)
+          }
+
+          if (this.__plugins__.__waiting__[type].length === 0) {
+            delete this.__plugins__.__waiting__[type]
           }
         }
       }

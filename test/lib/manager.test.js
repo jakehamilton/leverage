@@ -470,6 +470,67 @@ describe('lib/manager', function () {
       unit.__components__.http['/'].services.a.should.deep.equal(service)
     })
 
+    describe('plugin', function () {
+      it('Should allow plugins to have dependencies', function () {
+        /*
+         * Create a dummy plugin
+         */
+        class A extends DummyPlugin {
+          constructor () {
+            super()
+
+            this.__config__ = {
+              type: ['a'],
+              test: {
+                identifier: () => 1
+              },
+              dependencies: {
+                plugins: ['b']
+              }
+            }
+          }
+
+          a () {
+
+          }
+        }
+
+        /*
+         * Create a dummy plugin
+         */
+        class B extends DummyPlugin {
+          constructor () {
+            super()
+
+            this.__config__ = {
+              type: ['b'],
+              test: {
+                identifier: () => 1
+              }
+            }
+          }
+
+          b () {
+
+          }
+        }
+
+        const a = new A()
+        const b = new B()
+
+        unit.plugin(a)
+
+        should.exist(unit.__plugins__.__waiting__)
+
+        unit.plugin(b)
+
+        should.exist(unit.__plugins__['a'])
+        should.exist(unit.__plugins__['b'])
+
+        should.exist(a.plugins.b)
+      })
+    })
+
     describe('add', function () {
       it('Should allow dynamically adding plugins', function () {
         /*
