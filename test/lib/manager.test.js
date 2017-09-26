@@ -471,6 +471,32 @@ describe('lib/manager', function () {
     })
 
     describe('plugin', function () {
+      it('Should call lifecycle hooks', function () {
+        /*
+         * Create a dummy plugin
+         */
+        class Plugin extends DummyPlugin {
+          constructor () {
+            super()
+
+            this.__config__ = {
+              type: ['test'],
+              test: {
+                identifier: () => 1
+              }
+            }
+          }
+        }
+
+        const p = new Plugin()
+
+        p.ready = chai.spy(function () {})
+
+        unit.add(p)
+
+        p.ready.should.have.been.called()
+      })
+
       it('Should allow plugins to have dependencies', function () {
         /*
          * Create a dummy plugin

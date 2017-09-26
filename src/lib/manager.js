@@ -583,6 +583,13 @@ class Manager {
             delete this.__plugins__.__waiting__[type]
           }
         }
+
+        /*
+         * Run lifecycle hooks if they exist
+         */
+        if (plugin.ready && typeof plugin.ready === 'function') {
+          plugin.ready()
+        }
       }
     }
 
