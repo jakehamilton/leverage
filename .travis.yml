@@ -1,0 +1,14 @@
+language: node_js
+
+node_js:
+  - lts/argon
+  - lts/boron
+  - stable
+
+cache:
+  directories:
+    - node_modules
+
+after_success:
+  - npm i -g coveralls
+  - cat coverage/lcov.info | coveralls
