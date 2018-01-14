@@ -1,43 +1,16 @@
 <br>
-<center>
 
-<img src=".md-assets/logo.png" width="80" height="80">
+<p align="center">
+    <img src=".md-assets/logo.png" width="120" height="120" alt="Leverage Logo">
+</p>
 
-<h1>Leverage</h1>
-
-</center>
-
-<center>
-
-<span style="display: inline-block;">
-
-[![Coverage Status](https://coveralls.io/repos/github/jakehamilton/leverage/badge.svg?branch=next)](https://coveralls.io/github/jakehamilton/leverage?branch=next)
-
-</span>
-
-<span style="display: inline-block;">
-
-[![Build Status](https://travis-ci.org/jakehamilton/leverage.svg?branch=next)](https://travis-ci.org/jakehamilton/leverage)
-
-</span>
-
-</center>
-
-<center>
-
-<span style="display: inline-block;">
-
-[![forthebadge](http://forthebadge.com/images/badges/makes-people-smile.svg)](http://forthebadge.com)
-
-</span>
-
-<span style="display: inline-block;">
-
-[![forthebadge](http://forthebadge.com/images/badges/built-with-love.svg)](http://forthebadge.com)
-
-</span>
-
-</center>
+<p align="center">
+  <a href="https://coveralls.io/github/jakehamilton/leverage?branch=next"><img src="https://coveralls.io/repos/github/jakehamilton/leverage/badge.svg?branch=next" alt="Coverage Status"></a>
+  <a href="https://travis-ci.org/jakehamilton/leverage"><img src="https://travis-ci.org/jakehamilton/leverage.svg?branch=next" alt="Build Status"></a>
+  <br>
+  <a href="http://forthebadge.com"><img src="http://forthebadge.com/images/badges/makes-people-smile.svg" alt="forthebadge"></a>
+  <a href="http://forthebadge.com"><img src="http://forthebadge.com/images/badges/built-with-love.svg" alt="forthebadge"></a>
+</p>
 
 What is it?
 -----------
