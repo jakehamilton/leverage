@@ -17,7 +17,7 @@
     "clean": "rimraf dist es lib coverage",
     "typecheck": "tsc --noEmit",
     "lint": "tslint --project tsconfig.json --type-check --format stylish",
-    "test": "jest --env=node --coverage",
+    "test": "npm run lint && jest --env=node --coverage",
     "test:watch": "jest --env=node --watch --updateSnapshot",
     "prepublishOnly": "npm run build",
     "prebuild": "npm run clean",
