@@ -1,7 +1,25 @@
-import f from '..';
+import * as Leverage from '..';
+import {
+  Manager,
 
-test('it works', () => {
-  const four = f(2, 2);
+  Plugin,
+  Service,
+  Component,
+  Middleware,
+} from '..';
 
-  expect(four).toBe(4);
+test('can be imported', () => {
+  /*
+   * Default import
+   */
+  expect(Leverage).toBeDefined();
+
+  /*
+   * Named imports
+   */
+  expect(Manager).toBeDefined();
+  expect(Plugin).toBeDefined();
+  expect(Service).toBeDefined();
+  expect(Component).toBeDefined();
+  expect(Middleware).toBeDefined();
 });

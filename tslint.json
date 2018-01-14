@@ -17,9 +17,9 @@
     "space-before-function-paren": [true, {
       "anonymous": "always",
       "asyncArrow": "always",
-      "constructor": "never",
-      "method": "never",
-      "named": "never"
+      "constructor": "always",
+      "method": "always",
+      "named": "always"
     }],
     "variable-name": [
       true,
