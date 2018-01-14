@@ -29,6 +29,20 @@ test('rejects an invalid config', () => {
     }).toThrow();
 
     /*
+     * Invalid `type` value
+     */
+    expect(() => {
+        Middleware({
+            type: {},
+        } as any);
+    }).toThrow();
+    expect(() => {
+        Middleware({
+            type: false,
+        } as any);
+    }).toThrow();
+
+    /*
      * Invalid config type
      */
     expect(() => {

@@ -12,7 +12,7 @@ function Component (config: ComponentConfig) {
         throw new Error(`[Component] Invalid config, expected a \`type\` property`);
     }
 
-    if (typeof config.type !== 'string' || Array.isArray(config.type)) {
+    if (typeof config.type !== 'string' && !Array.isArray(config.type)) {
         // tslint:disable-next-line:max-line-length
         throw new Error(`[Component] Invalid config, expected a string or array of strings for the property \`type\` but got "${typeof config.type}"`);
     }
