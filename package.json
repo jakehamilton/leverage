@@ -34,7 +34,8 @@
   "files": [
     "lib",
     "es",
-    "dist"
+    "dist",
+    "types"
   ],
   "dependencies": {
     "@types/node": "^8.0.0",

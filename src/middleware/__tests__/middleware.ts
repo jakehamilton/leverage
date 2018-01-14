@@ -1,6 +1,6 @@
 import Middleware from '../middleware';
 
-import { MiddlewareConfig } from '../../types/middleware';
+import { MiddlewareConfig } from '../../../types/middleware';
 
 test('is a function', () => {
     expect(typeof Middleware).toBe('function');
@@ -68,9 +68,9 @@ test('can extend a class', () => {
     };
 
     @Middleware(config)
-    class TestComponent {}
+    class TestMiddleware {}
 
-    const instance: any = new TestComponent();
+    const instance: any = new TestMiddleware();
 
     expect(instance.config.is).toBe('middleware');
     expect(instance.config.type).toEqual(config.type);

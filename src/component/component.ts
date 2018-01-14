@@ -1,4 +1,4 @@
-import { ComponentUnit, ComponentConfig } from '../types/component';
+import { ComponentUnit, ComponentConfig } from '../../types/component';
 
 function Component (config: ComponentConfig) {
     /*

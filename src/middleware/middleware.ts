@@ -1,4 +1,4 @@
-import { MiddlewareUnit, MiddlewareConfig } from '../types/middleware';
+import { MiddlewareUnit, MiddlewareConfig } from '../../types/middleware';
 
 function Middleware (config: MiddlewareConfig) {
     /*

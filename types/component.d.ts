@@ -9,7 +9,7 @@ interface ComponentUnit {
     [key: string]: any;
 }
 
-declare function Component (ComponentConfig):
+declare function Component (config: ComponentConfig):
     <T extends ComponentUnit>(component: T) => void;
 
 export default Component;

@@ -9,7 +9,7 @@ interface MiddlewareUnit {
     [key: string]: any;
 }
 
-declare function Middleware (MiddlewareConfig):
+declare function Middleware (config: MiddlewareConfig):
     <T extends MiddlewareUnit>(middleware: T) => void;
 
 export default Middleware;

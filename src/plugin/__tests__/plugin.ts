@@ -1,9 +1,9 @@
-import Component from '../component';
+import Plugin from '../plugin';
 
-import { ComponentConfig } from '../../../types/component';
+import { PluginConfig } from '../../../types/plugin';
 
 test('is a function', () => {
-    expect(typeof Component).toBe('function');
+    expect(typeof Plugin).toBe('function');
 });
 
 test('takes valid config', () => {
@@ -11,7 +11,7 @@ test('takes valid config', () => {
      * Object config
      */
     expect(() => {
-        Component({
+        Plugin({
             type: 'xyz',
             xyz: {},
         });
@@ -23,7 +23,7 @@ test('rejects an invalid config', () => {
      * Forgot `type`
      */
     expect(() => {
-        Component({
+        Plugin({
             xyz: {},
         } as any);
     }).toThrow();
@@ -32,12 +32,12 @@ test('rejects an invalid config', () => {
      * Invalid `type` value
      */
     expect(() => {
-        Component({
+        Plugin({
             type: {},
         } as any);
     }).toThrow();
     expect(() => {
-        Component({
+        Plugin({
             type: false,
         } as any);
     }).toThrow();
@@ -46,33 +46,33 @@ test('rejects an invalid config', () => {
      * Invalid config type
      */
     expect(() => {
-        Component(true as any);
+        Plugin(true as any);
     }).toThrow();
     expect(() => {
-        Component(42 as any);
+        Plugin(42 as any);
     }).toThrow();
     expect(() => {
-        Component('leverage' as any);
+        Plugin('leverage' as any);
     }).toThrow();
     expect(() => {
-        Component((() => null) as any);
+        Plugin((() => null) as any);
     }).toThrow();
 });
 
 test('can extend a class', () => {
-    const config: ComponentConfig = {
+    const config: PluginConfig = {
         type: 'xyz',
         xyz: {
             a: 'a',
         },
     };
 
-    @Component(config)
-    class TestComponent {}
+    @Plugin(config)
+    class TestPlugin {}
 
-    const instance: any = new TestComponent();
+    const instance: any = new TestPlugin();
 
-    expect(instance.config.is).toBe('component');
+    expect(instance.config.is).toBe('plugin');
     expect(instance.config.type).toEqual(config.type);
 
     expect(instance.config.xyz).toBeDefined();
