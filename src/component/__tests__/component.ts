@@ -1,6 +1,6 @@
 import Component from '../component';
 
-import { ComponentConfig } from '../../../types/component';
+import { ComponentConfig, ComponentUnit } from '../../../types/component';
 
 test('is a function', () => {
     expect(typeof Component).toBe('function');
@@ -70,7 +70,7 @@ test('can extend a class', () => {
     @Component(config)
     class TestComponent {}
 
-    const instance: any = new TestComponent();
+    const instance: ComponentUnit = new TestComponent();
 
     expect(instance.config.is).toBe('component');
     expect(instance.config.type).toEqual(config.type);

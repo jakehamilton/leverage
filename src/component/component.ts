@@ -34,7 +34,11 @@ function Component (config: ComponentConfig) {
         /*
          * Extend the given component class
          */
+        (component as any).config = config;
         (component as any).prototype.config = config;
+
+        (component as any).plugins = {};
+        (component as any).services = {};
     }
 
     return decorator;
