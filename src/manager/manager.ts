@@ -1,6 +1,6 @@
-import { PluginUnit, PluginInstance } from '../../types/plugin';
+import { PluginInstance } from '../../types/plugin';
 import { ServiceUnit } from '../../types/service';
-import { ComponentUnit, ComponentInstance } from '../../types/component';
+import { ComponentInstance } from '../../types/component';
 import { MiddlewareUnit } from '../../types/middleware';
 
 import { LeverageUnit, LeverageInstance } from '../../types/leverage';

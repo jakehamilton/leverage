@@ -1,5 +1,5 @@
 import Manager from '../manager';
-import { Component, Plugin } from '../../index';
+import { Component } from '../../index';
 
 test('rejects invalid units', () => {
     /*
@@ -229,7 +229,6 @@ test('can add components + plugins', () => {
                 type: 'x',
             },
             x: instance => {
-                console.log('here');
                 instance.x();
             },
         };
@@ -271,7 +270,7 @@ test('plugins can depend on plugins', () => {
                 type: 'x',
             },
             x: () => null,
-        }
+        };
 
         manager.add(component, plugin1, plugin2);
     }).not.toThrow();

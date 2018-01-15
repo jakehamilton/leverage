@@ -11,7 +11,7 @@ interface ServiceUnit {
     [key: string]: any;
 }
 
-interface ServiceInstance extends ServiceComponent {
+interface ServiceInstance extends ServiceUnit {
     config: ServiceConfig;
 
     plugins: {
