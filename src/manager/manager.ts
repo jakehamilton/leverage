@@ -66,13 +66,6 @@ export default class Manager implements LeverageManager {
             }
 
             /*
-             * Ensure the unit has a config
-             */
-            if (!unit.hasOwnProperty('config') && !unit.prototype.hasOwnProperty('config')) {
-                throw new Error(`[Manager] A Leverage unit must have a \`config\` property`);
-            }
-
-            /*
              * Support constructor functions
              */
             const instance = this.createUnitInstance(unit);
@@ -210,9 +203,11 @@ export default class Manager implements LeverageManager {
             /*
              * Remove the component from the waiting array if it exists
              */
-            const index = this.__components__.__waiting__.plugins[plugin].indexOf(component);
-            if (index !== -1) {
-                this.__components__.__waiting__.plugins[plugin].splice(index, 1);
+            if (this.__components__.__waiting__.plugins[plugin]) {
+                const index = this.__components__.__waiting__.plugins[plugin].indexOf(component);
+                if (index !== -1) {
+                    this.__components__.__waiting__.plugins[plugin].splice(index, 1);
+                }
             }
         }
 
@@ -225,9 +220,11 @@ export default class Manager implements LeverageManager {
             /*
              * Remove the component from the waiting array if it exists
              */
-            const index = this.__components__.__waiting__.services[service].indexOf(component);
-            if (index !== -1) {
-                this.__components__.__waiting__.services[service].splice(index, 1);
+            if (this.__components__.__waiting__.services[service]) {
+                const index = this.__components__.__waiting__.services[service].indexOf(component);
+                if (index !== -1) {
+                    this.__components__.__waiting__.services[service].splice(index, 1);
+                }
             }
         }
 
@@ -257,7 +254,6 @@ export default class Manager implements LeverageManager {
     }
 
     addPlugin (plugin: PluginInstance): boolean {
-        // @TODO (jakehamilton): Add plugin
         /*
          * Verify validity of the plugin
          */
@@ -275,7 +271,7 @@ export default class Manager implements LeverageManager {
          * Ensure the plugin conforms to the plugin interface
          */
         for (const type of types) {
-            if (!plugin.hasOwnProperty(type)) {
+            if (!plugin[type]) {
                 throw new Error(`[Manager] Plugins must have methods that match their types, missing method "${type}"`);
             }
 
@@ -339,9 +335,11 @@ export default class Manager implements LeverageManager {
             /*
              * Remove the plugin from the waiting array if it exists
              */
-            const index = this.__plugins__.__waiting__.plugins[type].indexOf(plugin);
-            if (index !== -1) {
-                this.__plugins__.__waiting__.plugins[type].splice(index, 1);
+            if (this.__plugins__.__waiting__.plugins[type]) {
+                const index = this.__plugins__.__waiting__.plugins[type].indexOf(plugin);
+                if (index !== -1) {
+                    this.__plugins__.__waiting__.plugins[type].splice(index, 1);
+                }
             }
         }
 
@@ -354,9 +352,11 @@ export default class Manager implements LeverageManager {
             /*
              * Remove the plugin from the waiting array if it exists
              */
-            const index = this.__plugins__.__waiting__.services[service].indexOf(plugin);
-            if (index !== -1) {
-                this.__plugins__.__waiting__.services[service].splice(index, 1);
+            if (this.__plugins__.__waiting__.services[service]) {
+                const index = this.__plugins__.__waiting__.services[service].indexOf(plugin);
+                if (index !== -1) {
+                    this.__plugins__.__waiting__.services[service].splice(index, 1);
+                }
             }
         }
 

@@ -1,7 +1,55 @@
 import Manager from '../manager';
-import { Component } from '../../index';
+import { Component, Plugin } from '../../index';
 
+/*
+ * Accept functions as units
+ */
+test('creates unit instances', () => {
+    expect(() => {
+        const manager = new Manager();
+
+        @Component({
+            type: 'xyz',
+        })
+        class C {}
+
+        manager.add(C);
+    }).not.toThrow();
+
+    expect(() => {
+        const manager = new Manager();
+
+        @Plugin({
+            type: 'xyz',
+        })
+        class P {
+            // tslint:disable-next-line:no-empty
+            xyz () {}
+        }
+
+        manager.add(P);
+    }).not.toThrow();
+});
+
+/*
+ * Generic, bad units
+ */
 test('rejects invalid units', () => {
+    /*
+     * Not a unit type
+     */
+    expect(() => {
+        const manager = new Manager();
+
+        manager.add((true as any));
+    }).toThrow();
+
+    expect(() => {
+        const manager = new Manager();
+
+        manager.add((42 as any));
+    }).toThrow();
+
     /*
      * No config
      */
@@ -133,9 +181,65 @@ test('rejects invalid units', () => {
 
         manager.add(unit);
     }).toThrow();
+
+    /*
+     * No `type` on instance config
+     */
+    expect(() => {
+        const manager = new Manager();
+
+        class C {
+            constructor () {
+                (this as any).config = {
+                    is: 'component',
+                };
+            }
+        }
+
+        manager.add(C);
+    }).toThrow();
+
+    /*
+     * Invalid `type` on instance config
+     */
+    expect(() => {
+        const manager = new Manager();
+
+        class C {
+            constructor () {
+                (this as any).config = {
+                    is: 'component',
+                    type: {},
+                };
+            }
+        }
+
+        manager.add(C);
+    }).toThrow();
+
+    /*
+     * Invalid `type` on instance config
+     */
+    expect(() => {
+        const manager = new Manager();
+
+        class C {
+            constructor () {
+                (this as any).config = {
+                    is: 'component',
+                    type: 42,
+                };
+            }
+        }
+
+        manager.add(C);
+    }).toThrow();
 });
 
-test('can add a component', () => {
+/*
+ * Components
+ */
+test('can add a valid component', () => {
     const unit = {
         config: {
             is: 'component',
@@ -165,7 +269,10 @@ test('can add a component', () => {
     }).not.toThrow();
 });
 
-test('can add a plugin', () => {
+/*
+ * Plugins
+ */
+test('can add a valid plugin', () => {
     const unit = {
         config: {
             is: 'plugin',
@@ -196,19 +303,9 @@ test('can add a plugin', () => {
     }).not.toThrow();
 });
 
-test('creates unit instances', () => {
-    expect(() => {
-        const manager = new Manager();
-
-        @Component({
-            type: 'xyz',
-        })
-        class C {}
-
-        manager.add(C);
-    }).not.toThrow();
-});
-
+/*
+ * Unit Composition
+ */
 test('can add components + plugins', () => {
     expect(() => {
         const manager = new Manager();
@@ -233,9 +330,35 @@ test('can add components + plugins', () => {
             },
         };
 
-        manager.add(component, plugin);
+        manager.add(plugin, component);
 
         expect(callback.mock.calls.length).toBe(1);
+    }).not.toThrow();
+
+    expect(() => {
+        const manager = new Manager();
+
+        const callback = jest.fn();
+
+        const component = {
+            config: {
+                is: 'component',
+                type: 'x',
+            },
+            x: callback,
+        };
+
+        const plugin = {
+            config: {
+                is: 'plugin',
+                type: 'x',
+            },
+            x: instance => {
+                instance.x();
+            },
+        };
+
+        manager.add(component, plugin, component);
     }).not.toThrow();
 });
 
@@ -272,6 +395,6 @@ test('plugins can depend on plugins', () => {
             x: () => null,
         };
 
-        manager.add(component, plugin1, plugin2);
+        manager.add(component, plugin1, plugin2, component);
     }).not.toThrow();
 });
