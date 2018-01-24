@@ -270,8 +270,8 @@ test('can add a valid component', () => {
 
         manager.add(unit);
 
-        expect(manager.__components__.__waiting__.plugins[unit.config.type]).toBeDefined();
-        expect(manager.__components__.__waiting__.plugins[unit.config.type][0]).toEqual(unit);
+        expect((manager as any).components.waiting.plugins[unit.config.type]).toBeDefined();
+        expect((manager as any).components.waiting.plugins[unit.config.type][0]).toEqual(unit);
     }).not.toThrow();
 });
 
@@ -304,8 +304,8 @@ test('can add a valid plugin', () => {
 
         manager.add(unit);
 
-        expect(manager.__plugins__[unit.config.type]).toBeDefined();
-        expect(manager.__plugins__[unit.config.type]).toEqual(unit);
+        expect((manager as any).plugins.installed[unit.config.type]).toBeDefined();
+        expect((manager as any).plugins.installed[unit.config.type]).toEqual(unit);
     }).not.toThrow();
 });
 
