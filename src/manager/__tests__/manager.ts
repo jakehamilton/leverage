@@ -1,5 +1,8 @@
 import Manager from '../manager';
 import { Component, Plugin } from '../../index';
+import { EmptyUnit } from '../../../types/leverage';
+import { ComponentUnit } from '../../../types/component';
+import { PluginUnit } from '../../../types/plugin';
 
 /*
  * Accept functions as units
@@ -11,9 +14,9 @@ test('creates unit instances', () => {
         @Component({
             type: 'xyz',
         })
-        class C {}
+        class C implements EmptyUnit {}
 
-        manager.add(C);
+        manager.add(C as any);
     }).not.toThrow();
 
     expect(() => {
@@ -22,7 +25,7 @@ test('creates unit instances', () => {
         @Plugin({
             type: 'xyz',
         })
-        class P {
+        class P implements EmptyUnit {
             // tslint:disable-next-line:no-empty
             xyz () {}
         }
@@ -114,9 +117,8 @@ test('rejects invalid units', () => {
         const manager = new Manager();
 
         const unit = {
-            config: {
-                is: '',
-            },
+            is: '',
+            config: {},
         };
 
         manager.add(unit);
@@ -126,9 +128,8 @@ test('rejects invalid units', () => {
         const manager = new Manager();
 
         const unit = {
-            config: {
-                is: 'does-not-exist',
-            },
+            is: 'does-not-exist',
+            config: {},
         };
 
         manager.add(unit);
@@ -138,9 +139,8 @@ test('rejects invalid units', () => {
         const manager = new Manager();
 
         const unit = {
-            config: {
-                is: true,
-            },
+            is: true,
+            config: {},
         };
 
         manager.add(unit);
@@ -150,9 +150,8 @@ test('rejects invalid units', () => {
         const manager = new Manager();
 
         const unit = {
-            config: {
-                is: 42,
-            },
+            is: 42,
+            config: {},
         };
 
         manager.add(unit);
@@ -162,9 +161,8 @@ test('rejects invalid units', () => {
         const manager = new Manager();
 
         const unit = {
-            config: {
-                is: () => null,
-            },
+            is: () => null,
+            config: {},
         };
 
         manager.add(unit);
@@ -174,9 +172,8 @@ test('rejects invalid units', () => {
         const manager = new Manager();
 
         const unit = {
-            config: {
-                is: {},
-            },
+            is: {},
+            config: {},
         };
 
         manager.add(unit);
@@ -188,11 +185,13 @@ test('rejects invalid units', () => {
     expect(() => {
         const manager = new Manager();
 
-        class C {
+        class C implements ComponentUnit {
+            is: 'component';
+            config: any; // Intentionally not ComponentConfig
+
             constructor () {
-                (this as any).config = {
-                    is: 'component',
-                };
+                this.is = 'component';
+                this.config = {};
             }
         }
 
@@ -205,10 +204,14 @@ test('rejects invalid units', () => {
     expect(() => {
         const manager = new Manager();
 
-        class C {
+        class C implements ComponentUnit {
+            is: 'component';
+            config: any; // Intentionally not ComponentConfig
+
             constructor () {
-                (this as any).config = {
-                    is: 'component',
+                this.is = 'component';
+
+                this.config = {
                     type: {},
                 };
             }
@@ -223,10 +226,13 @@ test('rejects invalid units', () => {
     expect(() => {
         const manager = new Manager();
 
-        class C {
+        class C implements ComponentUnit {
+            is: 'component';
+            config: any; // Intentionally not ComponentConfig
+
             constructor () {
-                (this as any).config = {
-                    is: 'component',
+                this.is = 'component';
+                this.config = {
                     type: 42,
                 };
             }
@@ -241,8 +247,8 @@ test('rejects invalid units', () => {
  */
 test('can add a valid component', () => {
     const unit = {
+        is: 'component',
         config: {
-            is: 'component',
             type: 'xyz',
         },
     };
@@ -274,8 +280,8 @@ test('can add a valid component', () => {
  */
 test('can add a valid plugin', () => {
     const unit = {
+        is: 'plugin',
         config: {
-            is: 'plugin',
             type: 'xyz',
         },
         xyz: () => null,
@@ -312,17 +318,17 @@ test('can add components + plugins', () => {
 
         const callback = jest.fn();
 
-        const component = {
+        const component: ComponentUnit = {
+            is: 'component',
             config: {
-                is: 'component',
                 type: 'x',
             },
             x: callback,
         };
 
-        const plugin = {
+        const plugin: PluginUnit = {
+            is: 'plugin',
             config: {
-                is: 'plugin',
                 type: 'x',
             },
             x: instance => {
@@ -340,17 +346,17 @@ test('can add components + plugins', () => {
 
         const callback = jest.fn();
 
-        const component = {
+        const component: ComponentUnit = {
+            is: 'component',
             config: {
-                is: 'component',
                 type: 'x',
             },
             x: callback,
         };
 
-        const plugin = {
+        const plugin: PluginUnit = {
+            is: 'plugin',
             config: {
-                is: 'plugin',
                 type: 'x',
             },
             x: instance => {
@@ -366,9 +372,9 @@ test('plugins can depend on plugins', () => {
     expect(() => {
         const manager = new Manager();
 
-        const plugin1 = {
+        const plugin1: PluginUnit = {
+            is: 'plugin',
             config: {
-                is: 'plugin',
                 type: 'x',
                 dependencies: {
                     plugins: ['y'],
@@ -379,17 +385,17 @@ test('plugins can depend on plugins', () => {
             },
         };
 
-        const plugin2 = {
+        const plugin2: PluginUnit = {
+            is: 'plugin',
             config: {
-                is: 'plugin',
                 type: 'y',
             },
             y: () => null,
         };
 
-        const component = {
+        const component: ComponentUnit = {
+            is: 'component',
             config: {
-                is: 'component',
                 type: 'x',
             },
             x: () => null,

@@ -5,6 +5,10 @@ import Service from './service';
 import Component from './component';
 import Middleware from './middleware';
 
+import * as Leverage from './leverage'
+
+export default Leverage;
+
 export {
     Manager,
 

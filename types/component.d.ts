@@ -1,8 +1,8 @@
-import { PluginInstance } from './plugin';
-import { ServiceInstance } from './service';
+import { EmptyUnit } from './leverage';
+import { PluginInstanceWithDependencies } from './plugin';
+import { ServiceInstanceWithDependencies } from './service';
 
 interface ComponentConfig {
-    is?: 'component';
     type: string | string[];
 
     dependencies?: {
@@ -10,27 +10,39 @@ interface ComponentConfig {
         services?: string[];
     }
 
-    [name: string]: any;
-}
-
-interface ComponentUnit {
     [key: string]: any;
 }
 
-interface ComponentInstance extends ComponentUnit {
+interface ComponentConfigWithDependencies extends ComponentConfig {
+    dependencies: {
+        plugins: string[];
+        services: string[];
+    }
+}
+
+interface ComponentUnit {
+    is: 'component';
     config: ComponentConfig;
 
+    [key: string]: any;
+}
+
+interface ComponentInstance extends ComponentUnit {}
+
+interface ComponentInstanceWithDependencies extends ComponentInstance {
+    config: ComponentConfigWithDependencies;
+
     plugins: {
-        [name: string]: PluginInstance;
-    };
+        [key: string]: PluginInstanceWithDependencies;
+    }
 
     services: {
-        [name: string]: ServiceInstance
-    };
+        [key: string]: ServiceInstanceWithDependencies;
+    }
 }
 
 declare function Component (config: ComponentConfig):
-    <T extends ComponentUnit>(component: T) => void;
+    (component: ComponentUnit | EmptyUnit) => void;
 
 export default Component;
 
@@ -39,4 +51,6 @@ export {
     ComponentUnit,
     ComponentConfig,
     ComponentInstance,
+    ComponentConfigWithDependencies,
+    ComponentInstanceWithDependencies,
 };

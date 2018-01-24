@@ -1,4 +1,5 @@
 import { ServiceUnit, ServiceConfig } from '../../types/service';
+import { EmptyUnit } from '../../types/leverage';
 
 function Service (config: ServiceConfig) {
     /*
@@ -21,19 +22,21 @@ function Service (config: ServiceConfig) {
      */
     config = Object.assign({}, config);
 
-    /*
-     * Set the kind of leverage unit this is
-     */
-    config.is = 'service';
-
     /**
      * Extend a class with Leverage Plugin Configuration
      */
-    function decorator<T extends ServiceUnit> (service: T): void {
+    function decorator (service: EmptyUnit): void {
         /*
          * Extend the given service class
          */
+        (service as ServiceUnit).config = config;
         (service as any).prototype.config = config;
+
+        /*
+        * Set the kind of leverage unit this is
+        */
+        (service as ServiceUnit).is = 'service';
+        (service as any).prototype.is = 'service';
     }
 
     return decorator;

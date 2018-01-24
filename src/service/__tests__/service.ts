@@ -1,6 +1,7 @@
 import Service from '../service';
 
 import { ServiceConfig } from '../../../types/service';
+import { EmptyUnit } from '../../../types/leverage';
 
 test('is a function', () => {
     expect(typeof Service).toBe('function');
@@ -68,11 +69,11 @@ test('can extend a class', () => {
     };
 
     @Service(config)
-    class TestService {}
+    class TestService implements EmptyUnit {}
 
     const instance: any = new TestService();
 
-    expect(instance.config.is).toBe('service');
+    expect(instance.is).toBe('service');
     expect(instance.config.name).toEqual(config.name);
 
     expect(instance.config.xyz).toBeDefined();

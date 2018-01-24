@@ -72,7 +72,7 @@ test('can extend a class', () => {
 
     const instance: any = new TestMiddleware();
 
-    expect(instance.config.is).toBe('middleware');
+    expect(instance.is).toBe('middleware');
     expect(instance.config.type).toEqual(config.type);
 
     expect(instance.config.xyz).toBeDefined();

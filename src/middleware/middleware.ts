@@ -1,4 +1,5 @@
 import { MiddlewareUnit, MiddlewareConfig } from '../../types/middleware';
+import { EmptyUnit } from '../../types/leverage';
 
 function Middleware (config: MiddlewareConfig) {
     /*
@@ -22,19 +23,21 @@ function Middleware (config: MiddlewareConfig) {
      */
     config = Object.assign({}, config);
 
-    /*
-     * Set the kind of leverage unit this is
-     */
-    config.is = 'middleware';
-
     /**
      * Extend a class with a Leverage Middleware Configuration
      */
-    function decorator<T extends MiddlewareUnit> (middleware: T): void {
+    function decorator (middleware: MiddlewareUnit | EmptyUnit): void {
         /*
          * Extend the given middleware class
          */
+        middleware.config = config;
         (middleware as any).prototype.config = config;
+
+        /*
+        * Set the kind of leverage unit this is
+        */
+        middleware.is = 'middleware';
+        (middleware as any).prototype.is = 'middleware';
     }
 
     return decorator;

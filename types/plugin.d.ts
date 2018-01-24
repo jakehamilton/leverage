@@ -1,26 +1,55 @@
-interface PluginConfig {
-    is?: 'plugin';
-    type: string | string[];
+import { ServiceInstanceWithDependencies } from './service';
+import { EmptyUnit } from './leverage';
 
-    [name: string]: any;
+interface PluginConfig {
+  type: string | string[];
+
+  dependencies?: {
+    plugins?: string[];
+    services?: string[];
+  }
+
+  [key: string]: any;
+}
+
+interface PluginConfigWithDependencies extends PluginConfig {
+  dependencies: {
+    plugins: string[];
+    services: string[];
+  }
 }
 
 interface PluginUnit {
-    [key: string]: any;
+  is: 'plugin';
+  config: PluginConfig;
+
+  [key: string]: any;
 }
 
-interface PluginInstance extends PluginUnit {
-    config: PluginConfig;
+interface PluginInstance extends PluginUnit {}
+
+interface PluginInstanceWithDependencies extends PluginInstance {
+  config: PluginConfigWithDependencies;
+
+  plugins: {
+    [key: string]: PluginInstanceWithDependencies;
+  }
+
+  services: {
+    [key: string]: ServiceInstanceWithDependencies;
+  }
 }
 
 declare function Plugin (config: PluginConfig):
-    <T extends PluginUnit>(plugin: T) => void;
+  (plugin: PluginUnit | EmptyUnit) => void;
 
 export default Plugin;
 
 export {
-    Plugin,
-    PluginUnit,
-    PluginConfig,
-    PluginInstance,
+  Plugin,
+  PluginUnit,
+  PluginConfig,
+  PluginInstance,
+  PluginConfigWithDependencies,
+  PluginInstanceWithDependencies,
 };

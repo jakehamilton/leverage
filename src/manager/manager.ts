@@ -1,9 +1,9 @@
-import { PluginInstance } from '../../types/plugin';
-import { ServiceUnit } from '../../types/service';
-import { ComponentInstance } from '../../types/component';
-import { MiddlewareUnit } from '../../types/middleware';
+import { PluginInstanceWithDependencies } from '../../types/plugin';
+import { ServiceInstanceWithDependencies } from '../../types/service';
+import { ComponentInstanceWithDependencies } from '../../types/component';
+import { MiddlewareInstanceWithDependencies } from '../../types/middleware';
 
-import { LeverageUnit, LeverageInstance } from '../../types/leverage';
+import { LeverageUnit, LeverageInstance, EmptyUnit } from '../../types/leverage';
 import { Manager as LeverageManager } from '../../types/manager';
 
 export interface LeverageUnitWaitingMap {
@@ -56,7 +56,7 @@ export default class Manager implements LeverageManager {
         };
     }
 
-    add (...units: LeverageUnit[]) {
+    add (...units: Array<LeverageUnit|EmptyUnit>) {
         for (const unit of units) {
             /*
              * Only accept objects or functions
@@ -71,6 +71,13 @@ export default class Manager implements LeverageManager {
             const instance = this.createUnitInstance(unit);
 
             /*
+             * Ensure the instance has an `is` property
+             */
+            if (!instance.is) {
+                throw new Error(`[Manager] A Leverage unit must have an \`is\` property`);
+            }
+
+            /*
              * Verify the validity of the config
              */
             if (typeof instance.config !== 'object') {
@@ -78,53 +85,38 @@ export default class Manager implements LeverageManager {
                 throw new Error(`[Manager] Expected config property to be an "object" but got "${typeof instance.config}"`);
             }
 
-            if (!instance.config.hasOwnProperty('is')) {
-                throw new Error(`[Manager] A Leverage unit's config must have an \`is\` property`);
+            if (typeof instance.is !== 'string') {
+                // tslint:disable-next-line:max-line-length
+                throw new Error(`[Manager] Expected \`config.is\` to be a "string" but got a "${typeof instance.is}"`);
             }
 
-            if (typeof instance.config.is !== 'string') {
-                // tslint:disable-next-line:max-line-length
-                throw new Error(`[Manager] Expected \`config.is\` to be a "string" but got a "${typeof instance.config.is}"`);
+            /*
+             * Normalize the dependency map
+             */
+            if (instance.is === 'component') {
+                this.initializeInstanceDependencies(instance, true);
+            } else {
+                this.initializeInstanceDependencies(instance);
             }
 
             /*
              * Begin install process
              */
-            switch (instance.config.is) {
+            switch (instance.is) {
             case 'plugin':
-                /*
-                * Normalize the dependency map
-                */
-                this.initializeInstanceDependencies(instance);
-
-                this.addPlugin(instance as PluginInstance);
+                this.addPlugin(instance as PluginInstanceWithDependencies);
                 break;
 
             case 'service':
-                /*
-                * Normalize the dependency map
-                */
-                this.initializeInstanceDependencies(instance);
-
-                this.addService(instance);
+                this.addService(instance as ServiceInstanceWithDependencies);
                 break;
 
             case 'component':
-                /*
-                * Normalize the dependency map
-                */
-                this.initializeInstanceDependencies(instance, true);
-
-                this.addComponent(instance as ComponentInstance);
+                this.addComponent(instance as ComponentInstanceWithDependencies);
                 break;
 
             case 'middleware':
-                /*
-                * Normalize the dependency map
-                */
-                this.initializeInstanceDependencies(instance);
-
-                this.addMiddleware(instance);
+                this.addMiddleware(instance as MiddlewareInstanceWithDependencies);
                 break;
 
             default:
@@ -134,7 +126,7 @@ export default class Manager implements LeverageManager {
         }
     }
 
-    addComponent (component: ComponentInstance): boolean {
+    addComponent (component: ComponentInstanceWithDependencies): boolean {
         /*
          * Verify validity of the component
          */
@@ -253,7 +245,7 @@ export default class Manager implements LeverageManager {
         return true;
     }
 
-    addPlugin (plugin: PluginInstance): boolean {
+    addPlugin (plugin: PluginInstanceWithDependencies): boolean {
         /*
          * Verify validity of the plugin
          */
@@ -378,7 +370,7 @@ export default class Manager implements LeverageManager {
              */
             if (this.__components__.__waiting__.plugins.hasOwnProperty(type)) {
                 for (const component of this.__components__.__waiting__.plugins[type]) {
-                    this.addComponent(component as ComponentInstance);
+                    this.addComponent(component as ComponentInstanceWithDependencies);
                 }
             }
         }
@@ -386,15 +378,15 @@ export default class Manager implements LeverageManager {
         return true;
     }
 
-    addService (service: ServiceUnit) {
+    addService (service: ServiceInstanceWithDependencies) {
         // @TODO (jakehamilton): Add service
     }
 
-    addMiddleware (middleware: MiddlewareUnit) {
+    addMiddleware (middleware: MiddlewareInstanceWithDependencies) {
         // @TODO (jakehamilton): Add middleware
     }
 
-    private createUnitInstance (unit: LeverageUnit): LeverageInstance {
+    private createUnitInstance (unit: LeverageUnit | EmptyUnit): LeverageInstance {
         if (typeof unit === 'function') {
             return new (unit as any)();
         } else {
@@ -403,15 +395,16 @@ export default class Manager implements LeverageManager {
     }
 
     private initializeInstanceDependencies (instance: LeverageInstance, patchType: boolean = false): void {
-        const dependencies = {
-            plugins: [],
-            services: [],
-        };
+        if (!instance.config.dependencies) {
+            instance.config.dependencies = {};
+        }
 
-        if (!instance.config.hasOwnProperty('dependencies')) {
-            instance.config.dependencies = dependencies;
-        } else {
-            instance.config.dependencies = Object.assign({}, dependencies, instance.config.dependencies);
+        if (!instance.config.dependencies.plugins) {
+            instance.config.dependencies.plugins = [];
+        }
+
+        if (!instance.config.dependencies.services) {
+            instance.config.dependencies.services = [];
         }
 
         (instance as any).plugins = {};

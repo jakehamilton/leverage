@@ -1,36 +1,55 @@
-import { PluginInstance } from './plugin';
+import { EmptyUnit } from './leverage';
+import { PluginInstanceWithDependencies } from './plugin';
 
 interface ServiceConfig {
-    is?: 'service';
-    name: string | string[];
+  name: string;
 
-    [name: string]: any;
+  dependencies?: {
+    plugins?: string[];
+    services?: string[];
+  }
+
+  [key: string]: any;
+}
+
+interface ServiceConfigWithDependencies extends ServiceConfig {
+  dependencies: {
+    plugins: string[];
+    services: string[];
+  }
 }
 
 interface ServiceUnit {
-    [key: string]: any;
+  is: 'service';
+  config: ServiceConfig;
+
+  [key: string]: any;
 }
 
-interface ServiceInstance extends ServiceUnit {
-    config: ServiceConfig;
+interface ServiceInstance extends ServiceUnit {}
 
-    plugins: {
-        [name: string]: PluginInstance;
-    };
+interface ServiceInstanceWithDependencies extends ServiceInstance {
+  config: ServiceConfigWithDependencies;
 
-    services: {
-        [name: string]: ServiceInstance
-    };
+  plugins: {
+    [key: string]: PluginInstanceWithDependencies;
+  }
+
+  services: {
+    [key: string]: ServiceInstanceWithDependencies;
+  }
 }
 
 declare function Service (config: ServiceConfig):
-    <T extends ServiceConfig>(service: T) => void;
+  (service: ServiceUnit | EmptyUnit) => void;
 
 export default Service;
 
 export {
-    Service,
-    ServiceUnit,
-    ServiceConfig,
-    ServiceInstance,
+  Service,
+  ServiceUnit,
+  ServiceConfig,
+  ServiceInstance,
+  ServiceConfigWithDependencies,
+  ServiceInstanceWithDependencies,
 };

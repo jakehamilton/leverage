@@ -1,6 +1,7 @@
 import Plugin from '../plugin';
 
 import { PluginConfig } from '../../../types/plugin';
+import { EmptyUnit } from '../../../types/leverage';
 
 test('is a function', () => {
     expect(typeof Plugin).toBe('function');
@@ -68,11 +69,11 @@ test('can extend a class', () => {
     };
 
     @Plugin(config)
-    class TestPlugin {}
+    class TestPlugin implements EmptyUnit {}
 
     const instance: any = new TestPlugin();
 
-    expect(instance.config.is).toBe('plugin');
+    expect(instance.is).toBe('plugin');
     expect(instance.config.type).toEqual(config.type);
 
     expect(instance.config.xyz).toBeDefined();

@@ -31,7 +31,7 @@ Install it
 ----------
 
 ```bash
-npm i -S leverage-js
+npm i -S @leverage/core
 ```
 
 Hello World
@@ -42,14 +42,14 @@ For a "Hello World", we'll create a simple http server that responds to requests
 First, install the HTTP plugin:
 
 ```bash
-npm i -S leverage-plugin-http
+npm i -S @leverage/http-plugin
 ```
 
 Now, we will write an HTTP component and load our component and the HTTP plugin:
 
 ```js
-import { Manager, Component } from 'leverage-js';
-import http from 'leverage-plugin-http';
+import { Manager, Component } from '@leverage/core';
+import http from '@leverage/http-plugin';
 
 const manager = new Manager();
 
@@ -66,7 +66,9 @@ class Route {
     }
 }
 
-manager.add(new Route());
+manager.add(Route);
+
+http.listen(8080);
 ```
 
 Want To Dig In Deeper?

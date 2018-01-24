@@ -1,16 +1,48 @@
-interface MiddlewareConfig {
-    is?: 'middleware';
-    type: string | string[];
+import { PluginInstanceWithDependencies } from "./plugin";
+import { ServiceInstanceWithDependencies } from "./service";
+import { EmptyUnit } from "./leverage";
 
-    [name: string]: any;
+interface MiddlewareConfig {
+  type: string | string[];
+
+  dependencies?: {
+    plugins?: string[];
+    services?: string[];
+  }
+
+  [key: string]: any;
+}
+
+interface MiddlewareConfigWithDependencies extends MiddlewareConfig {
+  dependencies: {
+    plugins: string[];
+    services: string[];
+  }
 }
 
 interface MiddlewareUnit {
-    [key: string]: any;
+  is: 'middleware';
+  config: MiddlewareConfig;
+
+  [key: string]: any;
+}
+
+interface MiddlewareInstance extends MiddlewareUnit {}
+
+interface MiddlewareInstanceWithDependencies extends MiddlewareInstance {
+  config: MiddlewareConfigWithDependencies;
+
+  plugins: {
+    [key: string]: PluginInstanceWithDependencies;
+  }
+
+  services: {
+    [key: string]: ServiceInstanceWithDependencies;
+  }
 }
 
 declare function Middleware (config: MiddlewareConfig):
-    <T extends MiddlewareUnit>(middleware: T) => void;
+  (middleware: MiddlewareUnit | EmptyUnit) => void;
 
 export default Middleware;
 
@@ -18,4 +50,7 @@ export {
     Middleware,
     MiddlewareUnit,
     MiddlewareConfig,
+    MiddlewareInstance,
+    MiddlewareConfigWithDependencies,
+    MiddlewareInstanceWithDependencies,
 };

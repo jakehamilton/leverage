@@ -1,4 +1,5 @@
 import { PluginUnit, PluginConfig } from '../../types/plugin';
+import { EmptyUnit } from '../../types/leverage';
 
 function Plugin (config: PluginConfig) {
     /*
@@ -22,19 +23,21 @@ function Plugin (config: PluginConfig) {
      */
     config = Object.assign({}, config);
 
-    /*
-     * Set the kind of leverage unit this is
-     */
-    config.is = 'plugin';
-
     /**
      * Extend a class with a Leverage Plugin Configuration
      */
-    function decorator<T extends PluginUnit> (plugin: T): void {
+    function decorator (plugin: PluginUnit | EmptyUnit): void {
         /*
          * Extend the given plugin class
          */
+        plugin.config = config;
         (plugin as any).prototype.config = config;
+
+        /*
+        * Set the kind of leverage unit this is
+        */
+        plugin.is = 'plugin';
+        (plugin as any).prototype.is = 'plugin';
     }
 
     return decorator;

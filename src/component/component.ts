@@ -1,4 +1,5 @@
 import { ComponentUnit, ComponentConfig } from '../../types/component';
+import { EmptyUnit } from '../../types/leverage';
 
 function Component (config: ComponentConfig) {
     /*
@@ -22,23 +23,21 @@ function Component (config: ComponentConfig) {
      */
     config = Object.assign({}, config);
 
-    /*
-     * Set the kind of leverage unit this is
-     */
-    config.is = 'component';
-
     /**
      * Extend a class with a Leverage Component Configuration
      */
-    function decorator<T extends ComponentUnit> (component: T): void {
+    function decorator (component: ComponentUnit | EmptyUnit): void {
         /*
          * Extend the given component class
          */
-        (component as any).config = config;
+        (component as ComponentUnit).config = config;
         (component as any).prototype.config = config;
 
-        (component as any).plugins = {};
-        (component as any).services = {};
+        /*
+        * Set the kind of leverage unit this is
+        */
+        (component as ComponentUnit).is = 'component';
+        (component as any).prototype.is = 'component';
     }
 
     return decorator;
