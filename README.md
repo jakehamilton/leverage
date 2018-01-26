@@ -42,31 +42,33 @@ For a "Hello World", we'll create a simple http server that responds to requests
 First, install the HTTP plugin:
 
 ```bash
-npm i -S @leverage/http-plugin
+npm i -S @leverage/plugin-http
 ```
 
 Now, we will write an HTTP component and load our component and the HTTP plugin:
 
 ```js
-import { Manager, Component } from '@leverage/core';
-import http from '@leverage/http-plugin';
+import { Manager } from '@leverage/core';
+import http from '@leverage/plugin-http';
 
 const manager = new Manager();
 
-@Component({
-    type: 'http',
-    http: {
-        path: '/',
-        method: 'get'
-    }
-})
-class Route {
-    http (req, res) {
-        res.send('Hello World');
+const route = {
+    is: 'component',
+    config: {
+        type: 'http',
+        http: {
+            path: '/',
+            method: 'get'
+        }
+    },
+
+    http (request, response) {
+        response.send('Hello World');
     }
 }
 
-manager.add(Route);
+manager.add(route);
 
 http.listen(8080);
 ```
