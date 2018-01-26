@@ -41,8 +41,8 @@ interface MiddlewareInstanceWithDependencies extends MiddlewareInstance {
   }
 }
 
-declare function Middleware (config: MiddlewareConfig):
-  (middleware: MiddlewareUnit | EmptyUnit) => void;
+declare function Middleware (config: any | MiddlewareConfig):
+  any | ((middleware: MiddlewareUnit | EmptyUnit) => void);
 
 export default Middleware;
 

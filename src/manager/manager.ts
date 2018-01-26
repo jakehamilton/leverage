@@ -6,38 +6,41 @@ import { MiddlewareInstanceWithDependencies } from '../../types/middleware';
 import { LeverageUnit, LeverageInstance, EmptyUnit } from '../../types/leverage';
 import { Manager as LeverageManager } from '../../types/manager';
 
-export interface ManagerUnitMap {
+interface UnitMap<T> {
     waiting: {
         plugins: {
-            [name: string]: LeverageUnit[];
+            [type: string]: T[];
         };
         services: {
-            [name: string]: LeverageUnit[];
+            [name: string]: T[];
         };
+    };
+
+    installed: {
+        [key: string]: T;
+    };
+}
+
+interface ComponentUnitMap {
+    waiting: {
+        plugins: {
+            [type: string]: ComponentInstanceWithDependencies[];
+        };
+        services: {
+            [name: string]: ComponentInstanceWithDependencies[];
+        };
+    };
+
+    installed: {
+        [key: string]: ComponentInstanceWithDependencies[];
     };
 }
 
 export default class Manager implements LeverageManager {
-    private plugins: ManagerUnitMap & {
-        installed: {
-            [key: string]: PluginInstanceWithDependencies;
-        };
-    };
-    private services: ManagerUnitMap & {
-        installed: {
-            [key: string]: ServiceInstanceWithDependencies;
-        };
-    };
-    private middleware: ManagerUnitMap & {
-        installed: {
-            [key: string]: MiddlewareInstanceWithDependencies;
-        };
-    };
-    private components: ManagerUnitMap & {
-        installed: {
-            [key: string]: ComponentInstanceWithDependencies[];
-        };
-    };
+    private plugins: UnitMap<PluginInstanceWithDependencies>;
+    private services: UnitMap<ServiceInstanceWithDependencies>;
+    private middleware: UnitMap<MiddlewareInstanceWithDependencies>;
+    private components: ComponentUnitMap;
 
     constructor () {
         this.plugins = {
@@ -165,7 +168,7 @@ export default class Manager implements LeverageManager {
                 /*
                  * Create waiting array if it doesn't exist for this type
                  */
-                if (!this.components.waiting.hasOwnProperty(plugin)) {
+                if (!this.components.waiting.plugins.hasOwnProperty(plugin)) {
                     this.components.waiting.plugins[plugin] = [];
                 }
 
@@ -188,7 +191,7 @@ export default class Manager implements LeverageManager {
                 /*
                 * Create waiting array if it doesn't exist for this type
                 */
-                if (!this.components.waiting.hasOwnProperty(service)) {
+                if (!this.components.waiting.services.hasOwnProperty(service)) {
                     this.components.waiting.services[service] = [];
                 }
 
@@ -297,12 +300,12 @@ export default class Manager implements LeverageManager {
                 /*
                  * Create waiting array if it doesn't exist for this type
                  */
-                if (!this.plugins.waiting.hasOwnProperty(type)) {
+                if (!this.plugins.waiting.plugins.hasOwnProperty(type)) {
                     this.plugins.waiting.plugins[type] = [];
                 }
 
                 /*
-                 * Push the component to the waiting array if it isn't already
+                 * Push the plugin to the waiting array if it isn't already
                  */
                 if (!this.plugins.waiting.plugins[type].includes(plugin)) {
                     this.plugins.waiting.plugins[type].push(plugin);
@@ -320,7 +323,7 @@ export default class Manager implements LeverageManager {
                 /*
                 * Create waiting array if it doesn't exist for this type
                 */
-                if (!this.plugins.waiting.hasOwnProperty(service)) {
+                if (!this.plugins.waiting.services.hasOwnProperty(service)) {
                     this.plugins.waiting.services[service] = [];
                 }
 
@@ -383,11 +386,17 @@ export default class Manager implements LeverageManager {
             this.plugins.installed[type] = plugin;
 
             /*
-             * Attempt to install anything waiting on this component
+             * Attempt to install anything waiting on this plugin
              */
             if (this.components.waiting.plugins.hasOwnProperty(type)) {
-                for (const component of this.components.waiting.plugins[type]) {
-                    this.addComponent(component as ComponentInstanceWithDependencies);
+                for (const unit of this.components.waiting.plugins[type]) {
+                    this.addComponent(unit);
+                }
+            }
+
+            if (this.services.waiting.plugins.hasOwnProperty(type)) {
+                for (const unit of this.services.waiting.plugins[type]) {
+                    this.addService(unit);
                 }
             }
         }
@@ -396,7 +405,124 @@ export default class Manager implements LeverageManager {
     }
 
     addService (service: ServiceInstanceWithDependencies) {
-        // @TODO (jakehamilton): Add service
+        /*
+         * Verify validity of the service
+         */
+        if (!service.config.hasOwnProperty('name')) {
+            throw new Error(`[Manager] A Leverage service's config must have a \`name\` property`);
+        }
+
+        if (typeof service.config.name !== 'string') {
+            // tslint:disable-next-line:max-line-length
+            throw new Error(`[Manager] Expected \`service.config.name\` to be a "string" but got ${typeof service.config.name}`);
+        }
+
+        /*
+         * Check to see if all required plugins are available
+         */
+        for (const type of service.config.dependencies.plugins) {
+            if (!this.plugins.installed.hasOwnProperty(type)) {
+                /*
+                 * Create waiting array if it doesn't exist for this plugin
+                 */
+                if (!this.services.waiting.plugins.hasOwnProperty(type)) {
+                    this.services.waiting.plugins[type] = [];
+                }
+
+                /*
+                 * Push the service to the waiting array if it isn't already
+                 */
+                if (!this.services.waiting.plugins[type].includes(service)) {
+                    this.services.waiting.plugins[type].push(service);
+                }
+
+                return false;
+            }
+        }
+
+        /*
+         * Check to see if all required services are available
+         */
+        for (const name of service.config.dependencies.services) {
+            if (!this.services.installed.hasOwnProperty(name)) {
+                /*
+                 * Create waiting array if it doesn't exist for this service
+                 */
+                if (!this.services.waiting.services.hasOwnProperty(name)) {
+                    this.services.waiting.services[name] = [];
+                }
+
+                /*
+                 * Push the service to the waiting array if it isn't already
+                 */
+                if (!this.services.waiting.services[name].includes(service)) {
+                    this.services.waiting.services[name].push(service);
+                }
+
+                return false;
+            }
+        }
+
+        /*
+         * Inject plugins
+         */
+        for (const type of service.config.dependencies.plugins) {
+            service.plugins[type] = this.plugins.installed[type];
+
+            /*
+             * Remove the service from the waiting array if it exists
+             */
+            if (this.services.waiting.plugins[type]) {
+                const index = this.services.waiting.plugins[type].indexOf(service);
+                if (index !== -1) {
+                    this.services.waiting.plugins[type].splice(index, 1);
+                }
+            }
+        }
+
+        /*
+         * Inject services
+         */
+        for (const name of service.config.dependencies.services) {
+            service.services[name] = this.services.installed[name];
+
+            if (this.services.waiting.services[name]) {
+                const index = this.services.waiting.services[name].indexOf(service);
+                if (index !== -1) {
+                    this.services.waiting.services[name].splice(index, 1);
+                }
+            }
+        }
+
+        /*
+         * Start installing the service
+         */
+        if (this.services.installed.hasOwnProperty(service.config.name)) {
+            throw new Error(`[Manager] Service name "${service.config.name}" is already defined`);
+        }
+
+        this.services.installed[service.config.name] = service;
+
+        /*
+         * Attempt to intsall anything waiting on this service
+         */
+        if (this.components.waiting.services.hasOwnProperty(service.config.name)) {
+            for (const unit of this.components.waiting.services[service.config.name]) {
+                this.addComponent(unit);
+            }
+        }
+
+        if (this.plugins.waiting.services.hasOwnProperty(service.config.name)) {
+            for (const unit of this.plugins.waiting.services[service.config.name]) {
+                this.addPlugin(unit);
+            }
+        }
+
+        if (this.services.waiting.services.hasOwnProperty(service.config.name)) {
+            for (const unit of this.services.waiting.services[service.config.name]) {
+                this.addService(unit);
+            }
+        }
     }
 
     addMiddleware (middleware: MiddlewareInstanceWithDependencies) {

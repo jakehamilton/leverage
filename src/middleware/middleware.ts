@@ -1,7 +1,32 @@
 import { MiddlewareUnit, MiddlewareConfig } from '../../types/middleware';
 import { EmptyUnit } from '../../types/leverage';
 
-function Middleware (config: MiddlewareConfig) {
+function Middleware (config: any) {
+    /*
+     * Inheritance pattern
+     */
+    if (this instanceof Middleware) {
+        (this as MiddlewareUnit).is = 'middleware';
+
+        /*
+         * Break early since this is all we need
+         */
+        return (null as any);
+    }
+
+    /*
+     * Minimal decorator pattern
+     */
+    if (typeof config === 'function') {
+        (config as MiddlewareUnit).is = 'middleware';
+        (config as any).prototype.is = 'middleware';
+
+        /*
+         * Break early since this is all we need
+         */
+        return (null as any);
+    }
+
     /*
      * Check validity of the config
      */
@@ -21,7 +46,7 @@ function Middleware (config: MiddlewareConfig) {
     /*
      * Create a copy of the config
      */
-    config = Object.assign({}, config);
+    const copy: MiddlewareConfig = Object.assign({}, config);
 
     /**
      * Extend a class with a Leverage Middleware Configuration
@@ -30,8 +55,8 @@ function Middleware (config: MiddlewareConfig) {
         /*
          * Extend the given middleware class
          */
-        middleware.config = config;
-        (middleware as any).prototype.config = config;
+        middleware.config = copy;
+        (middleware as any).prototype.config = copy;
 
         /*
         * Set the kind of leverage unit this is
