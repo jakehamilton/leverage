@@ -61,7 +61,6 @@ describe('Manager', () => {
                 x () {},
             };
 
-
             /*
              * Errors shouldn't be thrown on valid instances
              */
