@@ -40,8 +40,8 @@ interface PluginInstanceWithDependencies extends PluginInstance {
   }
 }
 
-declare function Plugin (config: PluginConfig):
-  (plugin: PluginUnit | EmptyUnit) => void;
+declare function Plugin (config: any | PluginConfig):
+  any | ((plugin: PluginUnit | EmptyUnit) => void);
 
 export default Plugin;
 

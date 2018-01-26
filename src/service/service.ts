@@ -1,7 +1,32 @@
 import { ServiceUnit, ServiceConfig } from '../../types/service';
 import { EmptyUnit } from '../../types/leverage';
 
-function Service (config: ServiceConfig) {
+function Service (config: any) {
+    /*
+     * Inheritance pattern
+     */
+    if (this instanceof Service) {
+        (this as ServiceUnit).is = 'service';
+
+        /*
+         * Break early since this is all we need
+         */
+        return (null as any);
+    }
+
+    /*
+     * Minimal decorator pattern
+     */
+    if (typeof config === 'function') {
+        (config as ServiceUnit).is = 'service';
+        (config as any).prototype.is = 'service';
+
+        /*
+         * Break early since this is all we need
+         */
+        return (null as any);
+    }
+
     /*
      * Check validity of the config
      */
@@ -20,17 +45,17 @@ function Service (config: ServiceConfig) {
     /*
      * Create a copy of the config
      */
-    config = Object.assign({}, config);
+    const copy: ServiceConfig = Object.assign({}, config);
 
     /**
      * Extend a class with Leverage Plugin Configuration
      */
-    function decorator (service: EmptyUnit): void {
+    function decorator (service: ServiceUnit | EmptyUnit): void {
         /*
          * Extend the given service class
          */
-        (service as ServiceUnit).config = config;
-        (service as any).prototype.config = config;
+        (service as ServiceUnit).config = copy;
+        (service as any).prototype.config = copy;
 
         /*
         * Set the kind of leverage unit this is

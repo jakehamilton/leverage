@@ -1,7 +1,32 @@
 import { ComponentUnit, ComponentConfig } from '../../types/component';
 import { EmptyUnit } from '../../types/leverage';
 
-function Component (config: ComponentConfig) {
+function Component (config: any) {
+    /*
+     * Inheritance pattern
+     */
+    if (this instanceof Component) {
+        (this as ComponentUnit).is = 'component';
+
+        /*
+         * Break early since this is all we need
+         */
+        return (null as any);
+    }
+
+    /*
+     * Minimal decorator pattern
+     */
+    if (typeof config === 'function') {
+        (config as ComponentUnit).is = 'component';
+        (config as any).prototype.is = 'component';
+
+        /*
+         * Break early since this is all we need
+         */
+        return (null as any);
+    }
+
     /*
      * Check validity of the config
      */
@@ -21,7 +46,7 @@ function Component (config: ComponentConfig) {
     /*
      * Create a copy of the config
      */
-    config = Object.assign({}, config);
+    const copy: ComponentConfig = Object.assign({}, config);
 
     /**
      * Extend a class with a Leverage Component Configuration
@@ -30,8 +55,8 @@ function Component (config: ComponentConfig) {
         /*
          * Extend the given component class
          */
-        (component as ComponentUnit).config = config;
-        (component as any).prototype.config = config;
+        (component as ComponentUnit).config = copy;
+        (component as any).prototype.config = copy;
 
         /*
         * Set the kind of leverage unit this is

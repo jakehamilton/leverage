@@ -4,403 +4,405 @@ import { EmptyUnit } from '../../../types/leverage';
 import { ComponentUnit } from '../../../types/component';
 import { PluginUnit } from '../../../types/plugin';
 
-/*
- * Accept functions as units
- */
-test('creates unit instances', () => {
-    expect(() => {
-        const manager = new Manager();
-
-        @Component({
-            type: 'xyz',
-        })
-        class C implements EmptyUnit {}
-
-        manager.add(C as any);
-    }).not.toThrow();
-
-    expect(() => {
-        const manager = new Manager();
-
-        @Plugin({
-            type: 'xyz',
-        })
-        class P implements EmptyUnit {
-            // tslint:disable-next-line:no-empty
-            xyz () {}
-        }
-
-        manager.add(P);
-    }).not.toThrow();
-});
-
-/*
- * Generic, bad units
- */
-test('rejects invalid units', () => {
+describe('Manager', () => {
     /*
-     * Not a unit type
-     */
-    expect(() => {
-        const manager = new Manager();
+    * Accept functions as units
+    */
+    test('creates unit instances', () => {
+        expect(() => {
+            const manager = new Manager();
 
-        manager.add((true as any));
-    }).toThrow();
+            @Component({
+                type: 'xyz',
+            })
+            class C implements EmptyUnit {}
 
-    expect(() => {
-        const manager = new Manager();
+            manager.add(C);
+        }).not.toThrow();
 
-        manager.add((42 as any));
-    }).toThrow();
+        expect(() => {
+            const manager = new Manager();
 
-    /*
-     * No config
-     */
-    expect(() => {
-        const manager = new Manager();
-
-        const unit = {};
-
-        manager.add(unit);
-    }).toThrow();
-
-    /*
-     * Invalid config value
-     */
-    expect(() => {
-        const manager = new Manager();
-
-        const unit = {
-            config: true,
-        };
-
-        manager.add(unit);
-    }).toThrow();
-
-    expect(() => {
-        const manager = new Manager();
-
-        const unit = {
-            config: 42,
-        };
-
-        manager.add(unit);
-    }).toThrow();
-
-    expect(() => {
-        const manager = new Manager();
-
-        const unit = {
-            config: () => null,
-        };
-
-        manager.add(unit);
-    }).toThrow();
-
-    /*
-     * No `is` value
-     */
-    expect(() => {
-        const manager = new Manager();
-
-        const unit = {
-            config: {},
-        };
-
-        manager.add(unit);
-    }).toThrow();
-
-    /*
-     * Invalid `is` value
-     */
-    expect(() => {
-        const manager = new Manager();
-
-        const unit = {
-            is: '',
-            config: {},
-        };
-
-        manager.add(unit);
-    }).toThrow();
-
-    expect(() => {
-        const manager = new Manager();
-
-        const unit = {
-            is: 'does-not-exist',
-            config: {},
-        };
-
-        manager.add(unit);
-    }).toThrow();
-
-    expect(() => {
-        const manager = new Manager();
-
-        const unit = {
-            is: true,
-            config: {},
-        };
-
-        manager.add(unit);
-    }).toThrow();
-
-    expect(() => {
-        const manager = new Manager();
-
-        const unit = {
-            is: 42,
-            config: {},
-        };
-
-        manager.add(unit);
-    }).toThrow();
-
-    expect(() => {
-        const manager = new Manager();
-
-        const unit = {
-            is: () => null,
-            config: {},
-        };
-
-        manager.add(unit);
-    }).toThrow();
-
-    expect(() => {
-        const manager = new Manager();
-
-        const unit = {
-            is: {},
-            config: {},
-        };
-
-        manager.add(unit);
-    }).toThrow();
-
-    /*
-     * No `type` on instance config
-     */
-    expect(() => {
-        const manager = new Manager();
-
-        class C implements ComponentUnit {
-            is: 'component';
-            config: any; // Intentionally not ComponentConfig
-
-            constructor () {
-                this.is = 'component';
-                this.config = {};
+            @Plugin({
+                type: 'xyz',
+            })
+            class P implements EmptyUnit {
+                // tslint:disable-next-line:no-empty
+                xyz () {}
             }
-        }
 
-        manager.add(C);
-    }).toThrow();
+            manager.add(P);
+        }).not.toThrow();
+    });
 
     /*
-     * Invalid `type` on instance config
-     */
-    expect(() => {
-        const manager = new Manager();
+    * Generic, bad units
+    */
+    test('rejects invalid units', () => {
+        /*
+        * Not a unit type
+        */
+        expect(() => {
+            const manager = new Manager();
 
-        class C implements ComponentUnit {
-            is: 'component';
-            config: any; // Intentionally not ComponentConfig
+            manager.add((true as any));
+        }).toThrow();
 
-            constructor () {
-                this.is = 'component';
+        expect(() => {
+            const manager = new Manager();
 
-                this.config = {
-                    type: {},
-                };
+            manager.add((42 as any));
+        }).toThrow();
+
+        /*
+        * No config
+        */
+        expect(() => {
+            const manager = new Manager();
+
+            const unit = {};
+
+            manager.add(unit);
+        }).toThrow();
+
+        /*
+        * Invalid config value
+        */
+        expect(() => {
+            const manager = new Manager();
+
+            const unit = {
+                config: true,
+            };
+
+            manager.add(unit);
+        }).toThrow();
+
+        expect(() => {
+            const manager = new Manager();
+
+            const unit = {
+                config: 42,
+            };
+
+            manager.add(unit);
+        }).toThrow();
+
+        expect(() => {
+            const manager = new Manager();
+
+            const unit = {
+                config: () => null,
+            };
+
+            manager.add(unit);
+        }).toThrow();
+
+        /*
+        * No `is` value
+        */
+        expect(() => {
+            const manager = new Manager();
+
+            const unit = {
+                config: {},
+            };
+
+            manager.add(unit);
+        }).toThrow();
+
+        /*
+        * Invalid `is` value
+        */
+        expect(() => {
+            const manager = new Manager();
+
+            const unit = {
+                is: '',
+                config: {},
+            };
+
+            manager.add(unit);
+        }).toThrow();
+
+        expect(() => {
+            const manager = new Manager();
+
+            const unit = {
+                is: 'does-not-exist',
+                config: {},
+            };
+
+            manager.add(unit);
+        }).toThrow();
+
+        expect(() => {
+            const manager = new Manager();
+
+            const unit = {
+                is: true,
+                config: {},
+            };
+
+            manager.add(unit);
+        }).toThrow();
+
+        expect(() => {
+            const manager = new Manager();
+
+            const unit = {
+                is: 42,
+                config: {},
+            };
+
+            manager.add(unit);
+        }).toThrow();
+
+        expect(() => {
+            const manager = new Manager();
+
+            const unit = {
+                is: () => null,
+                config: {},
+            };
+
+            manager.add(unit);
+        }).toThrow();
+
+        expect(() => {
+            const manager = new Manager();
+
+            const unit = {
+                is: {},
+                config: {},
+            };
+
+            manager.add(unit);
+        }).toThrow();
+
+        /*
+        * No `type` on instance config
+        */
+        expect(() => {
+            const manager = new Manager();
+
+            class C implements ComponentUnit {
+                is: 'component';
+                config: any; // Intentionally not ComponentConfig
+
+                constructor () {
+                    this.is = 'component';
+                    this.config = {};
+                }
             }
-        }
 
-        manager.add(C);
-    }).toThrow();
+            manager.add(C);
+        }).toThrow();
 
-    /*
-     * Invalid `type` on instance config
-     */
-    expect(() => {
-        const manager = new Manager();
+        /*
+        * Invalid `type` on instance config
+        */
+        expect(() => {
+            const manager = new Manager();
 
-        class C implements ComponentUnit {
-            is: 'component';
-            config: any; // Intentionally not ComponentConfig
+            class C implements ComponentUnit {
+                is: 'component';
+                config: any; // Intentionally not ComponentConfig
 
-            constructor () {
-                this.is = 'component';
-                this.config = {
-                    type: 42,
-                };
+                constructor () {
+                    this.is = 'component';
+
+                    this.config = {
+                        type: {},
+                    };
+                }
             }
-        }
 
-        manager.add(C);
-    }).toThrow();
-});
+            manager.add(C);
+        }).toThrow();
 
-/*
- * Components
- */
-test('can add a valid component', () => {
-    const unit = {
-        is: 'component',
-        config: {
-            type: 'xyz',
-        },
-    };
+        /*
+        * Invalid `type` on instance config
+        */
+        expect(() => {
+            const manager = new Manager();
 
-    /*
-     * Add without throwing
-     */
-    expect(() => {
-        const manager = new Manager();
+            class C implements ComponentUnit {
+                is: 'component';
+                config: any; // Intentionally not ComponentConfig
 
-        manager.add(unit);
-    }).not.toThrow();
+                constructor () {
+                    this.is = 'component';
+                    this.config = {
+                        type: 42,
+                    };
+                }
+            }
 
-    /*
-     * Verify the unit was added to waiting when no plugin exists
-     */
-    expect(() => {
-        const manager = new Manager();
-
-        manager.add(unit);
-
-        expect((manager as any).components.waiting.plugins[unit.config.type]).toBeDefined();
-        expect((manager as any).components.waiting.plugins[unit.config.type][0]).toEqual(unit);
-    }).not.toThrow();
-});
-
-/*
- * Plugins
- */
-test('can add a valid plugin', () => {
-    const unit = {
-        is: 'plugin',
-        config: {
-            type: 'xyz',
-        },
-        xyz: () => null,
-    };
+            manager.add(C);
+        }).toThrow();
+    });
 
     /*
-     * Add without throwing
-     */
-    expect(() => {
-        const manager = new Manager();
-
-        manager.add(unit);
-    }).not.toThrow();
-
-    /*
-     * Verify the unit was added to the plugin map
-     */
-    expect(() => {
-        const manager = new Manager();
-
-        manager.add(unit);
-
-        expect((manager as any).plugins.installed[unit.config.type]).toBeDefined();
-        expect((manager as any).plugins.installed[unit.config.type]).toEqual(unit);
-    }).not.toThrow();
-});
-
-/*
- * Unit Composition
- */
-test('can add components + plugins', () => {
-    expect(() => {
-        const manager = new Manager();
-
-        const callback = jest.fn();
-
-        const component: ComponentUnit = {
+    * Components
+    */
+    test('can add a valid component', () => {
+        const unit = {
             is: 'component',
             config: {
-                type: 'x',
+                type: 'xyz',
             },
-            x: callback,
         };
 
-        const plugin: PluginUnit = {
+        /*
+        * Add without throwing
+        */
+        expect(() => {
+            const manager = new Manager();
+
+            manager.add(unit);
+        }).not.toThrow();
+
+        /*
+        * Verify the unit was added to waiting when no plugin exists
+        */
+        expect(() => {
+            const manager = new Manager();
+
+            manager.add(unit);
+
+            expect((manager as any).components.waiting.plugins[unit.config.type]).toBeDefined();
+            expect((manager as any).components.waiting.plugins[unit.config.type][0]).toEqual(unit);
+        }).not.toThrow();
+    });
+
+    /*
+    * Plugins
+    */
+    test('can add a valid plugin', () => {
+        const unit = {
             is: 'plugin',
             config: {
-                type: 'x',
+                type: 'xyz',
             },
-            x: instance => {
-                instance.x();
-            },
+            xyz: () => null,
         };
 
-        manager.add(plugin, component);
+        /*
+        * Add without throwing
+        */
+        expect(() => {
+            const manager = new Manager();
 
-        expect(callback.mock.calls.length).toBe(1);
-    }).not.toThrow();
+            manager.add(unit);
+        }).not.toThrow();
 
-    expect(() => {
-        const manager = new Manager();
+        /*
+        * Verify the unit was added to the plugin map
+        */
+        expect(() => {
+            const manager = new Manager();
 
-        const callback = jest.fn();
+            manager.add(unit);
 
-        const component: ComponentUnit = {
-            is: 'component',
-            config: {
-                type: 'x',
-            },
-            x: callback,
-        };
+            expect((manager as any).plugins.installed[unit.config.type]).toBeDefined();
+            expect((manager as any).plugins.installed[unit.config.type]).toEqual(unit);
+        }).not.toThrow();
+    });
 
-        const plugin: PluginUnit = {
-            is: 'plugin',
-            config: {
-                type: 'x',
-            },
-            x: instance => {
-                instance.x();
-            },
-        };
+    /*
+    * Unit Composition
+    */
+    test('can add components + plugins', () => {
+        expect(() => {
+            const manager = new Manager();
 
-        manager.add(component, plugin, component);
-    }).not.toThrow();
-});
+            const callback = jest.fn();
 
-test('plugins can depend on plugins', () => {
-    expect(() => {
-        const manager = new Manager();
-
-        const plugin1: PluginUnit = {
-            is: 'plugin',
-            config: {
-                type: 'x',
-                dependencies: {
-                    plugins: ['y'],
+            const component: ComponentUnit = {
+                is: 'component',
+                config: {
+                    type: 'x',
                 },
-            },
-            x (instance) {
-                expect(this.plugins.y).toBe(plugin2);
-            },
-        };
+                x: callback,
+            };
 
-        const plugin2: PluginUnit = {
-            is: 'plugin',
-            config: {
-                type: 'y',
-            },
-            y: () => null,
-        };
+            const plugin: PluginUnit = {
+                is: 'plugin',
+                config: {
+                    type: 'x',
+                },
+                x: instance => {
+                    instance.x();
+                },
+            };
 
-        const component: ComponentUnit = {
-            is: 'component',
-            config: {
-                type: 'x',
-            },
-            x: () => null,
-        };
+            manager.add(plugin, component);
 
-        manager.add(component, plugin1, plugin2, component);
-    }).not.toThrow();
+            expect(callback.mock.calls.length).toBe(1);
+        }).not.toThrow();
+
+        expect(() => {
+            const manager = new Manager();
+
+            const callback = jest.fn();
+
+            const component: ComponentUnit = {
+                is: 'component',
+                config: {
+                    type: 'x',
+                },
+                x: callback,
+            };
+
+            const plugin: PluginUnit = {
+                is: 'plugin',
+                config: {
+                    type: 'x',
+                },
+                x: instance => {
+                    instance.x();
+                },
+            };
+
+            manager.add(component, plugin, component);
+        }).not.toThrow();
+    });
+
+    test('plugins can depend on plugins', () => {
+        expect(() => {
+            const manager = new Manager();
+
+            const plugin1: PluginUnit = {
+                is: 'plugin',
+                config: {
+                    type: 'x',
+                    dependencies: {
+                        plugins: ['y'],
+                    },
+                },
+                x (instance) {
+                    expect(this.plugins.y).toBe(plugin2);
+                },
+            };
+
+            const plugin2: PluginUnit = {
+                is: 'plugin',
+                config: {
+                    type: 'y',
+                },
+                y: () => null,
+            };
+
+            const component: ComponentUnit = {
+                is: 'component',
+                config: {
+                    type: 'x',
+                },
+                x: () => null,
+            };
+
+            manager.add(component, plugin1, plugin2, component);
+        }).not.toThrow();
+    });
 });

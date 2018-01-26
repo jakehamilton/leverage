@@ -56,9 +56,6 @@ describe('Component', () => {
         expect(() => {
             Component('leverage' as any);
         }).toThrow();
-        expect(() => {
-            Component((() => null) as any);
-        }).toThrow();
     });
 
     test('can extend a class', () => {
@@ -79,5 +76,22 @@ describe('Component', () => {
 
         expect(instance.config.xyz).toBeDefined();
         expect(instance.config.xyz.a).toEqual(config.xyz.a);
+    });
+
+    test('can be inherited', () => {
+        class TestComponent extends (Component as any) {}
+
+        const instance: any = new TestComponent();
+
+        expect(instance.is).toBe('component');
+    });
+
+    test('can be used as a minimal decorator', () => {
+        @Component
+        class TestComponent implements EmptyUnit {}
+
+        const instance: any = new TestComponent();
+
+        expect(instance.is).toBe('component');
     });
 });

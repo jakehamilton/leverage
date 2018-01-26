@@ -40,8 +40,8 @@ interface ServiceInstanceWithDependencies extends ServiceInstance {
   }
 }
 
-declare function Service (config: ServiceConfig):
-  (service: ServiceUnit | EmptyUnit) => void;
+declare function Service (config: any | ServiceConfig):
+  any | ((service: ServiceUnit | EmptyUnit) => void);
 
 export default Service;
 

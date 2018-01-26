@@ -1,7 +1,32 @@
 import { PluginUnit, PluginConfig } from '../../types/plugin';
 import { EmptyUnit } from '../../types/leverage';
 
-function Plugin (config: PluginConfig) {
+function Plugin (config: any) {
+    /*
+     * Inheritance pattern
+     */
+    if (this instanceof Plugin) {
+        (this as PluginUnit).is = 'plugin';
+
+        /*
+         * Break early since this is all we need
+         */
+        return (null as any);
+    }
+
+    /*
+     * Minimal decorator pattern
+     */
+    if (typeof config === 'function') {
+        (config as PluginUnit).is = 'plugin';
+        (config as any).prototype.is = 'plugin';
+
+        /*
+         * Break early since this is all we need
+         */
+        return (null as any);
+    }
+
     /*
      * Check validity of the config
      */
@@ -21,7 +46,7 @@ function Plugin (config: PluginConfig) {
     /*
      * Create a copy of the config
      */
-    config = Object.assign({}, config);
+    const copy: PluginConfig = Object.assign({}, config);
 
     /**
      * Extend a class with a Leverage Plugin Configuration
@@ -30,8 +55,8 @@ function Plugin (config: PluginConfig) {
         /*
          * Extend the given plugin class
          */
-        plugin.config = config;
-        (plugin as any).prototype.config = config;
+        plugin.config = copy;
+        (plugin as any).prototype.config = copy;
 
         /*
         * Set the kind of leverage unit this is

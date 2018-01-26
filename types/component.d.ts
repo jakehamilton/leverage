@@ -41,8 +41,8 @@ interface ComponentInstanceWithDependencies extends ComponentInstance {
     }
 }
 
-declare function Component (config: ComponentConfig):
-    (component: ComponentUnit | EmptyUnit) => void;
+declare function Component (config: any | ComponentConfig):
+    any | ((component: ComponentUnit | EmptyUnit) => void);
 
 export default Component;
 
