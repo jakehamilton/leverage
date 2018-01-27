@@ -175,6 +175,8 @@ export default class Manager implements LeverageManager {
 
         const types = ([] as string[]).concat(component.config.type);
 
+        let ready = true;
+
         /*
          * Check to see if all required plugins are available
          */
@@ -194,8 +196,12 @@ export default class Manager implements LeverageManager {
                     this.components.waiting.plugins[plugin].push(component);
                 }
 
-                return false;
+                ready = false;
             }
+        }
+
+        if (!ready) {
+            return false;
         }
 
         /*
@@ -217,8 +223,12 @@ export default class Manager implements LeverageManager {
                     this.components.waiting.services[service].push(component);
                 }
 
-                return false;
+                ready = false;
             }
+        }
+
+        if (!ready) {
+            return false;
         }
 
         /*
@@ -307,6 +317,8 @@ export default class Manager implements LeverageManager {
             }
         }
 
+        let ready = true;
+
         /*
          * Check to see if all required plugins are available
          */
@@ -326,8 +338,12 @@ export default class Manager implements LeverageManager {
                     this.plugins.waiting.plugins[type].push(plugin);
                 }
 
-                return false;
+                ready = false;
             }
+        }
+
+        if (!ready) {
+            return false;
         }
 
         /*
@@ -349,8 +365,12 @@ export default class Manager implements LeverageManager {
                     this.plugins.waiting.services[service].push(plugin);
                 }
 
-                return false;
+                ready = false;
             }
+        }
+
+        if (!ready) {
+            return false;
         }
 
         /*
@@ -414,6 +434,12 @@ export default class Manager implements LeverageManager {
                     this.addService(unit);
                 }
             }
+
+            if (this.plugins.waiting.plugins.hasOwnProperty(type)) {
+                for (const unit of this.plugins.waiting.plugins[type]) {
+                    this.addPlugin(unit);
+                }
+            }
         }
 
         return true;
@@ -431,6 +457,8 @@ export default class Manager implements LeverageManager {
             // tslint:disable-next-line:max-line-length
             throw new Error(`[Manager] Expected \`service.config.name\` to be a "string" but got ${typeof service.config.name}`);
         }
+
+        let ready = true;
 
         /*
          * Check to see if all required plugins are available
@@ -451,8 +479,12 @@ export default class Manager implements LeverageManager {
                     this.services.waiting.plugins[type].push(service);
                 }
 
-                return false;
+                ready = false;
             }
+        }
+
+        if (!ready) {
+            return false;
         }
 
         /*
@@ -474,8 +506,12 @@ export default class Manager implements LeverageManager {
                     this.services.waiting.services[name].push(service);
                 }
 
-                return false;
+                ready = false;
             }
+        }
+
+        if (!ready) {
+            return false;
         }
 
         /*
@@ -554,6 +590,8 @@ export default class Manager implements LeverageManager {
 
         const types = ([] as string[]).concat(middleware.config.type);
 
+        let ready = true;
+
         /*
          * Check to see if all required plugins are available
          */
@@ -573,8 +611,12 @@ export default class Manager implements LeverageManager {
                     this.middleware.waiting.plugins[plugin].push(middleware);
                 }
 
-                return false;
+                ready = false;
             }
+        }
+
+        if (!ready) {
+            return false;
         }
 
         /*
@@ -596,8 +638,12 @@ export default class Manager implements LeverageManager {
                     this.middleware.waiting.services[service].push(middleware);
                 }
 
-                return false;
+                ready = false;
             }
+        }
+
+        if (!ready) {
+            return false;
         }
 
         /*

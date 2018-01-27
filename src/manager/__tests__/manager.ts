@@ -213,6 +213,79 @@ describe('Manager', () => {
              */
             expect((manager as any).services.installed.x).toBe(unit);
         });
+
+        test('does not accept service instances with invalid "name" types', () => {
+            expect(() => {
+                manager.addService({
+                    config: {},
+                } as any);
+            }).toThrow();
+
+            expect(() => {
+                manager.addService({
+                    config: {
+                        name: 42,
+                    },
+                } as any);
+            }).toThrow();
+
+            expect(() => {
+                manager.addService({
+                    config: {
+                        name: true,
+                    },
+                } as any);
+            }).toThrow();
+
+            expect(() => {
+                manager.addService({
+                    config: {
+                        // tslint:disable-next-line:no-empty
+                        name: () => {},
+                    },
+                } as any);
+            }).toThrow();
+        });
+
+        test('does not accept service instances the same name', () => {
+            const serviceA: ServiceInstanceWithDependencies = {
+                is: 'service',
+                config: {
+                    name: 'a',
+                    dependencies: {
+                        plugins: [],
+                        services: [],
+                    },
+                },
+                plugins: [] as any,
+                services: [] as any,
+            };
+
+            const serviceB: ServiceInstanceWithDependencies = {
+                is: 'service',
+                config: {
+                    name: 'a',
+                    dependencies: {
+                        plugins: [],
+                        services: [],
+                    },
+                },
+                plugins: [] as any,
+                services: [] as any,
+            };
+
+            expect(() => {
+                manager.addService(serviceA);
+            }).not.toThrow();
+
+            expect(() => {
+                manager.addService(serviceA);
+            }).toThrow();
+
+            expect(() => {
+                manager.addService(serviceB);
+            }).toThrow();
+        });
     });
 
     describe('#addMiddleware', () => {
@@ -406,7 +479,39 @@ describe('Manager', () => {
             }).toThrow();
         });
 
-        test('install order: plugin -> component -> service', () => {
+        test('does not allow two plugins to share the same type', () => {
+            const pluginA = {
+                is: 'plugin',
+                config: {
+                    type: 'x',
+                },
+                // tslint:disable-next-line:no-empty
+                x () {},
+            };
+
+            const pluginB = {
+                is: 'plugin',
+                config: {
+                    type: 'x',
+                },
+                // tslint:disable-next-line:no-empty
+                x () {},
+            };
+
+            expect(() => {
+                manager.add(pluginA);
+            }).not.toThrow();
+
+            expect(() => {
+                manager.add(pluginA);
+            }).toThrow();
+
+            expect(() => {
+                manager.add(pluginB);
+            }).toThrow();
+        });
+
+        test('install: plugin -> component -> service', () => {
             const plugin = {
                 is: 'plugin',
                 config: {
@@ -442,7 +547,7 @@ describe('Manager', () => {
                 manager.add(component);
             }).not.toThrow();
 
-            expect((manager as any).components.waiting.services.a[0]).toBe(component);
+            expect((manager as any).components.waiting.services.a.includes(component)).toBe(true);
             expect(plugin.x.mock.calls.length).toBe(0);
 
             expect(() => {
@@ -455,7 +560,7 @@ describe('Manager', () => {
             expect(plugin.x.mock.calls.length).toBe(1);
         });
 
-        test('install order: component -> service -> plugin', () => {
+        test('install: component -> service -> plugin', () => {
             const plugin = {
                 is: 'plugin',
                 config: {
@@ -506,6 +611,125 @@ describe('Manager', () => {
 
             expect(plugin.x.mock.calls.length).toBe(1);
             expect((manager as any).components.installed.x[0]).toBe(component);
+        });
+
+        test('install: plugin -> plugin -> component', () => {
+            const pluginA = {
+                is: 'plugin',
+                config: {
+                    type: 'x',
+                    dependencies: {
+                        plugins: ['y'],
+                    },
+                },
+                x: jest.fn(),
+            };
+
+            const pluginB = {
+                is: 'plugin',
+                config: {
+                    type: 'y',
+                },
+                y: jest.fn(),
+            };
+
+            const component = {
+                is: 'component',
+                config: {
+                    type: ['x', 'y'],
+                },
+            };
+
+            expect(() => {
+                manager.add(pluginA);
+            }).not.toThrow();
+
+            expect((manager as any).plugins.waiting.plugins.y[0]).toBe(pluginA);
+
+            expect(() => {
+                manager.add(pluginB);
+            }).not.toThrow();
+
+            expect((manager as any).plugins.waiting.plugins.y[0]).toBeUndefined();
+
+            expect(pluginA.x.mock.calls.length).toBe(0);
+            expect(pluginB.y.mock.calls.length).toBe(0);
+
+            expect(() => {
+                manager.add(component);
+            }).not.toThrow();
+        });
+
+        test('install: plugin -> service -> service', () => {
+            const plugin = {
+                is: 'plugin',
+                config: {
+                    type: 'x',
+                    dependencies: {
+                        services: ['a', 'b'],
+                    },
+                },
+                x: jest.fn(),
+            };
+
+            const serviceA = {
+                is: 'service',
+                config: {
+                    name: 'a',
+                },
+            };
+
+            const serviceB = {
+                is: 'service',
+                config: {
+                    name: 'b',
+                },
+            };
+
+            expect(() => {
+                manager.add(plugin);
+            }).not.toThrow();
+
+            expect((manager as any).plugins.waiting.services.a[0]).toBe(plugin);
+
+            expect(() => {
+                manager.add(serviceA);
+            }).not.toThrow();
+
+            expect((manager as any).plugins.waiting.services.a[0]).toBe(plugin);
+
+            expect(() => {
+                manager.add(serviceB);
+            }).not.toThrow();
+
+            expect((manager as any).plugins.installed.x).toBe(plugin);
+        });
+
+        test('install: service -> service', () => {
+            const serviceA = {
+                is: 'service',
+                config: {
+                    name: 'a',
+                    dependencies: {
+                        services: 'b',
+                    },
+                },
+            };
+
+            const serviceB = {
+                is: 'service',
+                config: {
+                    name: 'b',
+                },
+            };
+
+            expect(() => {
+                manager.add(serviceA);
+            }).not.toThrow();
+
+            expect(() => {
+                manager.add(serviceB);
+            }).not.toThrow();
         });
     });
 });
