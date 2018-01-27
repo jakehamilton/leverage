@@ -3,6 +3,7 @@ import { ComponentInstanceWithDependencies } from '../../../types/component';
 import { PluginInstanceWithDependencies } from '../../../types/plugin';
 import { ServiceInstanceWithDependencies } from '../../../types/service';
 import { MiddlewareInstanceWithDependencies } from '../../../types/middleware';
+import { Component } from '../../index';
 
 describe('Manager', () => {
     let manager: Manager;
@@ -315,6 +316,47 @@ describe('Manager', () => {
              */
             expect((manager as any).middleware.waiting.plugins.x[0]).toBe(unit);
         });
+
+        test('does not accept middleware instances with invalid "type" types', () => {
+            expect(() => {
+                manager.addMiddleware({
+                    config: {},
+                } as any);
+            }).toThrow();
+
+            expect(() => {
+                manager.addMiddleware({
+                    config: {
+                        type: 42,
+                    },
+                } as any);
+            }).toThrow();
+
+            expect(() => {
+                manager.addMiddleware({
+                    config: {
+                        type: true,
+                    },
+                } as any);
+            }).toThrow();
+
+            expect(() => {
+                manager.addMiddleware({
+                    config: {
+                        type: {},
+                    },
+                } as any);
+            }).toThrow();
+
+            expect(() => {
+                manager.addMiddleware({
+                    config: {
+                        // tslint:disable-next-line:no-empty
+                        type: () => {},
+                    },
+                } as any);
+            }).toThrow();
+        });
     });
 
     describe('#add', () => {
@@ -406,6 +448,18 @@ describe('Manager', () => {
              * Should be waiting on the necessary plugin
              */
             expect((manager as any).middleware.waiting.plugins.x[0]).toBe(unit);
+        });
+
+        test('can add a unit constructor', () => {
+            @Component({
+                type: 'x',
+                x: {},
+            })
+            class Unit {}
+
+            expect(() => {
+                manager.add(Unit);
+            }).not.toThrow();
         });
 
         test('does not accept invalid types', () => {
@@ -730,6 +784,52 @@ describe('Manager', () => {
             expect(() => {
                 manager.add(serviceB);
             }).not.toThrow();
+        });
+
+        test('install: middleware -> service -> plugin', () => {
+            const plugin = {
+                is: 'plugin',
+                config: {
+                    type: 'x',
+                },
+                x: jest.fn(),
+                middleware: jest.fn(),
+            };
+
+            const service = {
+                is: 'service',
+                config: {
+                    name: 'a',
+                },
+            };
+
+            const middleware = {
+                is: 'middleware',
+                config: {
+                    type: 'x',
+                    dependencies: {
+                        services: ['a'],
+                    },
+                },
+            };
+
+            expect(() => {
+                manager.add(middleware);
+            }).not.toThrow();
+
+            expect((manager as any).middleware.waiting.plugins.x[0]).toBe(middleware);
+
+            expect(() => {
+                manager.add(plugin);
+            }).not.toThrow();
+
+            expect((manager as any).middleware.waiting.plugins.x[0]).toBe(middleware);
+
+            expect(() => {
+                manager.add(service);
+            }).not.toThrow();
+
+            expect((manager as any).middleware.waiting.plugins.x[0]).not.toBe(middleware);
         });
     });
 });

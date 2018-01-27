@@ -440,6 +440,12 @@ export default class Manager implements LeverageManager {
                     this.addPlugin(unit);
                 }
             }
+
+            if (this.middleware.waiting.plugins.hasOwnProperty(type)) {
+                for (const unit of this.middleware.waiting.plugins[type]) {
+                    this.addMiddleware(unit);
+                }
+            }
         }
 
         return true;
@@ -574,6 +580,12 @@ export default class Manager implements LeverageManager {
                 this.addService(unit);
             }
         }
+
+        if (this.middleware.waiting.services.hasOwnProperty(service.config.name)) {
+            for (const unit of this.middleware.waiting.services[service.config.name]) {
+                this.addMiddleware(unit);
+            }
+        }
     }
 
     addMiddleware (middleware: MiddlewareInstanceWithDependencies): boolean {
@@ -634,7 +646,7 @@ export default class Manager implements LeverageManager {
                 /*
                  * Push the middleware to the waiting array if it isn't already
                  */
-                if (!this.middleware.waiting.services[service].includes) {
+                if (!this.middleware.waiting.services[service].includes(middleware)) {
                     this.middleware.waiting.services[service].push(middleware);
                 }
 
