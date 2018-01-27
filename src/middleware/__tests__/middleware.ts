@@ -80,7 +80,7 @@ describe('Middleware', () => {
     test('can be inherited', () => {
         class TestMiddleware extends (Middleware as any) {}
 
-        const instance: any = new TestMiddleware;
+        const instance: any = new TestMiddleware();
 
         expect(instance.is).toBe('middleware');
     });

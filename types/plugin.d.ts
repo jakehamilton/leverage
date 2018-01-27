@@ -1,5 +1,6 @@
 import { ServiceInstanceWithDependencies } from './service';
 import { EmptyUnit } from './leverage';
+import { MiddlewareInstanceWithDependencies } from './middleware';
 
 interface PluginConfig {
   type: string | string[];
@@ -22,6 +23,8 @@ interface PluginConfigWithDependencies extends PluginConfig {
 interface PluginUnit {
   is: 'plugin';
   config: PluginConfig;
+
+  middleware?: (middleware: MiddlewareInstanceWithDependencies) => void;
 
   [key: string]: any;
 }

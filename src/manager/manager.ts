@@ -36,10 +36,25 @@ interface ComponentUnitMap {
     };
 }
 
+interface MiddlewareUnitMap {
+    waiting: {
+        plugins: {
+            [type: string]: MiddlewareInstanceWithDependencies[];
+        };
+        services: {
+            [name: string]: MiddlewareInstanceWithDependencies[];
+        };
+    };
+
+    installed: {
+        [key: string]: MiddlewareInstanceWithDependencies[];
+    };
+}
+
 export default class Manager implements LeverageManager {
     private plugins: UnitMap<PluginInstanceWithDependencies>;
     private services: UnitMap<ServiceInstanceWithDependencies>;
-    private middleware: UnitMap<MiddlewareInstanceWithDependencies>;
+    private middleware: MiddlewareUnitMap;
     private components: ComponentUnitMap;
 
     constructor () {
@@ -113,7 +128,7 @@ export default class Manager implements LeverageManager {
             /*
              * Normalize the dependency map
              */
-            if (instance.is === 'component') {
+            if (instance.is === 'component' || instance.is === 'middleware') {
                 this.initializeInstanceDependencies(instance, true);
             } else {
                 this.initializeInstanceDependencies(instance);
@@ -316,20 +331,20 @@ export default class Manager implements LeverageManager {
         }
 
         /*
-        * Check to see if all required services are available
-        */
+         * Check to see if all required services are available
+         */
         for (const service of plugin.config.dependencies.services) {
             if (!this.services.installed.hasOwnProperty(service)) {
                 /*
-                * Create waiting array if it doesn't exist for this type
-                */
+                 * Create waiting array if it doesn't exist for this type
+                 */
                 if (!this.plugins.waiting.services.hasOwnProperty(service)) {
                     this.plugins.waiting.services[service] = [];
                 }
 
                 /*
-                * Push the component to the waiting array if it isn't already
-                */
+                 * Push the component to the waiting array if it isn't already
+                 */
                 if (!this.plugins.waiting.services[service].includes(plugin)) {
                     this.plugins.waiting.services[service].push(plugin);
                 }
@@ -358,7 +373,7 @@ export default class Manager implements LeverageManager {
          /*
           * Inject services
           */
-        for (const service of (plugin as any).config.dependencies.services) {
+        for (const service of plugin.config.dependencies.services) {
             plugin.services[service] = this.services.installed[service];
 
             /*
@@ -525,8 +540,126 @@ export default class Manager implements LeverageManager {
         }
     }
 
-    addMiddleware (middleware: MiddlewareInstanceWithDependencies) {
-        // @TODO (jakehamilton): Add middleware
+    addMiddleware (middleware: MiddlewareInstanceWithDependencies): boolean {
+        /*
+         * Verify validity of the middleware
+         */
+        if (!middleware.config.hasOwnProperty('type')) {
+            throw new Error(`[Manager] A Leverage plugin's config must have a \`type\` property`);
+        }
+
+        if (typeof middleware.config.type !== 'string' && !Array.isArray(middleware.config.type)) {
+            throw new Error(`[Manager] Expected \`middleware.config.type\` to be a "string" or array of "string"`);
+        }
+
+        const types = ([] as string[]).concat(middleware.config.type);
+
+        /*
+         * Check to see if all required plugins are available
+         */
+        for (const plugin of middleware.config.dependencies.plugins) {
+            if (!this.plugins.installed.hasOwnProperty(plugin)) {
+                /*
+                 * Create waiting array if it doesn't exist for this type
+                 */
+                if (!this.middleware.waiting.plugins.hasOwnProperty(plugin)) {
+                    this.middleware.waiting.plugins[plugin] = [];
+                }
+
+                /*
+                 * Push the middleware to the waiting array if it isn't already
+                 */
+                if (!this.middleware.waiting.plugins[plugin].includes(middleware)) {
+                    this.middleware.waiting.plugins[plugin].push(middleware);
+                }
+
+                return false;
+            }
+        }
+
+        /*
+         * Check to see if all required services are available
+         */
+        for (const service of middleware.config.dependencies.services) {
+            if (!this.services.installed.hasOwnProperty(service)) {
+                /*
+                 * Create waiting array if it doesn't exist for this service
+                 */
+                if (!this.middleware.waiting.services.hasOwnProperty(service)) {
+                    this.middleware.waiting.services[service] = [];
+                }
+
+                /*
+                 * Push the middleware to the waiting array if it isn't already
+                 */
+                if (!this.middleware.waiting.services[service].includes) {
+                    this.middleware.waiting.services[service].push(middleware);
+                }
+
+                return false;
+            }
+        }
+
+        /*
+         * Inject plugins
+         */
+        for (const plugin of middleware.config.dependencies.plugins) {
+            middleware.plugins[plugin] = this.plugins.installed[plugin];
+
+            /*
+             * Remove the middleware from the waiting array if it exists
+             */
+            if (this.middleware.waiting.plugins[plugin]) {
+                const index = this.middleware.waiting.plugins[plugin].indexOf(middleware);
+                if (index !== -1) {
+                    this.middleware.waiting.plugins[plugin].splice(index, 1);
+                }
+            }
+        }
+
+        /*
+         * Inject services
+         */
+        for (const service of middleware.config.dependencies.services) {
+            middleware.services[service] = this.services.installed[service];
+
+            /*
+             * Remove the middleware from the waiting array if it exists
+             */
+            if (this.middleware.waiting.services[service]) {
+                const index = this.middleware.waiting.services[service].indexOf(middleware);
+                if (index !== -1) {
+                    this.middleware.waiting.services[service].splice(index, 1);
+                }
+            }
+        }
+
+        /*
+         * Start installing the middleware for each type it supports
+         */
+        for (const type of types) {
+            /*
+             * Install the middleware
+             */
+            const install = this.plugins.installed[type].middleware;
+            if (install && typeof install === 'function') {
+                install(middleware);
+            }
+
+            /*
+             * Create the middleware array if it doesn't exist
+             */
+            if (!this.middleware.installed.hasOwnProperty(type)) {
+                this.middleware.installed[type] = ([] as MiddlewareInstanceWithDependencies[]);
+            }
+
+            /*
+             * Push the middleware to the middleware array
+             */
+            this.middleware.installed[type].push(middleware);
+        }
+
+        return true;
     }
 
     private createUnitInstance (unit: LeverageUnit | EmptyUnit): LeverageInstance {

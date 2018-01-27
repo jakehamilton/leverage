@@ -2,7 +2,6 @@ import Service from '../service';
 
 import { ServiceConfig } from '../../../types/service';
 import { EmptyUnit } from '../../../types/leverage';
-import { Server } from 'tls';
 
 describe('Service', () => {
     test('is a function', () => {
