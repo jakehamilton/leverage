@@ -39,6 +39,7 @@
     ],
     "dependencies": {
         "@types/node": "^8.0.0",
+        "require-dir-all": "^0.4.15",
         "tslib": "^1.6.0"
     },
     "devDependencies": {

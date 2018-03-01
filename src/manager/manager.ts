@@ -1,3 +1,4 @@
+import requireAll from 'require-dir-all';
 import { PluginUnit, PluginInstanceWithDependencies } from '../plugin';
 import { ServiceUnit, ServiceInstanceWithDependencies } from '../service';
 import { ComponentUnit, ComponentInstanceWithDependencies } from '../component';
@@ -102,8 +103,25 @@ export class Manager implements LeverageManager {
         };
     }
 
-    add (...units: Array<LeverageUnit | EmptyUnit>) {
+    add (...units: Array<LeverageUnit | EmptyUnit | string>) {
         for (const unit of units) {
+            /*
+             * We were given a path
+             */
+            if (typeof unit === 'string') {
+                const modules = requireAll(unit, {
+                    recursive: true,
+                });
+
+                for (const key in modules) {
+                    if (modules.hasOwnProperty(key)) {
+                        this.add(modules[key]);
+                    }
+                }
+
+                // Do not process this entry any further
+                continue;
+            }
             /*
              * Only accept objects or functions
              */
