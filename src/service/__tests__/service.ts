@@ -1,7 +1,7 @@
 import Service from '../service';
 
-import { ServiceConfig } from '../../../types/service';
-import { EmptyUnit } from '../../../types/leverage';
+import { ServiceConfig } from '..';
+import { EmptyUnit } from '../..';
 
 describe('Service', () => {
     test('is a function', () => {

@@ -1,9 +1,9 @@
 import Manager from '../manager';
-import { ComponentInstanceWithDependencies } from '../../../types/component';
-import { PluginInstanceWithDependencies } from '../../../types/plugin';
-import { ServiceInstanceWithDependencies } from '../../../types/service';
-import { MiddlewareInstanceWithDependencies } from '../../../types/middleware';
-import { Component } from '../../index';
+import { ComponentInstanceWithDependencies } from '../../component';
+import { PluginInstanceWithDependencies } from '../../plugin';
+import { ServiceInstanceWithDependencies } from '../../service';
+import { MiddlewareInstanceWithDependencies } from '../../middleware';
+import { Component } from '../..';
 
 describe('Manager', () => {
     let manager: Manager;
@@ -36,7 +36,9 @@ describe('Manager', () => {
                     type: 'x',
                     x: {},
                     dependencies: {
-                        plugins: ['x'],
+                        plugins: [
+                            'x',
+                        ],
                         services: [],
                     },
                 },
@@ -296,7 +298,9 @@ describe('Manager', () => {
                 config: {
                     type: 'x',
                     dependencies: {
-                        plugins: ['x'],
+                        plugins: [
+                            'x',
+                        ],
                         services: [],
                     },
                 },
@@ -579,7 +583,9 @@ describe('Manager', () => {
                 config: {
                     type: 'x',
                     dependencies: {
-                        services: ['a'],
+                        services: [
+                            'a',
+                        ],
                     },
                 },
             };
@@ -601,7 +607,11 @@ describe('Manager', () => {
                 manager.add(component);
             }).not.toThrow();
 
-            expect((manager as any).components.waiting.services.a.includes(component)).toBe(true);
+            expect(
+                (manager as any).components.waiting.services.a.includes(
+                    component,
+                ),
+            ).toBe(true);
             expect(plugin.x.mock.calls.length).toBe(0);
 
             expect(() => {
@@ -628,7 +638,9 @@ describe('Manager', () => {
                 config: {
                     type: 'x',
                     dependencies: {
-                        services: ['a'],
+                        services: [
+                            'a',
+                        ],
                     },
                 },
             };
@@ -638,7 +650,9 @@ describe('Manager', () => {
                 config: {
                     name: 'a',
                     dependencies: {
-                        plugins: ['x'],
+                        plugins: [
+                            'x',
+                        ],
                     },
                 },
             };
@@ -647,14 +661,18 @@ describe('Manager', () => {
                 manager.add(component);
             }).not.toThrow();
 
-            expect((manager as any).components.waiting.plugins.x[0]).toBe(component);
+            expect((manager as any).components.waiting.plugins.x[0]).toBe(
+                component,
+            );
             expect(plugin.x.mock.calls.length).toBe(0);
 
             expect(() => {
                 manager.add(service);
             }).not.toThrow();
 
-            expect((manager as any).services.waiting.plugins.x).not.toBeUndefined();
+            expect(
+                (manager as any).services.waiting.plugins.x,
+            ).not.toBeUndefined();
             expect(plugin.x.mock.calls.length).toBe(0);
 
             expect(() => {
@@ -673,7 +691,9 @@ describe('Manager', () => {
                 config: {
                     type: 'x',
                     dependencies: {
-                        plugins: ['y'],
+                        plugins: [
+                            'y',
+                        ],
                     },
                 },
                 x: jest.fn(),
@@ -690,7 +710,10 @@ describe('Manager', () => {
             const component = {
                 is: 'component',
                 config: {
-                    type: ['x', 'y'],
+                    type: [
+                        'x',
+                        'y',
+                    ],
                 },
             };
 
@@ -704,7 +727,9 @@ describe('Manager', () => {
                 manager.add(pluginB);
             }).not.toThrow();
 
-            expect((manager as any).plugins.waiting.plugins.y[0]).toBeUndefined();
+            expect(
+                (manager as any).plugins.waiting.plugins.y[0],
+            ).toBeUndefined();
 
             expect(pluginA.x.mock.calls.length).toBe(0);
             expect(pluginB.y.mock.calls.length).toBe(0);
@@ -720,7 +745,10 @@ describe('Manager', () => {
                 config: {
                     type: 'x',
                     dependencies: {
-                        services: ['a', 'b'],
+                        services: [
+                            'a',
+                            'b',
+                        ],
                     },
                 },
                 x: jest.fn(),
@@ -808,7 +836,9 @@ describe('Manager', () => {
                 config: {
                     type: 'x',
                     dependencies: {
-                        services: ['a'],
+                        services: [
+                            'a',
+                        ],
                     },
                 },
             };
@@ -817,19 +847,25 @@ describe('Manager', () => {
                 manager.add(middleware);
             }).not.toThrow();
 
-            expect((manager as any).middleware.waiting.plugins.x[0]).toBe(middleware);
+            expect((manager as any).middleware.waiting.plugins.x[0]).toBe(
+                middleware,
+            );
 
             expect(() => {
                 manager.add(plugin);
             }).not.toThrow();
 
-            expect((manager as any).middleware.waiting.plugins.x[0]).toBe(middleware);
+            expect((manager as any).middleware.waiting.plugins.x[0]).toBe(
+                middleware,
+            );
 
             expect(() => {
                 manager.add(service);
             }).not.toThrow();
 
-            expect((manager as any).middleware.waiting.plugins.x[0]).not.toBe(middleware);
+            expect((manager as any).middleware.waiting.plugins.x[0]).not.toBe(
+                middleware,
+            );
         });
     });
 });

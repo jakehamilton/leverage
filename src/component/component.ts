@@ -1,7 +1,48 @@
-import { ComponentUnit, ComponentConfig } from '../../types/component';
-import { EmptyUnit } from '../../types/leverage';
+import { EmptyUnit } from '..';
+import { PluginInstanceWithDependencies } from '../plugin';
+import { ServiceInstanceWithDependencies } from '../service';
 
-function Component (config: any) {
+export interface ComponentConfig {
+    type: string | string[];
+
+    dependencies?: {
+        plugins?: string[];
+        services?: string[];
+    };
+
+    [key: string]: any;
+}
+
+export interface ComponentConfigWithDependencies extends ComponentConfig {
+    dependencies: {
+        plugins: string[];
+        services: string[];
+    };
+}
+
+export interface ComponentUnit {
+    is: 'component';
+    config: ComponentConfig;
+
+    [key: string]: any;
+}
+
+// tslint:disable-next-line:no-empty-interface
+export interface ComponentInstance extends ComponentUnit {}
+
+export interface ComponentInstanceWithDependencies extends ComponentInstance {
+    config: ComponentConfigWithDependencies;
+
+    plugins: {
+        [key: string]: PluginInstanceWithDependencies;
+    };
+
+    services: {
+        [key: string]: ServiceInstanceWithDependencies;
+    };
+}
+
+export function Component (config: any) {
     /*
      * Inheritance pattern
      */
@@ -11,7 +52,7 @@ function Component (config: any) {
         /*
          * Break early since this is all we need
          */
-        return (null as any);
+        return null as any;
     }
 
     /*
@@ -24,23 +65,29 @@ function Component (config: any) {
         /*
          * Break early since this is all we need
          */
-        return (null as any);
+        return null as any;
     }
 
     /*
      * Check validity of the config
      */
     if (typeof config !== 'object') {
-        throw new Error(`[Component] Invalid config, expected "Object" but got "${typeof config}"`);
+        throw new Error(
+            `[Component] Invalid config, expected "Object" but got "${typeof config}"`,
+        );
     }
 
     if (!config.hasOwnProperty('type')) {
-        throw new Error(`[Component] Invalid config, expected a \`type\` property`);
+        throw new Error(
+            `[Component] Invalid config, expected a \`type\` property`,
+        );
     }
 
     if (typeof config.type !== 'string' && !Array.isArray(config.type)) {
-        // tslint:disable-next-line:max-line-length
-        throw new Error(`[Component] Invalid config, expected a string or array of strings for the property \`type\` but got "${typeof config.type}"`);
+        throw new Error(
+            // tslint:disable-next-line:max-line-length
+            `[Component] Invalid config, expected a string or array of strings for the property \`type\` but got "${typeof config.type}"`,
+        );
     }
 
     /*

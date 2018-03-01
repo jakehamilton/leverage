@@ -1,3 +1,2 @@
-import Middleware from './middleware';
-
-export default Middleware;
+export * from './middleware';
+export { default } from './middleware';

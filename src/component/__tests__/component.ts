@@ -1,7 +1,7 @@
 import Component from '../component';
 
-import { ComponentConfig } from '../../../types/component';
-import { EmptyUnit } from '../../../types/leverage';
+import { ComponentConfig } from '..';
+import { EmptyUnit } from '../..';
 
 describe('Component', () => {
     test('is a function', () => {

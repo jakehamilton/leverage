@@ -1,6 +1,6 @@
 import Middleware from '../middleware';
 
-import { MiddlewareConfig } from '../../../types/middleware';
+import { MiddlewareConfig } from '..';
 
 describe('Middleware', () => {
     test('is a function', () => {

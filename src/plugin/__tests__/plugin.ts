@@ -1,7 +1,7 @@
 import Plugin from '../plugin';
 
-import { PluginConfig } from '../../../types/plugin';
-import { EmptyUnit } from '../../../types/leverage';
+import { PluginConfig } from '..';
+import { EmptyUnit } from '../..';
 
 describe('Plugin', () => {
     test('is a function', () => {

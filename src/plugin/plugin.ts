@@ -1,7 +1,50 @@
-import { PluginUnit, PluginConfig } from '../../types/plugin';
-import { EmptyUnit } from '../../types/leverage';
+import { EmptyUnit } from '..';
+import { MiddlewareInstanceWithDependencies } from '../middleware';
+import { ServiceInstanceWithDependencies } from '../service';
 
-function Plugin (config: any) {
+export interface PluginConfig {
+    type: string | string[];
+
+    dependencies?: {
+        plugins?: string[];
+        services?: string[];
+    };
+
+    [key: string]: any;
+}
+
+export interface PluginConfigWithDependencies extends PluginConfig {
+    dependencies: {
+        plugins: string[];
+        services: string[];
+    };
+}
+
+export interface PluginUnit {
+    is: 'plugin';
+    config: PluginConfig;
+
+    middleware?: (middleware: MiddlewareInstanceWithDependencies) => void;
+
+    [key: string]: any;
+}
+
+// tslint:disable-next-line:no-empty-interface
+export interface PluginInstance extends PluginUnit {}
+
+export interface PluginInstanceWithDependencies extends PluginInstance {
+    config: PluginConfigWithDependencies;
+
+    plugins: {
+        [key: string]: PluginInstanceWithDependencies;
+    };
+
+    services: {
+        [key: string]: ServiceInstanceWithDependencies;
+    };
+}
+
+export function Plugin (config: any) {
     /*
      * Inheritance pattern
      */
@@ -11,7 +54,7 @@ function Plugin (config: any) {
         /*
          * Break early since this is all we need
          */
-        return (null as any);
+        return null as any;
     }
 
     /*
@@ -24,23 +67,29 @@ function Plugin (config: any) {
         /*
          * Break early since this is all we need
          */
-        return (null as any);
+        return null as any;
     }
 
     /*
      * Check validity of the config
      */
     if (typeof config !== 'object') {
-        throw new Error(`[Plugin] Invalid config, expected "Object" but got "${typeof config}"`);
+        throw new Error(
+            `[Plugin] Invalid config, expected "Object" but got "${typeof config}"`,
+        );
     }
 
     if (!config.hasOwnProperty('type')) {
-        throw new Error(`[Plugin] Invalid config, expected a \`type\` property`);
+        throw new Error(
+            `[Plugin] Invalid config, expected a \`type\` property`,
+        );
     }
 
     if (typeof config.type !== 'string' && !Array.isArray(config.type)) {
-        // tslint:disable-next-line:max-line-length
-        throw new Error(`[Plugin] Invalid config, expected a string or array of strings for the property \`type\` but got "${typeof config.type}"`);
+        throw new Error(
+            // tslint:disable-next-line:max-line-length
+            `[Plugin] Invalid config, expected a string or array of strings for the property \`type\` but got "${typeof config.type}"`,
+        );
     }
 
     /*

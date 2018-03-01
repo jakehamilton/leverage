@@ -1,3 +1,2 @@
-import Plugin from './plugin';
-
-export default Plugin;
+export * from './plugin';
+export { default } from './plugin';

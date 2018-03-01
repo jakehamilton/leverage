@@ -1,12 +1,23 @@
-import { PluginInstanceWithDependencies } from '../../types/plugin';
-import { ServiceInstanceWithDependencies } from '../../types/service';
-import { ComponentInstanceWithDependencies } from '../../types/component';
-import { MiddlewareInstanceWithDependencies } from '../../types/middleware';
+import { PluginUnit, PluginInstanceWithDependencies } from '../plugin';
+import { ServiceUnit, ServiceInstanceWithDependencies } from '../service';
+import { ComponentUnit, ComponentInstanceWithDependencies } from '../component';
+import {
+    MiddlewareUnit,
+    MiddlewareInstanceWithDependencies,
+} from '../middleware';
 
-import { LeverageUnit, LeverageInstance, EmptyUnit } from '../../types/leverage';
-import { Manager as LeverageManager } from '../../types/manager';
+import { LeverageUnit, LeverageInstance, EmptyUnit } from '..';
 
-interface UnitMap<T> {
+export abstract class LeverageManager {
+    add: (...units: LeverageUnit[]) => void;
+
+    addPlugin: (plugin: PluginUnit) => void;
+    addService: (service: ServiceUnit) => void;
+    addComponent: (component: ComponentUnit) => void;
+    addMiddleware: (middleware: MiddlewareUnit) => void;
+}
+
+export interface UnitMap<T> {
     waiting: {
         plugins: {
             [type: string]: T[];
@@ -21,7 +32,7 @@ interface UnitMap<T> {
     };
 }
 
-interface ComponentUnitMap {
+export interface ComponentUnitMap {
     waiting: {
         plugins: {
             [type: string]: ComponentInstanceWithDependencies[];
@@ -36,7 +47,7 @@ interface ComponentUnitMap {
     };
 }
 
-interface MiddlewareUnitMap {
+export interface MiddlewareUnitMap {
     waiting: {
         plugins: {
             [type: string]: MiddlewareInstanceWithDependencies[];
@@ -51,7 +62,7 @@ interface MiddlewareUnitMap {
     };
 }
 
-export default class Manager implements LeverageManager {
+export class Manager implements LeverageManager {
     private plugins: UnitMap<PluginInstanceWithDependencies>;
     private services: UnitMap<ServiceInstanceWithDependencies>;
     private middleware: MiddlewareUnitMap;
@@ -91,13 +102,15 @@ export default class Manager implements LeverageManager {
         };
     }
 
-    add (...units: Array<LeverageUnit|EmptyUnit>) {
+    add (...units: Array<LeverageUnit | EmptyUnit>) {
         for (const unit of units) {
             /*
              * Only accept objects or functions
              */
             if (typeof unit !== 'object' && typeof unit !== 'function') {
-                throw new Error(`[Manager] A Leverage unit must be either an object or constructor function`);
+                throw new Error(
+                    `[Manager] A Leverage unit must be either an object or constructor function`,
+                );
             }
 
             /*
@@ -109,7 +122,9 @@ export default class Manager implements LeverageManager {
              * Ensure the instance has an `is` property
              */
             if (!instance.is) {
-                throw new Error(`[Manager] A Leverage unit must have an \`is\` property`);
+                throw new Error(
+                    `[Manager] A Leverage unit must have an \`is\` property`,
+                );
             }
 
             /*
@@ -117,12 +132,16 @@ export default class Manager implements LeverageManager {
              */
             if (typeof instance.config !== 'object') {
                 // tslint:disable-next-line:max-line-length
-                throw new Error(`[Manager] Expected config property to be an "object" but got "${typeof instance.config}"`);
+                throw new Error(
+                    `[Manager] Expected config property to be an "object" but got "${typeof instance.config}"`,
+                );
             }
 
             if (typeof instance.is !== 'string') {
                 // tslint:disable-next-line:max-line-length
-                throw new Error(`[Manager] Expected \`config.is\` to be a "string" but got a "${typeof instance.is}"`);
+                throw new Error(
+                    `[Manager] Expected \`config.is\` to be a "string" but got a "${typeof instance.is}"`,
+                );
             }
 
             /*
@@ -138,25 +157,34 @@ export default class Manager implements LeverageManager {
              * Begin install process
              */
             switch (instance.is) {
-            case 'plugin':
-                this.addPlugin(instance as PluginInstanceWithDependencies);
-                break;
+                case 'plugin':
+                    this.addPlugin(instance as PluginInstanceWithDependencies);
+                    break;
 
-            case 'service':
-                this.addService(instance as ServiceInstanceWithDependencies);
-                break;
+                case 'service':
+                    this.addService(
+                        instance as ServiceInstanceWithDependencies,
+                    );
+                    break;
 
-            case 'component':
-                this.addComponent(instance as ComponentInstanceWithDependencies);
-                break;
+                case 'component':
+                    this.addComponent(
+                        instance as ComponentInstanceWithDependencies,
+                    );
+                    break;
 
-            case 'middleware':
-                this.addMiddleware(instance as MiddlewareInstanceWithDependencies);
-                break;
+                case 'middleware':
+                    this.addMiddleware(
+                        instance as MiddlewareInstanceWithDependencies,
+                    );
+                    break;
 
-            default:
-                // tslint:disable-next-line:max-line-length
-                throw new Error(`[Manager] Leverage unit kind "${instance.config.is}" is not valid; supported values are: "plugin", "service", "component", "middleware"`);
+                default:
+                    // tslint:disable-next-line:max-line-length
+                    throw new Error(
+                        `[Manager] Leverage unit kind "${instance.config
+                            .is}" is not valid; supported values are: "plugin", "service", "component", "middleware"`,
+                    );
             }
         }
     }
@@ -166,11 +194,18 @@ export default class Manager implements LeverageManager {
          * Verify validity of the component
          */
         if (!component.config.hasOwnProperty('type')) {
-            throw new Error(`[Manager] A Leverage component's config must have a \`type\` property`);
+            throw new Error(
+                `[Manager] A Leverage component's config must have a \`type\` property`,
+            );
         }
 
-        if (typeof component.config.type !== 'string' && !Array.isArray(component.config.type)) {
-            throw new Error(`[Manager] Expected \`component.config.type\` to be a "string" or array of "string"`);
+        if (
+            typeof component.config.type !== 'string' &&
+            !Array.isArray(component.config.type)
+        ) {
+            throw new Error(
+                `[Manager] Expected \`component.config.type\` to be a "string" or array of "string"`,
+            );
         }
 
         const types = ([] as string[]).concat(component.config.type);
@@ -192,7 +227,9 @@ export default class Manager implements LeverageManager {
                 /*
                  * Push the component to the waiting array if it isn't already
                  */
-                if (!this.components.waiting.plugins[plugin].includes(component)) {
+                if (
+                    !this.components.waiting.plugins[plugin].includes(component)
+                ) {
                     this.components.waiting.plugins[plugin].push(component);
                 }
 
@@ -219,7 +256,11 @@ export default class Manager implements LeverageManager {
                 /*
                 * Push the component to the waiting array if it isn't already
                 */
-                if (!this.components.waiting.services[service].includes(component)) {
+                if (
+                    !this.components.waiting.services[service].includes(
+                        component,
+                    )
+                ) {
                     this.components.waiting.services[service].push(component);
                 }
 
@@ -241,14 +282,16 @@ export default class Manager implements LeverageManager {
              * Remove the component from the waiting array if it exists
              */
             if (this.components.waiting.plugins[plugin]) {
-                const index = this.components.waiting.plugins[plugin].indexOf(component);
+                const index = this.components.waiting.plugins[plugin].indexOf(
+                    component,
+                );
                 if (index !== -1) {
                     this.components.waiting.plugins[plugin].splice(index, 1);
                 }
             }
         }
 
-         /*
+        /*
           * Inject services
           */
         for (const service of (component as any).config.dependencies.services) {
@@ -258,7 +301,9 @@ export default class Manager implements LeverageManager {
              * Remove the component from the waiting array if it exists
              */
             if (this.components.waiting.services[service]) {
-                const index = this.components.waiting.services[service].indexOf(component);
+                const index = this.components.waiting.services[service].indexOf(
+                    component,
+                );
                 if (index !== -1) {
                     this.components.waiting.services[service].splice(index, 1);
                 }
@@ -278,7 +323,9 @@ export default class Manager implements LeverageManager {
              * Create the component array if it doesn't exist for this type
              */
             if (!this.components.installed.hasOwnProperty(type)) {
-                this.components.installed[type] = ([] as ComponentInstanceWithDependencies[]);
+                this.components.installed[
+                    type
+                ] = [] as ComponentInstanceWithDependencies[];
             }
 
             /*
@@ -295,11 +342,18 @@ export default class Manager implements LeverageManager {
          * Verify validity of the plugin
          */
         if (!plugin.config.hasOwnProperty('type')) {
-            throw new Error(`[Manager] A Leverage plugin's config must have a \`type\` property`);
+            throw new Error(
+                `[Manager] A Leverage plugin's config must have a \`type\` property`,
+            );
         }
 
-        if (typeof plugin.config.type !== 'string' && !Array.isArray(plugin.config.type)) {
-            throw new Error(`[Manager] Expected \`plugin.config.type\` to be a "string" or array of "string"`);
+        if (
+            typeof plugin.config.type !== 'string' &&
+            !Array.isArray(plugin.config.type)
+        ) {
+            throw new Error(
+                `[Manager] Expected \`plugin.config.type\` to be a "string" or array of "string"`,
+            );
         }
 
         const types = ([] as string[]).concat(plugin.config.type);
@@ -309,11 +363,15 @@ export default class Manager implements LeverageManager {
          */
         for (const type of types) {
             if (!plugin[type]) {
-                throw new Error(`[Manager] Plugins must have methods that match their types, missing method "${type}"`);
+                throw new Error(
+                    `[Manager] Plugins must have methods that match their types, missing method "${type}"`,
+                );
             }
 
             if (typeof plugin[type] !== 'function') {
-                throw new Error(`[Manager] \`plugin.${type}\` must be a function`);
+                throw new Error(
+                    `[Manager] \`plugin.${type}\` must be a function`,
+                );
             }
         }
 
@@ -383,14 +441,16 @@ export default class Manager implements LeverageManager {
              * Remove the plugin from the waiting array if it exists
              */
             if (this.plugins.waiting.plugins[type]) {
-                const index = this.plugins.waiting.plugins[type].indexOf(plugin);
+                const index = this.plugins.waiting.plugins[type].indexOf(
+                    plugin,
+                );
                 if (index !== -1) {
                     this.plugins.waiting.plugins[type].splice(index, 1);
                 }
             }
         }
 
-         /*
+        /*
           * Inject services
           */
         for (const service of plugin.config.dependencies.services) {
@@ -400,7 +460,9 @@ export default class Manager implements LeverageManager {
              * Remove the plugin from the waiting array if it exists
              */
             if (this.plugins.waiting.services[service]) {
-                const index = this.plugins.waiting.services[service].indexOf(plugin);
+                const index = this.plugins.waiting.services[service].indexOf(
+                    plugin,
+                );
                 if (index !== -1) {
                     this.plugins.waiting.services[service].splice(index, 1);
                 }
@@ -415,7 +477,9 @@ export default class Manager implements LeverageManager {
              * Ensure the plugin type doesn't already exist
              */
             if (this.plugins.installed.hasOwnProperty(type)) {
-                throw new Error(`[Manager] Plugin type "${type}" is already defined`);
+                throw new Error(
+                    `[Manager] Plugin type "${type}" is already defined`,
+                );
             }
 
             this.plugins.installed[type] = plugin;
@@ -456,12 +520,17 @@ export default class Manager implements LeverageManager {
          * Verify validity of the service
          */
         if (!service.config.hasOwnProperty('name')) {
-            throw new Error(`[Manager] A Leverage service's config must have a \`name\` property`);
+            throw new Error(
+                `[Manager] A Leverage service's config must have a \`name\` property`,
+            );
         }
 
         if (typeof service.config.name !== 'string') {
             // tslint:disable-next-line:max-line-length
-            throw new Error(`[Manager] Expected \`service.config.name\` to be a "string" but got ${typeof service.config.name}`);
+            throw new Error(
+                `[Manager] Expected \`service.config.name\` to be a "string" but got ${typeof service
+                    .config.name}`,
+            );
         }
 
         let ready = true;
@@ -530,7 +599,9 @@ export default class Manager implements LeverageManager {
              * Remove the service from the waiting array if it exists
              */
             if (this.services.waiting.plugins[type]) {
-                const index = this.services.waiting.plugins[type].indexOf(service);
+                const index = this.services.waiting.plugins[type].indexOf(
+                    service,
+                );
                 if (index !== -1) {
                     this.services.waiting.plugins[type].splice(index, 1);
                 }
@@ -544,7 +615,9 @@ export default class Manager implements LeverageManager {
             service.services[name] = this.services.installed[name];
 
             if (this.services.waiting.services[name]) {
-                const index = this.services.waiting.services[name].indexOf(service);
+                const index = this.services.waiting.services[name].indexOf(
+                    service,
+                );
                 if (index !== -1) {
                     this.services.waiting.services[name].splice(index, 1);
                 }
@@ -555,7 +628,10 @@ export default class Manager implements LeverageManager {
          * Start installing the service
          */
         if (this.services.installed.hasOwnProperty(service.config.name)) {
-            throw new Error(`[Manager] Service name "${service.config.name}" is already defined`);
+            throw new Error(
+                `[Manager] Service name "${service.config
+                    .name}" is already defined`,
+            );
         }
 
         this.services.installed[service.config.name] = service;
@@ -563,26 +639,40 @@ export default class Manager implements LeverageManager {
         /*
          * Attempt to intsall anything waiting on this service
          */
-        if (this.components.waiting.services.hasOwnProperty(service.config.name)) {
-            for (const unit of this.components.waiting.services[service.config.name]) {
+        if (
+            this.components.waiting.services.hasOwnProperty(service.config.name)
+        ) {
+            for (const unit of this.components.waiting.services[
+                service.config.name
+            ]) {
                 this.addComponent(unit);
             }
         }
 
         if (this.plugins.waiting.services.hasOwnProperty(service.config.name)) {
-            for (const unit of this.plugins.waiting.services[service.config.name]) {
+            for (const unit of this.plugins.waiting.services[
+                service.config.name
+            ]) {
                 this.addPlugin(unit);
             }
         }
 
-        if (this.services.waiting.services.hasOwnProperty(service.config.name)) {
-            for (const unit of this.services.waiting.services[service.config.name]) {
+        if (
+            this.services.waiting.services.hasOwnProperty(service.config.name)
+        ) {
+            for (const unit of this.services.waiting.services[
+                service.config.name
+            ]) {
                 this.addService(unit);
             }
         }
 
-        if (this.middleware.waiting.services.hasOwnProperty(service.config.name)) {
-            for (const unit of this.middleware.waiting.services[service.config.name]) {
+        if (
+            this.middleware.waiting.services.hasOwnProperty(service.config.name)
+        ) {
+            for (const unit of this.middleware.waiting.services[
+                service.config.name
+            ]) {
                 this.addMiddleware(unit);
             }
         }
@@ -593,11 +683,18 @@ export default class Manager implements LeverageManager {
          * Verify validity of the middleware
          */
         if (!middleware.config.hasOwnProperty('type')) {
-            throw new Error(`[Manager] A Leverage plugin's config must have a \`type\` property`);
+            throw new Error(
+                `[Manager] A Leverage plugin's config must have a \`type\` property`,
+            );
         }
 
-        if (typeof middleware.config.type !== 'string' && !Array.isArray(middleware.config.type)) {
-            throw new Error(`[Manager] Expected \`middleware.config.type\` to be a "string" or array of "string"`);
+        if (
+            typeof middleware.config.type !== 'string' &&
+            !Array.isArray(middleware.config.type)
+        ) {
+            throw new Error(
+                `[Manager] Expected \`middleware.config.type\` to be a "string" or array of "string"`,
+            );
         }
 
         const types = ([] as string[]).concat(middleware.config.type);
@@ -619,7 +716,11 @@ export default class Manager implements LeverageManager {
                 /*
                  * Push the middleware to the waiting array if it isn't already
                  */
-                if (!this.middleware.waiting.plugins[plugin].includes(middleware)) {
+                if (
+                    !this.middleware.waiting.plugins[plugin].includes(
+                        middleware,
+                    )
+                ) {
                     this.middleware.waiting.plugins[plugin].push(middleware);
                 }
 
@@ -646,7 +747,11 @@ export default class Manager implements LeverageManager {
                 /*
                  * Push the middleware to the waiting array if it isn't already
                  */
-                if (!this.middleware.waiting.services[service].includes(middleware)) {
+                if (
+                    !this.middleware.waiting.services[service].includes(
+                        middleware,
+                    )
+                ) {
                     this.middleware.waiting.services[service].push(middleware);
                 }
 
@@ -668,7 +773,9 @@ export default class Manager implements LeverageManager {
              * Remove the middleware from the waiting array if it exists
              */
             if (this.middleware.waiting.plugins[plugin]) {
-                const index = this.middleware.waiting.plugins[plugin].indexOf(middleware);
+                const index = this.middleware.waiting.plugins[plugin].indexOf(
+                    middleware,
+                );
                 if (index !== -1) {
                     this.middleware.waiting.plugins[plugin].splice(index, 1);
                 }
@@ -685,7 +792,9 @@ export default class Manager implements LeverageManager {
              * Remove the middleware from the waiting array if it exists
              */
             if (this.middleware.waiting.services[service]) {
-                const index = this.middleware.waiting.services[service].indexOf(middleware);
+                const index = this.middleware.waiting.services[service].indexOf(
+                    middleware,
+                );
                 if (index !== -1) {
                     this.middleware.waiting.services[service].splice(index, 1);
                 }
@@ -708,7 +817,9 @@ export default class Manager implements LeverageManager {
              * Create the middleware array if it doesn't exist
              */
             if (!this.middleware.installed.hasOwnProperty(type)) {
-                this.middleware.installed[type] = ([] as MiddlewareInstanceWithDependencies[]);
+                this.middleware.installed[
+                    type
+                ] = [] as MiddlewareInstanceWithDependencies[];
             }
 
             /*
@@ -720,7 +831,9 @@ export default class Manager implements LeverageManager {
         return true;
     }
 
-    private createUnitInstance (unit: LeverageUnit | EmptyUnit): LeverageInstance {
+    private createUnitInstance (
+        unit: LeverageUnit | EmptyUnit,
+    ): LeverageInstance {
         if (typeof unit === 'function') {
             return new (unit as any)();
         } else {
@@ -728,7 +841,10 @@ export default class Manager implements LeverageManager {
         }
     }
 
-    private initializeInstanceDependencies (instance: LeverageInstance, patchType: boolean = false): void {
+    private initializeInstanceDependencies (
+        instance: LeverageInstance,
+        patchType: boolean = false,
+    ): void {
         if (!instance.config.dependencies) {
             instance.config.dependencies = {};
         }
@@ -745,7 +861,11 @@ export default class Manager implements LeverageManager {
         (instance as any).services = {};
 
         if (patchType) {
-            instance.config.dependencies.plugins = instance.config.dependencies.plugins.concat(instance.config.type);
+            instance.config.dependencies.plugins = instance.config.dependencies.plugins.concat(
+                instance.config.type,
+            );
         }
     }
 }
+
+export default Manager;
