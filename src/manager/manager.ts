@@ -826,9 +826,9 @@ export class Manager implements LeverageManager {
             /*
              * Install the middleware
              */
-            const install = this.plugins.installed[type].middleware;
-            if (install && typeof install === 'function') {
-                install(middleware);
+            const unit = this.plugins.installed[type];
+            if (unit.middleware && typeof unit.middleware === 'function') {
+                unit.middleware(middleware);
             }
 
             /*
