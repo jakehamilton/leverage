@@ -114,5 +114,3 @@ export function Component (config: any) {
 
     return decorator;
 }
-
-export default Component;

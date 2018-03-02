@@ -1,27 +1,21 @@
-import Manager from './manager';
-
 import {
-    Plugin,
     PluginUnit,
     PluginConfig,
     PluginConfigWithDependencies,
     PluginInstanceWithDependencies,
 } from './plugin';
 import {
-    Service,
     ServiceUnit,
     ServiceConfig,
     ServiceConfigWithDependencies,
     ServiceInstanceWithDependencies,
 } from './service';
 import {
-    Component,
     ComponentUnit,
     ComponentConfig,
     ComponentConfigWithDependencies,
 } from './component';
 import {
-    Middleware,
     MiddlewareUnit,
     MiddlewareConfig,
     MiddlewareConfigWithDependencies,
@@ -79,15 +73,6 @@ export interface LeverageInstanceWithDependencies extends LeverageInstance {
         [key: string]: ServiceInstanceWithDependencies;
     };
 }
-
-export default {
-    Manager,
-
-    Plugin,
-    Service,
-    Component,
-    Middleware,
-};
 
 export * from './manager';
 export * from './plugin';

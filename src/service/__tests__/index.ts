@@ -1,4 +1,4 @@
-import Service from '..';
+import { Service } from '..';
 
 test('can be imported', () => {
     expect(Service).toBeDefined();

@@ -116,5 +116,3 @@ export function Plugin (config: any) {
 
     return decorator;
 }
-
-export default Plugin;

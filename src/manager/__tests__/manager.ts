@@ -1,4 +1,4 @@
-import Manager from '../manager';
+import { Manager } from '../manager';
 import { ComponentInstanceWithDependencies } from '../../component';
 import { PluginInstanceWithDependencies } from '../../plugin';
 import { ServiceInstanceWithDependencies } from '../../service';

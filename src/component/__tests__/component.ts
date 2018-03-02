@@ -1,4 +1,4 @@
-import Component from '../component';
+import { Component } from '../component';
 
 import { ComponentConfig } from '..';
 import { EmptyUnit } from '../..';

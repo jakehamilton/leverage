@@ -112,5 +112,3 @@ export function Service (config: any) {
 
     return decorator;
 }
-
-export default Service;

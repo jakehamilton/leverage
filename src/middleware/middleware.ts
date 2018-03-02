@@ -114,5 +114,3 @@ export function Middleware (config: any) {
 
     return decorator;
 }
-
-export default Middleware;

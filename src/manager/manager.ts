@@ -885,5 +885,3 @@ export class Manager implements LeverageManager {
         }
     }
 }
-
-export default Manager;

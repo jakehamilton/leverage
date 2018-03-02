@@ -1,4 +1,4 @@
-import Component from '..';
+import { Component } from '..';
 
 test('can be imported', () => {
     expect(Component).toBeDefined();
