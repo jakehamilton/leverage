@@ -49,9 +49,10 @@ Now, we will write an HTTP component and load our component and the HTTP plugin:
 
 ```js
 import { Manager } from '@leverage/core';
-import http from '@leverage/plugin-http';
+import HTTP from '@leverage/plugin-http';
 
 const manager = new Manager();
+const http = new HTTP();
 
 const route = {
     is: 'component',
@@ -68,7 +69,7 @@ const route = {
     }
 }
 
-manager.add(route);
+manager.add(http, route);
 
 http.listen(8080);
 ```
