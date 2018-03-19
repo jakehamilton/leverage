@@ -1,4 +1,4 @@
-import requireAll from 'require-dir-all';
+import * as requireAll from 'require-dir-all';
 import { PluginUnit, PluginInstanceWithDependencies } from '../plugin';
 import { ServiceUnit, ServiceInstanceWithDependencies } from '../service';
 import { ComponentUnit, ComponentInstanceWithDependencies } from '../component';

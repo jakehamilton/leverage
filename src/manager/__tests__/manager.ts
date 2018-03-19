@@ -5,6 +5,10 @@ import { ServiceInstanceWithDependencies } from '../../service';
 import { MiddlewareInstanceWithDependencies } from '../../middleware';
 import { Component } from '../..';
 
+import * as requireAll from '../__mocks__/require-dir-all';
+
+jest.mock('require-dir-all');
+
 describe('Manager', () => {
     let manager: Manager;
 
@@ -364,6 +368,21 @@ describe('Manager', () => {
     });
 
     describe('#add', () => {
+        test('can add a path', () => {
+            const path = '/some/path';
+            expect(() => {
+                manager.add(path);
+            }).not.toThrow();
+
+            expect(requireAll.mock.calls.length).toBe(1);
+            expect(requireAll.mock.calls[0][0]).toBe(path);
+
+            expect((manager as any).plugins.installed.x).toBeDefined();
+            expect((manager as any).services.installed.x).toBeDefined();
+            expect((manager as any).middleware.installed.x).toBeDefined();
+            expect((manager as any).components.installed.x).toBeDefined();
+        });
+
         test('can add a component unit', () => {
             const unit = {
                 is: 'component',
