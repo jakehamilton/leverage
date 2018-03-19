@@ -5,7 +5,8 @@ import { ServiceInstanceWithDependencies } from '../../service';
 import { MiddlewareInstanceWithDependencies } from '../../middleware';
 import { Component } from '../..';
 
-import * as requireAll from '../__mocks__/require-dir-all';
+// tslint:disable-next-line:no-var-requires no-require-imports
+const requireAll = require('require-dir-all');
 
 jest.mock('require-dir-all');
 
