@@ -1,4 +1,3 @@
-import * as requireAll from 'require-dir-all';
 import { PluginUnit, PluginInstanceWithDependencies } from '../plugin';
 import { ServiceUnit, ServiceInstanceWithDependencies } from '../service';
 import { ComponentUnit, ComponentInstanceWithDependencies } from '../component';
@@ -8,6 +7,9 @@ import {
 } from '../middleware';
 
 import { LeverageUnit, LeverageInstance, EmptyUnit } from '..';
+
+// tslint:disable-next-line:no-var-requires no-require-imports
+const requireAll = require('require-dir-all');
 
 export abstract class LeverageManager {
     add: (...units: LeverageUnit[]) => void;
