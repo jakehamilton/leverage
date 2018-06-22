@@ -1,6 +1,6 @@
 {
     "name": "@leverage/core",
-    "version": "2.2.3",
+    "version": "2.3.0",
     "description": "Modularize your application!",
     "author": "Jake Hamilton <jehamilton122@gmail.com>",
     "license": "MIT",
@@ -39,7 +39,6 @@
     ],
     "dependencies": {
         "@types/node": "^8.0.0",
-        "require-dir-all": "^0.4.15",
         "tslib": "^1.6.0"
     },
     "devDependencies": {
