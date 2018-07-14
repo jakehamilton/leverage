@@ -6,8 +6,6 @@
         "module": "commonjs",
         "target": "es5",
         "lib": ["es2017"],
-        "declaration": true,
-        "declarationDir": "types",
         "experimentalDecorators": true,
     },
     "exclude": [

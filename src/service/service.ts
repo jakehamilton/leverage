@@ -45,7 +45,9 @@ export function Service (config: any) {
     /*
      * Inheritance pattern
      */
+    // @ts-ignore
     if (this instanceof Service) {
+        // @ts-ignore
         (this as ServiceUnit).is = 'service';
 
         /*

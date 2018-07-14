@@ -1,20 +1,21 @@
-import { PluginUnit, PluginInstanceWithDependencies } from '../plugin';
-import { ServiceUnit, ServiceInstanceWithDependencies } from '../service';
-import { ComponentUnit, ComponentInstanceWithDependencies } from '../component';
-import {
-    MiddlewareUnit,
-    MiddlewareInstanceWithDependencies,
-} from '../middleware';
+import { PluginInstanceWithDependencies } from '../plugin';
+import { ServiceInstanceWithDependencies } from '../service';
+import { ComponentInstanceWithDependencies } from '../component';
+import { MiddlewareInstanceWithDependencies } from '../middleware';
 
 import { LeverageUnit, LeverageInstance, EmptyUnit } from '..';
 
-export abstract class LeverageManager {
+export interface LeverageManager {
     add: (...units: LeverageUnit[]) => void;
 
-    addPlugin: (plugin: PluginUnit) => void;
-    addService: (service: ServiceUnit) => void;
-    addComponent: (component: ComponentUnit) => void;
-    addMiddleware: (middleware: MiddlewareUnit) => void;
+    // @ts-ignore
+    addPlugin: (plugin: PluginInstanceWithDependencies) => boolean;
+    // @ts-ignore
+    addService: (service: ServiceInstanceWithDependencies) => boolean;
+    // @ts-ignore
+    addComponent: (component: ComponentInstanceWithDependencies) => boolean;
+    // @ts-ignore
+    addMiddleware: (middleware: MiddlewareInstanceWithDependencies) => boolean;
 }
 
 export interface UnitMap<T> {
@@ -676,6 +677,8 @@ export class Manager implements LeverageManager {
                 this.addMiddleware(unit);
             }
         }
+
+        return true;
     }
 
     addMiddleware (middleware: MiddlewareInstanceWithDependencies): boolean {

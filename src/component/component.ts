@@ -46,7 +46,9 @@ export function Component (config: any) {
     /*
      * Inheritance pattern
      */
+    // @ts-ignore
     if (this instanceof Component) {
+        // @ts-ignore
         (this as ComponentUnit).is = 'component';
 
         /*

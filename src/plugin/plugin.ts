@@ -48,7 +48,9 @@ export function Plugin (config: any) {
     /*
      * Inheritance pattern
      */
+    // @ts-ignore
     if (this instanceof Plugin) {
+        // @ts-ignore
         (this as PluginUnit).is = 'plugin';
 
         /*

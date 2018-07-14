@@ -46,7 +46,9 @@ export function Middleware (config: any) {
     /*
      * Inheritance pattern
      */
+    // @ts-ignore
     if (this instanceof Middleware) {
+        // @ts-ignore
         (this as MiddlewareUnit).is = 'middleware';
 
         /*
