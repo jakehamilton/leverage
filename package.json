@@ -27,10 +27,7 @@
         "modular"
     ],
     "files": [
-        "lib",
-        "es",
-        "dist",
-        "types"
+        "dist"
     ],
     "dependencies": {
         "@types/node": "^8.0.0",
@@ -39,6 +36,8 @@
     },
     "devDependencies": {
         "@types/jest": "^20.0.0",
+        "commitizen": "^2.10.1",
+        "cz-conventional-changelog": "^2.1.0",
         "dts-bundle": "^0.7.2",
         "dts-bundle-webpack": "^1.0.0",
         "jest": "^20.0.0",
