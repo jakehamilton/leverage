@@ -10,6 +10,7 @@ module.exports = {
         filename: 'lib.browser.js',
         library: 'Leverage',
         libraryTarget: 'umd',
+        globalObject: 'typeof self !== "undefined" ? self : this',
     },
     resolve: {
         extensions: [
