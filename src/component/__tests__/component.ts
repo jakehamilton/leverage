@@ -1,97 +1,43 @@
-import { Component } from '../component';
-
-import { ComponentConfig } from '..';
-import { EmptyUnit } from '../..';
+import { Component, ComponentUnit } from '../component';
 
 describe('Component', () => {
-    test('is a function', () => {
+    test('sets the `is` property', () => {
+        const component = new Component({
+            type: 'xyz',
+        });
+
+        expect(component.is).toEqual('component');
+    });
+
+    test('is a class', () => {
         expect(typeof Component).toBe('function');
     });
 
-    test('takes valid config', () => {
-        /*
-        * Object config
-        */
+    test('can be extended', () => {
         expect(() => {
-            Component({
-                type: 'xyz',
-                xyz: {},
-            });
+            class C extends Component implements ComponentUnit {
+                type = 'xyz';
+            }
+
+            const component = new C();
+
+            expect(component.is).toEqual('component');
+            expect(component.type).toEqual('xyz');
         }).not.toThrow();
-    });
 
-    test('rejects an invalid config', () => {
-        /*
-        * Forgot `type`
-        */
         expect(() => {
-            Component({
-                xyz: {},
-            } as any);
-        }).toThrow();
+            class C extends Component implements ComponentUnit {
+                constructor () {
+                    super({
+                        type: 'xyz',
+                    });
+                }
+            }
 
-        /*
-        * Invalid `type` value
-        */
-        expect(() => {
-            Component({
-                type: {},
-            } as any);
-        }).toThrow();
-        expect(() => {
-            Component({
-                type: false,
-            } as any);
-        }).toThrow();
+            const component = new C();
 
-        /*
-        * Invalid config type
-        */
-        expect(() => {
-            Component(true as any);
-        }).toThrow();
-        expect(() => {
-            Component(42 as any);
-        }).toThrow();
-        expect(() => {
-            Component('leverage' as any);
-        }).toThrow();
-    });
-
-    test('can extend a class', () => {
-        const config: ComponentConfig = {
-            type: 'xyz',
-            xyz: {
-                a: 'a',
-            },
-        };
-
-        @Component(config)
-        class TestComponent implements EmptyUnit {}
-
-        const instance: any = new TestComponent();
-
-        expect(instance.is).toBe('component');
-        expect(instance.config.type).toEqual(config.type);
-
-        expect(instance.config.xyz).toBeDefined();
-        expect(instance.config.xyz.a).toEqual(config.xyz.a);
-    });
-
-    test('can be inherited', () => {
-        class TestComponent extends (Component as any) {}
-
-        const instance: any = new TestComponent();
-
-        expect(instance.is).toBe('component');
-    });
-
-    test('can be used as a minimal decorator', () => {
-        @Component
-        class TestComponent implements EmptyUnit {}
-
-        const instance: any = new TestComponent();
-
-        expect(instance.is).toBe('component');
+            expect(component.is).toEqual('component');
+            expect(component.type).toEqual('xyz');
+        }).not.toThrow();
     });
 });

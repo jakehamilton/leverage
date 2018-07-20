@@ -12,6 +12,7 @@
             "statements": -10
         }
     },
+    "mapCoverage": true,
     "moduleFileExtensions": [
         "js",
         "json",

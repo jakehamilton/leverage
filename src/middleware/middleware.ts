@@ -1,10 +1,8 @@
 import { EmptyUnit } from '..';
-import { ServiceInstanceWithDependencies } from '../service';
-import { PluginInstanceWithDependencies } from '../plugin';
+import { ServiceInstance } from '../service';
+import { PluginInstance } from '../plugin';
 
 export interface MiddlewareConfig {
-    type: string | string[];
-
     dependencies?: {
         plugins?: string[];
         services?: string[];
@@ -13,106 +11,38 @@ export interface MiddlewareConfig {
     [key: string]: any;
 }
 
-export interface MiddlewareConfigWithDependencies extends MiddlewareConfig {
+export interface MiddlewareConfigInstance extends MiddlewareConfig {
     dependencies: {
         plugins: string[];
         services: string[];
     };
 }
 
-export interface MiddlewareUnit {
+export interface MiddlewareUnit extends EmptyUnit {
     is: 'middleware';
-    config: MiddlewareConfig;
-
-    [key: string]: any;
+    type: string | string[];
+    config?: MiddlewareConfig;
 }
 
-// tslint:disable-next-line:no-empty-interface
-export interface MiddlewareInstance extends MiddlewareUnit {}
-
-export interface MiddlewareInstanceWithDependencies extends MiddlewareInstance {
-    config: MiddlewareConfigWithDependencies;
+export interface MiddlewareInstance extends MiddlewareUnit {
+    config: MiddlewareConfigInstance;
 
     plugins: {
-        [key: string]: PluginInstanceWithDependencies;
+        [key: string]: PluginInstance;
     };
 
     services: {
-        [key: string]: ServiceInstanceWithDependencies;
+        [key: string]: ServiceInstance;
     };
 }
 
-export function Middleware (config: any) {
-    /*
-     * Inheritance pattern
-     */
-    // @ts-ignore
-    if (this instanceof Middleware) {
-        // @ts-ignore
-        (this as MiddlewareUnit).is = 'middleware';
+export class Middleware implements Partial<MiddlewareUnit> {
+    is: 'middleware' = 'middleware';
+    type = 'unknown';
 
-        /*
-         * Break early since this is all we need
-         */
-        return null as any;
+    constructor (unit?: Partial<MiddlewareUnit>) {
+        if (unit) {
+            Object.assign(this, unit);
+        }
     }
-
-    /*
-     * Minimal decorator pattern
-     */
-    if (typeof config === 'function') {
-        (config as MiddlewareUnit).is = 'middleware';
-        (config as any).prototype.is = 'middleware';
-
-        /*
-         * Break early since this is all we need
-         */
-        return null as any;
-    }
-
-    /*
-     * Check validity of the config
-     */
-    if (typeof config !== 'object') {
-        throw new Error(
-            `[Middleware] Invalid config, expected "Object" but got "${typeof config}"`,
-        );
-    }
-
-    if (!config.hasOwnProperty('type')) {
-        throw new Error(
-            `[Middleware] Invalid config, expected a \`type\` property`,
-        );
-    }
-
-    if (typeof config.type !== 'string' && !Array.isArray(config.type)) {
-        throw new Error(
-            // tslint:disable-next-line:max-line-length
-            `[Middleware] Invalid config, expected a string or array of strings for the property \`type\` but got "${typeof config.type}"`,
-        );
-    }
-
-    /*
-     * Create a copy of the config
-     */
-    const copy: MiddlewareConfig = Object.assign({}, config);
-
-    /**
-     * Extend a class with a Leverage Middleware Configuration
-     */
-    function decorator (middleware: MiddlewareUnit | EmptyUnit): void {
-        /*
-         * Extend the given middleware class
-         */
-        middleware.config = copy;
-        (middleware as any).prototype.config = copy;
-
-        /*
-        * Set the kind of leverage unit this is
-        */
-        middleware.is = 'middleware';
-        (middleware as any).prototype.is = 'middleware';
-    }
-
-    return decorator;
 }

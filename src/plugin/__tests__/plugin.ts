@@ -1,97 +1,43 @@
-import { Plugin } from '../plugin';
-
-import { PluginConfig } from '..';
-import { EmptyUnit } from '../..';
+import { Plugin, PluginUnit } from '../plugin';
 
 describe('Plugin', () => {
+    test('sets the `is` property', () => {
+        const plugin = new Plugin({
+            type: 'xyz',
+        });
+
+        expect(plugin.is).toEqual('plugin');
+    });
+
     test('is a function', () => {
         expect(typeof Plugin).toBe('function');
     });
 
-    test('takes valid config', () => {
-        /*
-        * Object config
-        */
+    test('can be extended', () => {
         expect(() => {
-            Plugin({
-                type: 'xyz',
-                xyz: {},
-            });
+            class P extends Plugin implements PluginUnit {
+                type = 'xyz';
+            }
+
+            const plugin = new P();
+
+            expect(plugin.is).toEqual('plugin');
+            expect(plugin.type).toEqual('xyz');
         }).not.toThrow();
-    });
 
-    test('rejects an invalid config', () => {
-        /*
-        * Forgot `type`
-        */
         expect(() => {
-            Plugin({
-                xyz: {},
-            } as any);
-        }).toThrow();
+            class P extends Plugin implements PluginUnit {
+                constructor () {
+                    super({
+                        type: 'xyz',
+                    });
+                }
+            }
 
-        /*
-        * Invalid `type` value
-        */
-        expect(() => {
-            Plugin({
-                type: {},
-            } as any);
-        }).toThrow();
-        expect(() => {
-            Plugin({
-                type: false,
-            } as any);
-        }).toThrow();
+            const plugin = new P();
 
-        /*
-        * Invalid config type
-        */
-        expect(() => {
-            Plugin(true as any);
-        }).toThrow();
-        expect(() => {
-            Plugin(42 as any);
-        }).toThrow();
-        expect(() => {
-            Plugin('leverage' as any);
-        }).toThrow();
-    });
-
-    test('can extend a class', () => {
-        const config: PluginConfig = {
-            type: 'xyz',
-            xyz: {
-                a: 'a',
-            },
-        };
-
-        @Plugin(config)
-        class TestPlugin implements EmptyUnit {}
-
-        const instance: any = new TestPlugin();
-
-        expect(instance.is).toBe('plugin');
-        expect(instance.config.type).toEqual(config.type);
-
-        expect(instance.config.xyz).toBeDefined();
-        expect(instance.config.xyz.a).toEqual(config.xyz.a);
-    });
-
-    test('can be inherited', () => {
-        class TestPlugin extends (Plugin as any) {}
-
-        const instance: any = new TestPlugin();
-
-        expect(instance.is).toBe('plugin');
-    });
-
-    test('can be used as a minimal decorator', () => {
-        @Plugin
-        class TestPlugin {}
-
-        const instance: any = new TestPlugin();
-
-        expect(instance.is).toBe('plugin');
+            expect(plugin.is).toEqual('plugin');
+            expect(plugin.type).toEqual('xyz');
+        }).not.toThrow();
     });
 });

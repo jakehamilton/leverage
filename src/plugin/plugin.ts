@@ -1,10 +1,8 @@
 import { EmptyUnit } from '..';
-import { MiddlewareInstanceWithDependencies } from '../middleware';
-import { ServiceInstanceWithDependencies } from '../service';
+import { MiddlewareInstance } from '../middleware';
+import { ServiceInstance } from '../service';
 
 export interface PluginConfig {
-    type: string | string[];
-
     dependencies?: {
         plugins?: string[];
         services?: string[];
@@ -13,7 +11,7 @@ export interface PluginConfig {
     [key: string]: any;
 }
 
-export interface PluginConfigWithDependencies extends PluginConfig {
+export interface PluginConfigInstance extends PluginConfig {
     dependencies: {
         plugins: string[];
         services: string[];
@@ -22,99 +20,33 @@ export interface PluginConfigWithDependencies extends PluginConfig {
 
 export interface PluginUnit {
     is: 'plugin';
-    config: PluginConfig;
+    type: string | string[];
+    config?: PluginConfig;
 
-    middleware?: (middleware: MiddlewareInstanceWithDependencies) => void;
+    middleware?: (middleware: MiddlewareInstance) => void;
 
     [key: string]: any;
 }
 
-// tslint:disable-next-line:no-empty-interface
-export interface PluginInstance extends PluginUnit {}
-
-export interface PluginInstanceWithDependencies extends PluginInstance {
-    config: PluginConfigWithDependencies;
+export interface PluginInstance extends PluginUnit {
+    config: PluginConfigInstance;
 
     plugins: {
-        [key: string]: PluginInstanceWithDependencies;
+        [key: string]: PluginInstance;
     };
 
     services: {
-        [key: string]: ServiceInstanceWithDependencies;
+        [key: string]: ServiceInstance;
     };
 }
 
-export function Plugin (config: any) {
-    /*
-     * Inheritance pattern
-     */
-    // @ts-ignore
-    if (this instanceof Plugin) {
-        // @ts-ignore
-        (this as PluginUnit).is = 'plugin';
+export class Plugin implements PluginUnit {
+    is: 'plugin' = 'plugin';
+    type = 'unknown';
 
-        /*
-         * Break early since this is all we need
-         */
-        return null as any;
+    constructor (unit?: Partial<PluginUnit>) {
+        if (unit) {
+            Object.assign(this, unit);
+        }
     }
-
-    /*
-     * Minimal decorator pattern
-     */
-    if (typeof config === 'function') {
-        (config as PluginUnit).is = 'plugin';
-        (config as any).prototype.is = 'plugin';
-
-        /*
-         * Break early since this is all we need
-         */
-        return null as any;
-    }
-
-    /*
-     * Check validity of the config
-     */
-    if (typeof config !== 'object') {
-        throw new Error(
-            `[Plugin] Invalid config, expected "Object" but got "${typeof config}"`,
-        );
-    }
-
-    if (!config.hasOwnProperty('type')) {
-        throw new Error(
-            `[Plugin] Invalid config, expected a \`type\` property`,
-        );
-    }
-
-    if (typeof config.type !== 'string' && !Array.isArray(config.type)) {
-        throw new Error(
-            // tslint:disable-next-line:max-line-length
-            `[Plugin] Invalid config, expected a string or array of strings for the property \`type\` but got "${typeof config.type}"`,
-        );
-    }
-
-    /*
-     * Create a copy of the config
-     */
-    const copy: PluginConfig = Object.assign({}, config);
-
-    /**
-     * Extend a class with a Leverage Plugin Configuration
-     */
-    function decorator (plugin: PluginUnit | EmptyUnit): void {
-        /*
-         * Extend the given plugin class
-         */
-        plugin.config = copy;
-        (plugin as any).prototype.config = copy;
-
-        /*
-        * Set the kind of leverage unit this is
-        */
-        plugin.is = 'plugin';
-        (plugin as any).prototype.is = 'plugin';
-    }
-
-    return decorator;
 }
