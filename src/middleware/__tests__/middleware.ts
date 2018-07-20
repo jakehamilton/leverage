@@ -1,96 +1,43 @@
-import { Middleware } from '../middleware';
-
-import { MiddlewareConfig } from '..';
+import { Middleware, MiddlewareUnit } from '../middleware';
 
 describe('Middleware', () => {
-    test('is a function', () => {
+    test('sets the `is` property', () => {
+        const middleware = new Middleware({
+            type: 'xyz',
+        });
+
+        expect(middleware.is).toEqual('middleware');
+    });
+
+    test('is a class', () => {
         expect(typeof Middleware).toBe('function');
     });
 
-    test('takes valid config', () => {
-        /*
-        * Object config
-        */
+    test('can be extended', () => {
         expect(() => {
-            Middleware({
-                type: 'xyz',
-                xyz: {},
-            });
+            class M extends Middleware implements MiddlewareUnit {
+                type = 'xyz';
+            }
+
+            const middleware = new M();
+
+            expect(middleware.is).toEqual('middleware');
+            expect(middleware.type).toEqual('xyz');
         }).not.toThrow();
-    });
 
-    test('rejects an invalid config', () => {
-        /*
-        * Forgot `type`
-        */
         expect(() => {
-            Middleware({
-                xyz: {},
-            } as any);
-        }).toThrow();
+            class M extends Middleware implements MiddlewareUnit {
+                constructor () {
+                    super({
+                        type: 'xyz',
+                    });
+                }
+            }
 
-        /*
-        * Invalid `type` value
-        */
-        expect(() => {
-            Middleware({
-                type: {},
-            } as any);
-        }).toThrow();
-        expect(() => {
-            Middleware({
-                type: false,
-            } as any);
-        }).toThrow();
+            const middleware = new M();
 
-        /*
-        * Invalid config type
-        */
-        expect(() => {
-            Middleware(true as any);
-        }).toThrow();
-        expect(() => {
-            Middleware(42 as any);
-        }).toThrow();
-        expect(() => {
-            Middleware('leverage' as any);
-        }).toThrow();
-    });
-
-    test('can extend a class', () => {
-        const config: MiddlewareConfig = {
-            type: 'xyz',
-            xyz: {
-                a: 'a',
-            },
-        };
-
-        @Middleware(config)
-        class TestMiddleware {}
-
-        const instance: any = new TestMiddleware();
-
-        expect(instance.is).toBe('middleware');
-        expect(instance.config.type).toEqual(config.type);
-
-        expect(instance.config.xyz).toBeDefined();
-        expect(instance.config.xyz.a).toEqual(config.xyz.a);
-    });
-
-    test('can be inherited', () => {
-        class TestMiddleware extends (Middleware as any) {}
-
-        const instance: any = new TestMiddleware();
-
-        expect(instance.is).toBe('middleware');
-    });
-
-    test('can be used as a minimal decorator', () => {
-        @Middleware
-        class TestMiddleware {}
-
-        const instance: any = new TestMiddleware();
-
-        expect(instance.is).toBe('middleware');
+            expect(middleware.is).toEqual('middleware');
+            expect(middleware.type).toEqual('xyz');
+        }).not.toThrow();
     });
 });

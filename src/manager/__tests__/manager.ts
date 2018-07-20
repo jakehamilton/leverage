@@ -1,8 +1,8 @@
 import { Manager } from '../manager';
-import { ComponentInstanceWithDependencies } from '../../component';
-import { PluginInstanceWithDependencies } from '../../plugin';
-import { ServiceInstanceWithDependencies } from '../../service';
-import { MiddlewareInstanceWithDependencies } from '../../middleware';
+import { ComponentInstance, ComponentUnit } from '../../component';
+import { PluginInstance, PluginUnit } from '../../plugin';
+import { ServiceInstance, ServiceUnit } from '../../service';
+import { MiddlewareInstance, MiddlewareUnit } from '../../middleware';
 import { Component } from '../..';
 
 describe('Manager', () => {
@@ -30,10 +30,10 @@ describe('Manager', () => {
 
     describe('#addComponent', () => {
         test('can add a component instance', () => {
-            const unit: ComponentInstanceWithDependencies = {
+            const unit: ComponentInstance = {
                 is: 'component',
+                type: 'x',
                 config: {
-                    type: 'x',
                     x: {},
                     dependencies: {
                         plugins: [
@@ -61,27 +61,27 @@ describe('Manager', () => {
             expect((manager as any).components.waiting.plugins.x[0]).toBe(unit);
         });
 
-        test('does not accept invalid "type" types', () => {
+        test('does not accept invalid "type" values', () => {
+            expect(() => {
+                manager.addComponent({} as any);
+            }).toThrow();
+
             expect(() => {
                 manager.addComponent({
-                    config: {},
+                    type: 42,
                 } as any);
             }).toThrow();
 
             expect(() => {
                 manager.addComponent({
-                    config: {
-                        type: 42,
-                    },
+                    // tslint:disable-next-line:no-empty
+                    type: () => {},
                 } as any);
             }).toThrow();
 
             expect(() => {
                 manager.addComponent({
-                    config: {
-                        // tslint:disable-next-line:no-empty
-                        type: () => {},
-                    },
+                    type: {},
                 } as any);
             }).toThrow();
         });
@@ -89,17 +89,17 @@ describe('Manager', () => {
 
     describe('#addPlugin', () => {
         test('can add a plugin instance', () => {
-            const unit: PluginInstanceWithDependencies = {
+            const unit: PluginInstance = {
                 is: 'plugin',
+                type: 'x',
                 config: {
-                    type: 'x',
                     dependencies: {
                         plugins: [],
                         services: [],
                     },
                 },
-                plugins: [] as any,
-                services: [] as any,
+                plugins: {},
+                services: {},
                 // tslint:disable-next-line:no-empty
                 x () {},
             };
@@ -119,34 +119,26 @@ describe('Manager', () => {
 
         test('does not accept invalid "type" types', () => {
             expect(() => {
+                manager.addPlugin({} as any);
+            }).toThrow();
+
+            expect(() => {
                 manager.addPlugin({
-                    config: {},
+                    type: 42,
                 } as any);
             }).toThrow();
 
             expect(() => {
                 manager.addPlugin({
-                    config: {
-                        type: 42,
-                    },
+                    // tslint:disable-next-line:no-empty
+                    type: () => {},
                 } as any);
             }).toThrow();
 
             expect(() => {
                 manager.addPlugin({
-                    config: {
-                        // tslint:disable-next-line:no-empty
-                        type: () => {},
-                    },
-                } as any);
-            }).toThrow();
-
-            expect(() => {
-                manager.addPlugin({
-                    config: {
-                        // tslint:disable-next-line:no-empty
-                        type: {},
-                    },
+                    // tslint:disable-next-line:no-empty
+                    type: {},
                 } as any);
             }).toThrow();
         });
@@ -154,35 +146,27 @@ describe('Manager', () => {
         test('does not accept plugins without an install method', () => {
             expect(() => {
                 manager.addPlugin({
-                    config: {
-                        type: 'x',
-                    },
+                    type: 'x',
                 } as any);
             }).toThrow();
 
             expect(() => {
                 manager.addPlugin({
-                    config: {
-                        type: 'x',
-                    },
+                    type: 'x',
                     x: true,
                 } as any);
             }).toThrow();
 
             expect(() => {
                 manager.addPlugin({
-                    config: {
-                        type: 'x',
-                    },
+                    type: 'x',
                     x: 42,
                 } as any);
             }).toThrow();
 
             expect(() => {
                 manager.addPlugin({
-                    config: {
-                        type: 'x',
-                    },
+                    type: 'x',
                     x: {},
                 } as any);
             }).toThrow();
@@ -191,17 +175,17 @@ describe('Manager', () => {
 
     describe('#addService', () => {
         test('can add a service instance', () => {
-            const unit: ServiceInstanceWithDependencies = {
+            const unit: ServiceInstance = {
                 is: 'service',
+                name: 'x',
                 config: {
-                    name: 'x',
                     dependencies: {
                         plugins: [],
                         services: [],
                     },
                 },
-                plugins: [] as any,
-                services: [] as any,
+                plugins: {},
+                services: {},
             };
 
             /*
@@ -217,44 +201,48 @@ describe('Manager', () => {
             expect((manager as any).services.installed.x).toBe(unit);
         });
 
-        test('does not accept service instances with invalid "name" types', () => {
+        test('does not accept service instances with invalid "name" values', () => {
+            expect(() => {
+                manager.addService({} as any);
+            }).toThrow();
+
             expect(() => {
                 manager.addService({
-                    config: {},
+                    name: 42,
                 } as any);
             }).toThrow();
 
             expect(() => {
                 manager.addService({
-                    config: {
-                        name: 42,
-                    },
+                    name: true,
                 } as any);
             }).toThrow();
 
             expect(() => {
                 manager.addService({
-                    config: {
-                        name: true,
-                    },
+                    // tslint:disable-next-line:no-empty
+                    name: () => {},
                 } as any);
             }).toThrow();
 
             expect(() => {
                 manager.addService({
-                    config: {
-                        // tslint:disable-next-line:no-empty
-                        name: () => {},
-                    },
+                    name: {},
+                } as any);
+            }).toThrow();
+
+            expect(() => {
+                manager.addService({
+                    name: [],
                 } as any);
             }).toThrow();
         });
 
-        test('does not accept service instances the same name', () => {
-            const serviceA: ServiceInstanceWithDependencies = {
+        test('does not accept service instances with the same name', () => {
+            const serviceA: ServiceInstance = {
                 is: 'service',
+                name: 'a',
                 config: {
-                    name: 'a',
                     dependencies: {
                         plugins: [],
                         services: [],
@@ -264,10 +252,10 @@ describe('Manager', () => {
                 services: [] as any,
             };
 
-            const serviceB: ServiceInstanceWithDependencies = {
+            const serviceB: ServiceInstance = {
                 is: 'service',
+                name: 'a',
                 config: {
-                    name: 'a',
                     dependencies: {
                         plugins: [],
                         services: [],
@@ -293,10 +281,10 @@ describe('Manager', () => {
 
     describe('#addMiddleware', () => {
         test('can add a middleware instance', () => {
-            const unit: MiddlewareInstanceWithDependencies = {
+            const unit: MiddlewareInstance = {
                 is: 'middleware',
+                type: 'x',
                 config: {
-                    type: 'x',
                     dependencies: {
                         plugins: [
                             'x',
@@ -304,8 +292,8 @@ describe('Manager', () => {
                         services: [],
                     },
                 },
-                plugins: [] as any,
-                services: [] as any,
+                plugins: {},
+                services: {},
             };
 
             /*
@@ -321,43 +309,33 @@ describe('Manager', () => {
             expect((manager as any).middleware.waiting.plugins.x[0]).toBe(unit);
         });
 
-        test('does not accept middleware instances with invalid "type" types', () => {
+        test('does not accept middleware instances with invalid "type" values', () => {
+            expect(() => {
+                manager.addMiddleware({} as any);
+            }).toThrow();
+
             expect(() => {
                 manager.addMiddleware({
-                    config: {},
+                    type: 42,
                 } as any);
             }).toThrow();
 
             expect(() => {
                 manager.addMiddleware({
-                    config: {
-                        type: 42,
-                    },
+                    type: true,
                 } as any);
             }).toThrow();
 
             expect(() => {
                 manager.addMiddleware({
-                    config: {
-                        type: true,
-                    },
+                    type: {},
                 } as any);
             }).toThrow();
 
             expect(() => {
                 manager.addMiddleware({
-                    config: {
-                        type: {},
-                    },
-                } as any);
-            }).toThrow();
-
-            expect(() => {
-                manager.addMiddleware({
-                    config: {
-                        // tslint:disable-next-line:no-empty
-                        type: () => {},
-                    },
+                    // tslint:disable-next-line:no-empty
+                    type: () => {},
                 } as any);
             }).toThrow();
         });
@@ -365,11 +343,9 @@ describe('Manager', () => {
 
     describe('#add', () => {
         test('can add a component unit', () => {
-            const unit = {
+            const unit: ComponentUnit = {
                 is: 'component',
-                config: {
-                    type: 'x',
-                },
+                type: 'x',
                 // tslint:disable-next-line:no-empty
                 x () {},
             };
@@ -388,11 +364,9 @@ describe('Manager', () => {
         });
 
         test('can add a plugin unit', () => {
-            const unit = {
+            const unit: PluginUnit = {
                 is: 'plugin',
-                config: {
-                    type: 'x',
-                },
+                type: 'x',
                 // tslint:disable-next-line:no-empty
                 x () {},
             };
@@ -411,11 +385,9 @@ describe('Manager', () => {
         });
 
         test('can add a service unit', () => {
-            const unit = {
+            const unit: ServiceUnit = {
                 is: 'service',
-                config: {
-                    name: 'x',
-                },
+                name: 'x',
             };
 
             /*
@@ -432,11 +404,9 @@ describe('Manager', () => {
         });
 
         test('can add a middleware unit', () => {
-            const unit = {
+            const unit: MiddlewareUnit = {
                 is: 'middleware',
-                config: {
-                    type: 'x',
-                },
+                type: 'x',
                 // tslint:disable-next-line:no-empty
                 x () {},
             };
@@ -455,11 +425,7 @@ describe('Manager', () => {
         });
 
         test('can add a unit constructor', () => {
-            @Component({
-                type: 'x',
-                x: {},
-            })
-            class Unit {}
+            class Unit extends Component {}
 
             expect(() => {
                 manager.add(Unit);
@@ -488,14 +454,12 @@ describe('Manager', () => {
             expect(() => {
                 manager.add({
                     is: 'tomato',
-                    config: {},
                 });
             }).toThrow();
 
             expect(() => {
                 manager.add({
                     is: 42,
-                    config: {},
                 });
             }).toThrow();
 
@@ -503,7 +467,6 @@ describe('Manager', () => {
                 manager.add({
                     // tslint:disable-next-line:no-empty
                     is: () => {},
-                    config: {},
                 });
             }).toThrow();
         });
@@ -512,12 +475,7 @@ describe('Manager', () => {
             expect(() => {
                 manager.add({
                     is: 'component',
-                });
-            }).toThrow();
-
-            expect(() => {
-                manager.add({
-                    is: 'component',
+                    type: 'xyz',
                     config: true,
                 });
             }).toThrow();
@@ -525,6 +483,7 @@ describe('Manager', () => {
             expect(() => {
                 manager.add({
                     is: 'component',
+                    type: 'xyz',
                     config: 42,
                 });
             }).toThrow();
@@ -532,6 +491,7 @@ describe('Manager', () => {
             expect(() => {
                 manager.add({
                     is: 'component',
+                    type: 'xyz',
                     config: 'tomato',
                 });
             }).toThrow();
@@ -540,18 +500,14 @@ describe('Manager', () => {
         test('does not allow two plugins to share the same type', () => {
             const pluginA = {
                 is: 'plugin',
-                config: {
-                    type: 'x',
-                },
+                type: 'x',
                 // tslint:disable-next-line:no-empty
                 x () {},
             };
 
             const pluginB = {
                 is: 'plugin',
-                config: {
-                    type: 'x',
-                },
+                type: 'x',
                 // tslint:disable-next-line:no-empty
                 x () {},
             };
@@ -570,18 +526,16 @@ describe('Manager', () => {
         });
 
         test('install: plugin -> component -> service', () => {
-            const plugin = {
+            const plugin: PluginUnit = {
                 is: 'plugin',
-                config: {
-                    type: 'x',
-                },
+                type: 'x',
                 x: jest.fn(),
             };
 
-            const component = {
+            const component: ComponentUnit = {
                 is: 'component',
+                type: 'x',
                 config: {
-                    type: 'x',
                     dependencies: {
                         services: [
                             'a',
@@ -590,11 +544,9 @@ describe('Manager', () => {
                 },
             };
 
-            const service = {
+            const service: ServiceUnit = {
                 is: 'service',
-                config: {
-                    name: 'a',
-                },
+                name: 'a',
             };
 
             expect(() => {
@@ -625,18 +577,16 @@ describe('Manager', () => {
         });
 
         test('install: component -> service -> plugin', () => {
-            const plugin = {
+            const plugin: PluginUnit = {
                 is: 'plugin',
-                config: {
-                    type: 'x',
-                },
+                type: 'x',
                 x: jest.fn(),
             };
 
-            const component = {
+            const component: ComponentUnit = {
                 is: 'component',
+                type: 'x',
                 config: {
-                    type: 'x',
                     dependencies: {
                         services: [
                             'a',
@@ -645,10 +595,10 @@ describe('Manager', () => {
                 },
             };
 
-            const service = {
+            const service: ServiceUnit = {
                 is: 'service',
+                name: 'a',
                 config: {
-                    name: 'a',
                     dependencies: {
                         plugins: [
                             'x',
@@ -686,10 +636,10 @@ describe('Manager', () => {
         });
 
         test('install: plugin -> plugin -> component', () => {
-            const pluginA = {
+            const pluginA: PluginUnit = {
                 is: 'plugin',
+                type: 'x',
                 config: {
-                    type: 'x',
                     dependencies: {
                         plugins: [
                             'y',
@@ -699,22 +649,18 @@ describe('Manager', () => {
                 x: jest.fn(),
             };
 
-            const pluginB = {
+            const pluginB: PluginUnit = {
                 is: 'plugin',
-                config: {
-                    type: 'y',
-                },
+                type: 'y',
                 y: jest.fn(),
             };
 
-            const component = {
+            const component: ComponentUnit = {
                 is: 'component',
-                config: {
-                    type: [
-                        'x',
-                        'y',
-                    ],
-                },
+                type: [
+                    'x',
+                    'y',
+                ],
             };
 
             expect(() => {
@@ -740,10 +686,10 @@ describe('Manager', () => {
         });
 
         test('install: plugin -> service -> service', () => {
-            const plugin = {
+            const plugin: PluginUnit = {
                 is: 'plugin',
+                type: 'x',
                 config: {
-                    type: 'x',
                     dependencies: {
                         services: [
                             'a',
@@ -754,18 +700,14 @@ describe('Manager', () => {
                 x: jest.fn(),
             };
 
-            const serviceA = {
+            const serviceA: ServiceUnit = {
                 is: 'service',
-                config: {
-                    name: 'a',
-                },
+                name: 'a',
             };
 
-            const serviceB = {
+            const serviceB: ServiceUnit = {
                 is: 'service',
-                config: {
-                    name: 'b',
-                },
+                name: 'b',
             };
 
             expect(() => {
@@ -788,21 +730,21 @@ describe('Manager', () => {
         });
 
         test('install: service -> service', () => {
-            const serviceA = {
+            const serviceA: ServiceUnit = {
                 is: 'service',
+                name: 'a',
                 config: {
-                    name: 'a',
                     dependencies: {
-                        services: 'b',
+                        services: [
+                            'b',
+                        ],
                     },
                 },
             };
 
-            const serviceB = {
+            const serviceB: ServiceUnit = {
                 is: 'service',
-                config: {
-                    name: 'b',
-                },
+                name: 'b',
             };
 
             expect(() => {
@@ -815,26 +757,22 @@ describe('Manager', () => {
         });
 
         test('install: middleware -> service -> plugin', () => {
-            const plugin = {
+            const plugin: PluginUnit = {
                 is: 'plugin',
-                config: {
-                    type: 'x',
-                },
+                type: 'x',
                 x: jest.fn(),
                 middleware: jest.fn(),
             };
 
-            const service = {
+            const service: ServiceUnit = {
                 is: 'service',
-                config: {
-                    name: 'a',
-                },
+                name: 'a',
             };
 
-            const middleware = {
+            const middleware: MiddlewareUnit = {
                 is: 'middleware',
+                type: 'x',
                 config: {
-                    type: 'x',
                     dependencies: {
                         services: [
                             'a',

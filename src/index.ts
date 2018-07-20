@@ -1,77 +1,65 @@
 import {
     PluginUnit,
     PluginConfig,
-    PluginConfigWithDependencies,
-    PluginInstanceWithDependencies,
+    PluginConfigInstance,
+    PluginInstance,
 } from './plugin';
 import {
     ServiceUnit,
     ServiceConfig,
-    ServiceConfigWithDependencies,
-    ServiceInstanceWithDependencies,
+    ServiceConfigInstance,
+    ServiceInstance,
 } from './service';
 import {
     ComponentUnit,
     ComponentConfig,
-    ComponentConfigWithDependencies,
+    ComponentConfigInstance,
+    ComponentInstance,
 } from './component';
 import {
     MiddlewareUnit,
     MiddlewareConfig,
-    MiddlewareConfigWithDependencies,
+    MiddlewareConfigInstance,
+    MiddlewareInstance,
 } from './middleware';
 
 /**
- * A valid (and useful) Leverage unit
+ * A valid Leverage Unit
  */
-export type LeverageUnit =
-    | PluginUnit
-    | ServiceUnit
-    | ComponentUnit
-    | MiddlewareUnit;
+export type Unit = PluginUnit | ServiceUnit | ComponentUnit | MiddlewareUnit;
 
 /**
- * A valid Leverage unit config
+ * A valid Leverage Unit Instance
  */
-export type LeverageConfig =
+export type Instance =
+    | PluginInstance
+    | ServiceInstance
+    | ComponentInstance
+    | MiddlewareInstance;
+
+/**
+ * A valid Leverage Unit config
+ */
+export type Config =
     | PluginConfig
     | ServiceConfig
     | ComponentConfig
     | MiddlewareConfig;
 
 /**
- * A valid Leverage unit config with its dependency properties
+ * A valid Leverage Unit config with its dependency properties
  */
-export type LeverageConfigWithDependencies =
-    | PluginConfigWithDependencies
-    | ServiceConfigWithDependencies
-    | ComponentConfigWithDependencies
-    | MiddlewareConfigWithDependencies;
+export type ConfigInstance =
+    | PluginConfigInstance
+    | ServiceConfigInstance
+    | ComponentConfigInstance
+    | MiddlewareConfigInstance;
 
 /**
- * Non-specific leverage unit
+ * Non-specific Leverage Unit
  */
 export interface EmptyUnit {
     [x: string]: any;
-}
-
-export interface LeverageInstance {
-    is: string;
-    config: LeverageConfig;
-
-    [key: string]: any;
-}
-
-export interface LeverageInstanceWithDependencies extends LeverageInstance {
-    config: LeverageConfigWithDependencies;
-
-    plugins: {
-        [key: string]: PluginInstanceWithDependencies;
-    };
-
-    services: {
-        [key: string]: ServiceInstanceWithDependencies;
-    };
 }
 
 export * from './manager';

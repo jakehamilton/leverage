@@ -1,0 +1,33 @@
+{
+    "clearMocks": true,
+    "coverageDirectory": "../.coverage",
+    "collectCoverageFrom": [
+        "**/*.ts"
+    ],
+    "coverageThreshold": {
+        "global": {
+            "branches": 80,
+            "functions": 80,
+            "lines": 80,
+            "statements": -10
+        }
+    },
+    "mapCoverage": true,
+    "moduleFileExtensions": [
+        "js",
+        "json",
+        "jsx",
+        "ts",
+        "tsx"
+    ],
+    "resetMocks": true,
+    "rootDir": "src",
+    "testEnvironment": "node",
+    "testMatch": [
+        "**/__tests__/**",
+        "**/*.spec.*"
+    ],
+    "transform": {
+        "^.+.tsx?$": "<rootDir>/../node_modules/ts-jest/preprocessor.js"
+    }
+}
