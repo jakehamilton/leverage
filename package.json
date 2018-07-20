@@ -32,6 +32,11 @@
         "dist",
         "types"
     ],
+    "config": {
+        "commitizen": {
+            "path": "./node_modules/cz-conventional-changelog"
+        }
+    },
     "dependencies": {
         "@types/node": "^8.0.0",
         "ts-loader": "^4.4.2",
