@@ -5,6 +5,9 @@ const path = require('path');
 const DTSBundlePlugin = require('dts-bundle-webpack');
 
 // @ts-ignore
+const nodeExternals = require('webpack-node-externals');
+
+// @ts-ignore
 const pkg = require('./package.json');
 
 module.exports = {
@@ -14,7 +17,13 @@ module.exports = {
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: 'lib.js',
+        library: 'Leverage',
+        libraryTarget: 'umd',
+        globalObject: 'typeof self !== "undefined" ? self : this',
     },
+    externals: [
+        nodeExternals(),
+    ],
     resolve: {
         extensions: [
             '.ts',
