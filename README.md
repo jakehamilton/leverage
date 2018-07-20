@@ -58,8 +58,8 @@ const http = new HTTP();
 
 const route = {
     is: 'component',
+    type: 'http',
     config: {
-        type: 'http',
         http: {
             path: '/',
             method: 'get'
