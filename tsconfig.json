@@ -11,7 +11,7 @@
         "experimentalDecorators": true,
     },
     "exclude": [
-        "**/__tests/**",
+        "**/__tests__/**",
         "**/*.spec.*"
     ]
 }
