@@ -1,62 +1,59 @@
-<br>
-
 <p align="center">
-    <img src="https://raw.githubusercontent.com/jakehamilton/leverage/next/.md-assets/logo.png" width="120" height="120" alt="Leverage Logo">
+    <img src="https://raw.githubusercontent.com/jakehamilton/leverage/master/.md-assets/logo.png" width="120" height="120" alt="Leverage Logo">
 </p>
 
 <p align="center">
-  <a href="https://coveralls.io/github/jakehamilton/leverage?branch=next"><img src="https://coveralls.io/repos/github/jakehamilton/leverage/badge.svg?branch=next" alt="Coverage Status"></a>
-  <a href="https://travis-ci.org/jakehamilton/leverage"><img src="https://travis-ci.org/jakehamilton/leverage.svg?branch=next" alt="Build Status"></a>
-  <br>
-  <a href="http://forthebadge.com"><img src="http://forthebadge.com/images/badges/makes-people-smile.svg" alt="forthebadge"></a>
-  <a href="http://forthebadge.com"><img src="http://forthebadge.com/images/badges/built-with-love.svg" alt="forthebadge"></a>
-  <br><br>
-  <a href='https://ko-fi.com/Y8Y5A40S' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://az743702.vo.msecnd.net/cdn/kofi1.png?v=0' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
+    <img src="https://img.shields.io/npm/v/@leverage/core.svg?style=for-the-badge">
+    <img src="https://img.shields.io/travis/jakehamilton/leverage.svg?style=for-the-badge">
+    <img src="https://img.shields.io/coveralls/github/jakehamilton/leverage.svg?style=for-the-badge">
+    <img src="https://img.shields.io/badge/semantic_release_🚀📦-enabled-brightgreen.svg?style=for-the-badge">
+    <img src="https://img.shields.io/badge/made_with-love-ff69b4.svg?style=for-the-badge">
 </p>
 
-What is it?
------------
+## What is Leverage?
 
-👩‍💻 A super fast, super customizable library to orchestrate your next application!
+👩‍💻 Leverage is a pattern you can use to build your next application.
 
-What can you use it for?
-------------------------
+# What can you create with Leverage?
 
-+ A HTTP server
-+ A chat bot
-+ A realtime websocket server
-+ An IRC server
++ [A HTTP server](https://github.com/jakehamilton/leverage-plugin-http)
++ [A chat bot](https://github.com/jakehamilton/leverage-plugin-discord)
++ [A WebSocket server](https://github.com/jakehamilton/leverage-plugin-websocket)
 + A MIDI interface
 + 👩💭 Anything else you can imagine!
 
-Install it
-----------
+## Install
+
+Leverage's core library can be installed with one command:
 
 ```bash
-npm i -S @leverage/core
+yarn add @leverage/core # or npm install
 ```
 
-Hello World
------------
+## Getting Started
 
-For a "Hello World", we'll create a simple http server that responds to requests with a "Hello World".
+Let's start by creating a "Hello World" HTTP server.
 
-First, install the HTTP plugin:
+### Install Dependencies
+
+You will need the Leverage core library as well as an HTTP plugin.
 
 ```bash
-npm i -S @leverage/plugin-http
+yarn add @leverage/core @leverage/plugin-http # or npm install
 ```
 
-Now, we will write an HTTP component and load our component and the HTTP plugin:
+### Hello World
 
-```js
+Now, we will write an HTTP component for our plugin to install:
+
+```typescript
 import { Manager } from '@leverage/core';
-import HTTP from '@leverage/plugin-http';
+import { HTTP, HTTPComponent } from '@leverage/plugin-http';
 
 const manager = new Manager();
 const http = new HTTP();
 
-const route = {
+const component: HTTPComponent = {
     is: 'component',
     type: 'http',
     config: {
@@ -76,8 +73,7 @@ manager.add(http, route);
 http.listen(8080);
 ```
 
-Want To Dig In Deeper?
-----------------------
+## Want To Dig In Deeper?
 
 Check out [the wiki](https://github.com/jakehamilton/leverage/wiki)!
 
@@ -85,7 +81,6 @@ Learn from example applications:
 
 + *coming soon*
 
-Roadmap
--------
+# Roadmap
 
 Most (if not all) roadmap items are tracked on [the project board](https://github.com/jakehamilton/leverage/projects/2).
