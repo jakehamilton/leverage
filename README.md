@@ -1,7 +1,7 @@
 <br>
 
 <p align="center">
-    <img src="https://raw.githubusercontent.com/jakehamilton/leverage/next/.md-assets/logo.png" width="120" height="120" alt="Leverage Logo">
+    <img src="https://raw.githubusercontent.com/jakehamilton/leverage/master/.md-assets/logo.png" width="120" height="120" alt="Leverage Logo">
 </p>
 
 <p align="center">
