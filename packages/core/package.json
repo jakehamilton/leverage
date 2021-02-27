@@ -12,6 +12,9 @@
         "node",
         "server"
     ],
+    "files": [
+        "src/**/*"
+    ],
     "author": "Jake Hamilton <jake.hamilton@hey.com>",
     "license": "Apache-2.0",
     "dependencies": {
