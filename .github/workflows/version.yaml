@@ -1,0 +1,59 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    if: "!startsWith(github.event.head_commit.message, 'chore(release): publish')"
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+    steps:
+      - name: Turnstyle
+        uses: softprops/turnstyle@v1
+        with:
+          poll-interval-seconds: 30
+          continue-after-seconds: 180
+      - name: Checkout
+        uses: actions/checkout@v1
+        with:
+          fetch-depth: 0
+      - name: Configure Git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git remote set-url origin https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY
+      - name: Update History and Tags
+        run: |
+          git checkout "${GITHUB_REF:11}"
+          git pull --ff-only
+          git fetch origin +refs/tags/*:refs/tags/*
+      - name: Configure Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: "12.x"
+      - name: Configure NPM
+        run: |
+          npm i -g npm@7
+          npm config set registry https://registry.npmjs.org/
+          npm config set //registry.npmjs.org/:_authToken=\${NPM_TOKEN}
+      - name: Check Authentication with Registry
+        run: npm whoami
+      - name: Install Dependencies
+        run: npm install --no-save
+      - name: Bootstrap
+        run: |
+          npm run bootstrap:changed
+          npm run build:changed
+      - name: Version Packages
+        run: npm run version
+      - name: Publish Packages
+        run: npm run publish
+      - name: Push
+        run: |
+          git push
+          git push --tags

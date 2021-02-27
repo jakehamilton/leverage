@@ -1,0 +1,44 @@
+{
+    "name": "root",
+    "private": true,
+    "scripts": {
+        "bootstrap": "titan install --no-save",
+        "bootstrap:changed": "titan install --changed --no-save",
+        "build": "titan run build",
+        "build:changed": "titan run build --changed",
+        "test": "titan run test",
+        "test:changed": "titan run test --changed",
+        "version": "titan version",
+        "publish": "titan publish"
+    },
+    "titan": {
+        "packages": [
+            "./packages"
+        ]
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged",
+            "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+        }
+    },
+    "commitlint": {
+        "extends": [
+            "@commitlint/config-conventional"
+        ]
+    },
+    "lint-staged": {
+        "*.{md,json,ts,tsx,js,jsx}": "prettier --write"
+    },
+    "prettier": {
+        "tabWidth": 4
+    },
+    "devDependencies": {
+        "@commitlint/cli": "^9.1.2",
+        "@commitlint/config-conventional": "^9.1.2",
+        "@jakehamilton/titan": "^5.3.0",
+        "husky": "^4.3.0",
+        "lint-staged": "^10.3.0",
+        "prettier": "^2.1.1"
+    }
+}
