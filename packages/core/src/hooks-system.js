@@ -7,8 +7,8 @@ const { HOOKS_DATA } = require("./util/symbols");
 const createDefaultData = () => ({
     manager: null,
     config: {
-        is: null,
-        type: null,
+        is: "",
+        type: "",
         dependencies: {
             plugins: [],
             services: [],

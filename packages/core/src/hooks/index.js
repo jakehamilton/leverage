@@ -11,4 +11,5 @@ module.exports = {
     useSignal: require("./useSignal"),
     useState: require("./useState"),
     useType: require("./useType"),
+    useUnit: require("./useUnit"),
 };

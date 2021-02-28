@@ -718,42 +718,55 @@ describe("manager", () => {
         );
     });
 
-    it("should fail on invalid signal targets", () => {
-        expect(() => {
-            manager.signal({});
-        }).toThrow();
+    it("should fail on invalid signal targets", async () => {
+        expect.assertions(6);
 
-        expect(() => {
-            manager.signal({
-                is: 42,
-            });
-        }).toThrow();
+        try {
+            await manager.signal({});
+        } catch (error) {
+            expect(error.message).toMatch(
+                `Expected target.is to be a string but got "undefined"`
+            );
+        }
 
-        expect(() => {
-            manager.signal({
-                is: "plugin",
-            });
-        }).toThrow();
+        try {
+            await manager.signal({ is: 42 });
+        } catch (error) {
+            expect(error.message).toMatch(
+                `Expected target.is to be a string but got "42"`
+            );
+        }
 
-        expect(() => {
-            manager.signal({
-                is: "plugin",
-                type: "example",
-            });
-        }).toThrow();
+        try {
+            await manager.signal({ is: "plugin" });
+        } catch (error) {
+            expect(error.message).toMatch(
+                `Expected target.type to be a string but got "undefined".`
+            );
+        }
 
-        expect(() => {
-            manager.signal({
-                is: "service",
-                type: "example",
-            });
-        }).toThrow();
+        try {
+            await manager.signal({ is: "plugin", type: "example" });
+        } catch (error) {
+            expect(error.message).toMatch(
+                `No plugin for target: is="plugin" type="example"`
+            );
+        }
 
-        expect(() => {
-            manager.signal({
-                is: "component",
-                type: "example",
-            });
-        }).toThrow();
+        try {
+            await manager.signal({ is: "service", type: "example" });
+        } catch (error) {
+            expect(error.message).toMatch(
+                `No service for target: is="service" type="example"`
+            );
+        }
+
+        try {
+            await manager.signal({ is: "component", type: "example" });
+        } catch (error) {
+            expect(error.message).toMatch(
+                `Signals are not currently implemented for components.`
+            );
+        }
     });
 });

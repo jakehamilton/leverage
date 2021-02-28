@@ -1,0 +1,20 @@
+{
+    "name": "simple-http",
+    "version": "1.0.0",
+    "description": "A simple HTTP example for Leverage",
+    "private": true,
+    "main": "src/index.js",
+    "scripts": {
+        "start": "node ./src/index.js"
+    },
+    "keywords": [
+        ""
+    ],
+    "author": "Jake Hamilton <jake.hamilton@hey.com>",
+    "license": "Apache-2.0",
+    "dependencies": {
+        "@leverage/core": "^4.0.0",
+        "@leverage/plugin-http": "^4.0.0",
+        "cors": "^2.8.5"
+    }
+}

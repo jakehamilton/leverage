@@ -12,8 +12,8 @@
 
 With Leverage you can easily create:
 
--   [An HTTP server](https://github.com/jakehamilton/leverage/tree/main/packages/plugin-express)
--   [A WebSocket server](https://github.com/jakehamilton/leverage/tree/main/packages/plugin-socketio)
+-   [An HTTP server](https://github.com/jakehamilton/leverage/tree/main/packages/plugin-http)
+-   [A WebSocket server](https://github.com/jakehamilton/leverage/tree/main/packages/plugin-websocket)
 -   [A Discord bot](https://github.com/jakehamilton/leverage/tree/main/packages/plugin-discord)
 -   👩💭 Anything else you can imagine!
 
@@ -31,8 +31,8 @@ yarn add @leverage/core
 
 Just getting started with Leverage and want to learn from a real-world example? Take a look at these projects!
 
--   [Simple HTTP Server](https://github.com/jakehamilton/leverage-example-simple-http)
--   [HTTP API w/ SQLite](https://github.com/jakehamilton/leverage-example-http-api)
+-   [Simple HTTP Server](https://github.com/jakehamilton/leverage/tree/main/examples/simple-http)
+-   [HTTP API](https://github.com/jakehamilton/leverage/tree/main/examples/http-api)
 
 ## Documentation
 

@@ -6,9 +6,8 @@ const useConfig = (instance) => (config) => {
         return config[HOOKS_DATA].config;
     } else if (config !== undefined) {
         if (instance[HOOKS_DATA].initialized) {
-            throw new Error(
-                "Cannot mutate config after unit has been initialized."
-            );
+            // prettier-ignore
+            throw new Error("Cannot mutate config after unit has been initialized.");
         } else {
             instance[HOOKS_DATA].config = deepmerge(
                 instance[HOOKS_DATA].config,

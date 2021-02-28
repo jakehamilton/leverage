@@ -53,18 +53,6 @@ class Manager {
     validate(unit) {
         const config = unit[HOOKS_DATA].config;
 
-        if (config.is === null) {
-            throw new Error(
-                `Expected config.is to be a string but got "${is}".`
-            );
-        }
-
-        if (config.type === null) {
-            throw new Error(
-                `Expected config.type to be a string but got "${type}".`
-            );
-        }
-
         if (
             config.is !== "service" &&
             config.is !== "plugin" &&
@@ -73,6 +61,10 @@ class Manager {
             throw new Error(
                 `Expected config.is to be "service", "plugin", or "component", but got "${config.is}".`
             );
+        }
+
+        if (config.type === "") {
+            throw new Error(`Expected config.type to not be empty.`);
         }
     }
 
@@ -328,15 +320,15 @@ class Manager {
         }
     }
 
-    runSignalHandlers(unit, message) {
+    async runSignalHandlers(unit, message) {
         for (const handler of unit[HOOKS_DATA].signalHandlers) {
-            hooksSystem.withInstance(unit, () => {
-                handler(message);
+            await hooksSystem.withInstance(unit, async () => {
+                await handler(message);
             });
         }
     }
 
-    signal(target, value) {
+    async signal(target, value) {
         if (typeof target.is !== "string") {
             throw new Error(
                 `Expected target.is to be a string but got "${target.is}".`
@@ -354,7 +346,7 @@ class Manager {
                 if (this.plugins.installed.has(target.type)) {
                     const plugin = this.plugins.installed.get(target.type);
 
-                    this.runSignalHandlers(plugin, value);
+                    await this.runSignalHandlers(plugin, value);
                 } else {
                     throw new Error(
                         `No plugin for target: is="${target.is}" type="${target.type}"`
@@ -365,7 +357,7 @@ class Manager {
                 if (this.services.installed.has(target.type)) {
                     const service = this.services.installed.get(target.type);
 
-                    this.runSignalHandlers(service, value);
+                    await this.runSignalHandlers(service, value);
                 } else {
                     throw new Error(
                         `No service for target: is="${target.is}" type="${target.type}"`

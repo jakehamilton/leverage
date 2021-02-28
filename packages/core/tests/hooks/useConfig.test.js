@@ -132,6 +132,23 @@ describe("useConfig", () => {
 
             add(plugin);
         }).toThrow();
+
+        expect(() => {
+            const is = "plugin";
+            const type = "http";
+
+            const plugin = {
+                init: () => {
+                    useConfig({ is, type });
+
+                    useInstallEffect(() => {
+                        useConfig({ is, type });
+                    });
+                },
+            };
+
+            add(plugin);
+        }).toThrow();
     });
 
     it("should fail when mutating after install", () => {
