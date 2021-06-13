@@ -14,7 +14,6 @@ With Leverage you can easily create:
 
 -   [An HTTP server](https://github.com/jakehamilton/leverage/tree/main/packages/plugin-http)
 -   [A WebSocket server](https://github.com/jakehamilton/leverage/tree/main/packages/plugin-websocket)
--   [A Discord bot](https://github.com/jakehamilton/leverage/tree/main/packages/plugin-discord)
 -   👩💭 Anything else you can imagine!
 
 ## Install
@@ -32,7 +31,8 @@ yarn add @leverage/core
 Just getting started with Leverage and want to learn from a real-world example? Take a look at these projects!
 
 -   [Simple HTTP Server](https://github.com/jakehamilton/leverage/tree/main/examples/simple-http)
--   [HTTP API](https://github.com/jakehamilton/leverage/tree/main/examples/http-api)
+-   [REST HTTP API](https://github.com/jakehamilton/leverage/tree/main/examples/http-api)
+-   [Simple WebSockets](https://github.com/jakehamilton/leverage/tree/main/examples/simple-websockets)
 
 ## Documentation
 
@@ -49,15 +49,17 @@ Table Of Contents
     -   [useConfig](#useConfig)
     -   [useDependencies](#useDependencies)
     -   [useEffect](#useEffect)
+    -   [useEvent](#useEvent)
+    -   [useHooks](#useHooks)
     -   [useInstallEffect](#useInstallEffect)
     -   [useIs](#useIs)
     -   [useKeyRef](#useKeyRef)
     -   [usePlugin](#usePlugin)
     -   [useRef](#useRef)
     -   [useService](#useService)
-    -   [useSignal](#useSignal)
     -   [useState](#useState)
     -   [useType](#useType)
+    -   [useUnit](#useUnit)
 
 ### Units
 
@@ -228,40 +230,47 @@ When a Unit is added to Leverage, it starts as `uninitialized`. Leverage will im
 
 -   `useConfig`
 -   `useDependencies`
+-   `useEvent`
+-   `useHooks`
 -   `useInstallEffect`
 -   `useIs`
 -   `useKeyRef`
--   `useSignal`
 -   `useType`
+-   `useUnit`
 
 In order to successfully initialize, a Unit's `init` function _must_ configure the `config.is` and `config.type` properties using `useConfig`, `useIs`, or `useType`.
 
 #### Installed
 
-Once all dependencies for a Unit are satisfied, a unit will be `installed` by Leverage. During this phase, any install effects created with `useInstallEffect` are run. Additionally, plugins are passed components of the same type. During this phase, a Unit can use the following hooks:
+Once all dependencies for a Unit are satisfied, a unit will be `installed` by Leverage. During this phase, any install effects created with `useInstallEffect` are run. Future `useInstallEffect` calls will fire immediately. Additionally, plugins are passed components of the same type. During this phase, a Unit can use the following hooks:
 
 -   `useConfig`
 -   `useDependencies`
 -   `useEffect`
+-   `useEvent`
+-   `useHooks`
+-   `useInstallEffect`
 -   `useIs`
 -   `useKeyRef`
 -   `usePlugin`
 -   `useRef`
 -   `useService`
--   `useSignal`
 -   `useState`
 -   `useType`
+-   `useUnit`
 
 However, an install effect created with `useInstallEffect` is limited to the following hooks:
 
 -   `useConfig`
 -   `useDependencies`
+-   `useEvent`
+-   `useHooks`
 -   `useIs`
 -   `useKeyRef`
 -   `usePlugin`
 -   `useService`
--   `useSignal`
 -   `useType`
+-   `useUnit`
 
 ### Hooks
 
@@ -271,6 +280,10 @@ Hooks are functions that can be used inside of a Unit's methods to interact with
 -   Run a function after a Unit has been installed
 -   Manage Unit state
 -   Get an installed Plugin or Service
+
+A Unit's exposed methods are automatically wrapped to support hooks.
+Any functions that are not exported will **not** be wrapped with
+hook support.
 
 #### `useConfig`
 
@@ -452,6 +465,41 @@ export const callback = () => {
             console.log("Hello, Cleanup!");
         };
     }, []);
+};
+```
+
+#### `useHooks`
+
+The `useHooks` hook can be used to wrap functions in order to use hook calls inside of them. This is most useful for plugins in order to allow for asynchronous actions that may lack context otherwise.
+
+```js
+import { useConfig, useHooks } from "@leverage/core";
+
+export const init = () => {
+    useConfig({
+        is: "plugin",
+        type: "example",
+    });
+
+    /*
+     * Calling `useHooks` gives us a `withHooks` helper that
+     *  is bound to the current Unit. In this case, it is the
+     *  example plugin.
+     */
+    const withHooks = useHooks();
+
+    /*
+     * Here, we wrap a function using `withHooks`.
+     */
+    const handleAsyncAction = withHooks(() => {
+        /*
+         * Hooks can safely be used within this function.
+         */
+        const config = useConfig();
+        // => { is: "plugin", type: "example" }
+    });
+
+    doSomethingAsync().then(handleAsyncAction);
 };
 ```
 
@@ -652,12 +700,12 @@ export const callback = () => {
 };
 ```
 
-#### `useSignal`
+#### `useEmitter`
 
-The `useSignal` hook can be used **during initialization** to create a handler for signal events.
+The `useEmitter` hook can be used to get the event emitter object.
 
 ```js
-import { useSignal } from "@leverage/core";
+import { useEmitter } from "@leverage/core";
 
 export const init = () => {
     useConfig({
@@ -666,19 +714,58 @@ export const init = () => {
     });
 
     /*
-     * Here, `useSignal` will run when a signal event fires for this Unit.
+     * Here, `useEmitter` will get the emitter object.
+     */
+    const emitter = useEmitter();
+
+    /*
+     * The emitter can then be used to handle events.
+     */
+    emitter.emit("my-event");
+
+    const handler = () => {};
+
+    /*
+     * Listen to "my-event" events.
+     */
+    emitter.on("my-event", handler);
+
+    /*
+     * Stop listening to "my-event" events.
+     */
+    emitter.off("my-event", handler);
+
+    /*
+     * Listen to "my-event" only once.
+     */
+    emitter.once("my-event", () => {});
+};
+```
+
+#### `useEvent`
+
+The `useEvent` hook can be used to handle events.
+
+```js
+import { useEvent } from "@leverage/core";
+
+export const init = () => {
+    useConfig({
+        is: "plugin",
+        type: "example",
+    });
+
+    /*
+     * Here, `useEvent` will handle the "example:message" event.
      *
      * For Example:
      *
-     *  signal(
-     *      {
-     *          is: "plugin",
-     *          type: "example"
-     *      },
+     *  emit(
+     *      "example:message",
      *      "Hello, World"
      *  )
      */
-    useSignal((message) => {
+    useEvent("example:configure", (message) => {
         console.log(message);
         //=> logs "Hello, World"
     });
@@ -758,5 +845,34 @@ export const callback = () => {
      *  `type` variable.
      */
     const type = useType();
+};
+```
+
+#### `useUnit`
+
+The `useUnit` hook can be used to get the current unit. This is mostly useful when you want a reference to the current unit to pass between boundaries. `useUnit` can also be useful when you need to call the wrapped version of unit methods.
+
+```js
+import { useConfig, useUnit } from "@leverage/core";
+
+export const init = () => {
+    useConfig({
+        is: "plugin",
+        type: "example",
+    });
+
+    /*
+     * Here, `useType` gets the current unit.
+     */
+    const self = useUnit("http");
+
+    /*
+     * Any exported members can be accessed.
+     */
+    self.callback();
+};
+
+export const callback = () => {
+    /* ... */
 };
 ```

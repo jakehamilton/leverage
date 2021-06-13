@@ -25,46 +25,29 @@ import { http } from "@leverage/plugin-http";
 add(http);
 ```
 
-### Signals
+### Events
 
-The HTTP Plugin can be configured using signals. The server can also be told to
-start listening.
+The HTTP Plugin can be configured using events. The server can also be told to start listening.
 
 ```js
-import { add, signal } from "@leverage/core";
+import { add, emit } from "@leverage/core";
 import { http } from "@leverage/plugin-http";
 
 add(http);
 
 // Configure the Fastify instance
-await signal(
-    {
-        is: "plugin",
-        type: "http",
-    },
-    {
-        type: "configure",
-        payload: {
-            /*
-             * All configuration options are passed directly to the Fastify server.
-             * https://www.fastify.io/docs/latest/Server/
-             */
-            ignoreTrailingSlash: true,
-        },
-    }
-);
+await emit("http:configure", {
+    /*
+     * All configuration options are passed directly to the Fastify server.
+     * https://www.fastify.io/docs/latest/Server/
+     */
+    ignoreTrailingSlash: true,
+});
 
 // Tell the server to start listening on a port
-await signal(
-    {
-        is: "plugin",
-        type: "http",
-    },
-    {
-        type: "listen",
-        payload: 8080,
-    }
-);
+await signal("http:listen", {
+    port: 8080,
+});
 ```
 
 ### Components
@@ -95,6 +78,19 @@ export const preHandler = (request, reply) => {
 export const onSend = (request, reply) => {
     /* ... */
 };
+```
+
+Additionally, connect-style middleware can be used by exporting a `middleware` function.
+
+```js
+import { useHTTP } from "@leverage/plugin-http";
+import cors from "cors";
+
+export const init = () => {
+    useHTTP();
+};
+
+export const middleware = cors();
 ```
 
 ### Hooks
@@ -128,39 +124,5 @@ export const init = () => {
      *  `useMiddleware` hook.
      */
     useHTTP();
-};
-```
-
-#### `useMiddleware`
-
-Connect-style middleware can be installed with the `useMiddleware` hook.
-
-```js
-import { useHTTP, useMiddleware } from "@leverage/plugin-http";
-import cors from "cors";
-
-export const init = () => {
-    useHTTP();
-
-    /*
-     * When called with only a middleware handler, the handler will run on every
-     *  route.
-     */
-    useMiddleware(cors);
-};
-```
-
-```js
-import { useHTTP, useMiddleware } from "@leverage/plugin-http";
-import cors from "cors";
-
-export const init = () => {
-    useHTTP();
-
-    /*
-     * When called with a path and a handler, the handler will only run on the
-     *  path provided.
-     */
-    useMiddleware("/hello-world", cors);
 };
 ```

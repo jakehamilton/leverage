@@ -1,5 +1,5 @@
 import { HOOKS_DATA } from "./src/util/symbols";
-import manager from "./src/manager";
+import manager, { once } from "./src/manager";
 import { Emitter, EventType, Handler, WildcardHandler } from "mitt";
 
 export type UnitIs = "plugin" | "component" | "service";
@@ -92,6 +92,10 @@ export function useEffect(
     dependencies: HookDependencyArray
 ): void;
 
+export type WithHooks = (fn: (...args: Array<any>) => void) => void;
+
+export function useHooks(): WithHooks;
+
 export function useInstallEffect(callback: EffectCallback): void;
 
 export function useIs(): UnitIs;
@@ -129,20 +133,27 @@ export function useType(): string;
 export function useType(type: string): string;
 export function useType<Type extends string>(unit: Unit<UnitIs, Type>): Type;
 
+export function useUnit<Is extends UnitIs, Type extends string>(): Unit<
+    Is,
+    Type
+>;
+
 export const add: Manager["add"];
 export const remove: Manager["remove"];
 
 export function on<Payload = any>(
     event: EventType,
-    payload: EventHandler<Payload>
+    handler: EventHandler<Payload>
 ): void;
-export function on(event: "*", payload: WildCardEventHandler): void;
+export function on(event: "*", handler: WildCardEventHandler): void;
 
 export function off<Payload = any>(
     event: EventType,
-    payload: EventHandler<Payload>
+    handler: EventHandler<Payload>
 ): void;
-export function off(event: "*", payload: WildCardEventHandler): void;
+export function off(event: "*", handler: WildCardEventHandler): void;
+
+export function once(event: EventType, handler: EventHandler<any>): void;
 
 export function emit<Payload = any>(event: EventType, payload: Payload): void;
 
@@ -151,6 +162,7 @@ interface EventEmitter {
     on: typeof on;
     off: typeof off;
     emit: typeof emit;
+    once: typeof once;
 }
 
 export const emitter: EventEmitter;
