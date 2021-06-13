@@ -1,10 +1,10 @@
-const { useHTTP, useMiddleware } = require("@leverage/plugin-http");
+const { useHTTP, useHTTPMiddleware } = require("@leverage/plugin-http");
 const cors = require("cors");
 
 const init = () => {
     useHTTP();
 
-    useMiddleware(cors(), "cors");
+    useHTTPMiddleware(cors(), "cors");
 };
 
 module.exports = {

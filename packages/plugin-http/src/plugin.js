@@ -1,93 +1,43 @@
-const { useConfig, useKeyRef, useSignal, useUnit } = require("@leverage/core");
-const fastify = require("fastify");
-const littlelog = require("@littlethings/log");
+const {
+    useConfig,
+    useKeyRef,
+    useEvent,
+    useEmitter,
+} = require("@leverage/core");
+const Fastify = require("fastify");
+const middie = require("middie");
 
 const log = require("./log");
-const { getVerbosity } = require("@littlethings/log");
-const { getLevelFromNumber } = require("@littlethings/log/src/util");
 
-const useApp = () => {
-    return useKeyRef("app").current;
-};
+const routeHandlerKeys = [
+    "onRequest",
+    "preParsing",
+    "preValidation",
+    "preHandler",
+    "preSerialization",
+    "onSend",
+    "onResponse",
+    "handler",
+    "errorHandler",
+    "validatorCompiler",
+    "serializerCompiler",
+    "schemaErrorFormatter",
+];
 
-const _addComponent = (component) => {
-    const app = useApp();
-    const { http } = useConfig(component);
+const routeMethods = [
+    "DELETE",
+    "GET",
+    "HEAD",
+    "PATCH",
+    "POST",
+    "PUT",
+    "OPTIONS",
+];
 
-    log.debug({ status: "installing", component: http });
+const useFastify = () => {
+    const fastifyRef = useKeyRef("fastify");
 
-    app.route({
-        ...http,
-        onRequest: component.onRequest,
-        preParsing: component.preParsing,
-        preValidation: component.preValidation,
-        preHandler: component.preHandler,
-        preSerialization: component.preSerialization,
-        onSend: component.onSend,
-        onResponse: component.onResponse,
-        handler: component.handler,
-        errorHandler: component.errorHandler,
-        validatorCompiler: component.validatorCompiler,
-        serializerCompiler: component.serializerCompiler,
-        schemaErrorFormatter: component.schemaErrorFormatter,
-    });
-};
-
-const _addMiddleware = (middleware) => {
-    const app = useApp();
-
-    log.debug({
-        status: "installing",
-        middleware: {
-            path: middleware.path ? middleware.path : "*",
-            name: middleware.name,
-        },
-    });
-
-    if (middleware.path) {
-        app.use(middleware.path, middleware.handler);
-    } else {
-        app.use(middleware.handler);
-    }
-};
-
-const initApp = async (config = {}) => {
-    const self = useUnit();
-    const appRef = useKeyRef("app");
-    const readyRef = useKeyRef("ready", false);
-    const waitingRoutesRef = useKeyRef("waitingRoutes");
-    const waitingMiddlewareRef = useKeyRef("waitingMiddleware");
-
-    appRef.current = fastify({
-        level: getLevelFromNumber(
-            getVerbosity(
-                process.env.LOG_LEVEL
-                    ? process.env.LOG_LEVEL.toUpperCase()
-                    : "INFO"
-            )
-        ).toLowerCase(),
-        ...config,
-    });
-
-    await appRef.current.register(require("middie"));
-
-    readyRef.current = true;
-
-    if (waitingRoutesRef.current.length > 0) {
-        for (const component of waitingRoutesRef.current) {
-            self._addComponent(component);
-        }
-
-        waitingRoutesRef.current.length = 0;
-    }
-
-    if (waitingMiddlewareRef.current.length > 0) {
-        for (const middleware of waitingMiddlewareRef.current) {
-            self._addMiddleware(middleware);
-        }
-
-        waitingMiddlewareRef.current.length = 0;
-    }
+    return fastifyRef.current;
 };
 
 const init = () => {
@@ -96,93 +46,200 @@ const init = () => {
         type: "http",
     });
 
-    const appRef = useKeyRef("app", null);
-    useKeyRef("ready", false);
-    useKeyRef("waitingRoutes", []);
-    useKeyRef("waitingMiddleware", []);
+    const emitter = useEmitter();
 
-    useSignal(async ({ type, payload }) => {
-        if (type === "listen") {
-            if (!appRef.current) {
-                await initApp();
-            }
+    const fastifyRef = useKeyRef("fastify", null);
+    const fastifyConfigRef = useKeyRef("fastifyConfig", {});
+    const fastifyPluginsRef = useKeyRef("fastifyPlugins", []);
 
-            appRef.current.listen(payload, (error, address) => {
-                if (error) {
-                    log.error(error);
-                }
+    const routesRef = useKeyRef("routes", []);
+    const middlewareRef = useKeyRef("middleware", []);
 
-                log.info({ status: "listening", address });
-            });
-        } else if (type === "configure") {
-            await initApp(payload);
+    const isConfiguredRef = useKeyRef("isConfigured", false);
+
+    const listenConfigRef = useKeyRef("port", null);
+
+    const configure = async () => {
+        const fastify = Fastify(fastifyConfigRef.current);
+
+        await fastify.register(middie);
+
+        for (const fastifyPlugin of fastifyPluginsRef.current) {
+            await fastify.register(fastifyPlugin);
         }
+
+        fastifyRef.current = fastify;
+    };
+
+    useEvent("http:configure", async (config) => {
+        fastifyConfigRef.current = config;
+
+        await configure();
+
+        isConfiguredRef.current = true;
+
+        emitter.emit("http:configured");
+    });
+
+    useEvent("http:configured", () => {
+        const fastify = fastifyRef.current;
+
+        for (const component of middlewareRef.current) {
+            const config = useConfig(component);
+
+            if (config.http.path) {
+                fastify.use(config.http.path, component.middleware);
+            } else {
+                fastify.use(component.middleware);
+            }
+        }
+
+        for (const component of routesRef.current) {
+            const config = useConfig(component);
+            fastify.route({
+                ...config.http,
+                onRequest: component.onRequest,
+                preParsing: component.preParsing,
+                preValidation: component.preValidation,
+                preHandler: component.preHandler,
+                preSerialization: component.preSerialization,
+                onSend: component.onSend,
+                onResponse: component.onResponse,
+                handler: component.handler,
+                errorHandler: component.errorHandler,
+                validatorCompiler: component.validatorCompiler,
+                serializerCompiler: component.serializerCompiler,
+                schemaErrorFormatter: component.schemaErrorFormatter,
+            });
+        }
+    });
+
+    useEvent("http:listen", (data) => {
+        log.info({
+            event: "http:listen",
+            ...data,
+        });
+
+        const listen = () => {
+            listenConfigRef.current = data;
+            fastifyRef.current.listen(data.port, () => {
+                log.info({
+                    emit: "http:listening",
+                    ...data,
+                });
+
+                emitter.emit("http:listening", data);
+            });
+        };
+
+        if (fastifyRef.current) {
+            listen();
+        } else {
+            emitter.once("http:configured", () => {
+                listen();
+            });
+        }
+    });
+
+    useEvent("http:close", async () => {
+        log.info({
+            event: "http:close",
+        });
+
+        if (fastifyRef.current) {
+            await fastifyRef.current.close();
+        }
+
+        log.info({
+            event: "http:closed",
+        });
+
+        emitter.emit("http:closed");
     });
 };
 
 const install = (component) => {
     const config = useConfig(component);
+    const fastifyRef = useKeyRef("fastify");
+    const routesRef = useKeyRef("routes");
+    const middlewareRef = useKeyRef("middleware");
+    const isConfiguredRef = useKeyRef("isConfigured");
 
-    if (config.http === undefined) {
-        // this component is just middleware or configuration, no install needed
-        return;
+    if (component.middleware) {
+        if (isConfiguredRef.current) {
+            if (config.http.path) {
+                fastifyRef.current.use(config.http.path, component.middleware);
+            } else {
+                fastifyRef.current.use(component.middleware);
+            }
+        }
+
+        middlewareRef.current.push(component);
     }
 
-    const readyRef = useKeyRef("ready");
+    if (routeHandlerKeys.some((key) => component[key])) {
+        let isValid = true;
 
-    if (readyRef.current === false) {
-        const waitingRoutesRef = useKeyRef("waitingRoutes");
+        if (!config.http.method) {
+            isValid = false;
+            log.error(
+                "Could not install component handler without config.http.method."
+            );
+        }
 
-        log.debug({ status: "waiting", component: config.http });
+        if (Array.isArray(config.http.method)) {
+            if (
+                config.http.method.some(
+                    (method) => !routeMethods.includes(method)
+                )
+            ) {
+                isValid = false;
+                const invalidMethods = config.http.method.filter(
+                    (method) => !routeMethods.includes(method)
+                );
 
-        waitingRoutesRef.current.push(component);
-    } else {
-        _addComponent(app, component);
-    }
-};
+                for (const method of invalidMethods) {
+                    log.error(`No method "${method}" exists for app.`);
+                }
+            }
+        } else if (!routeMethods.includes(config.http.method)) {
+            isValid = false;
+            log.error(`No method "${config.http.method}" exists for app.`);
+        }
 
-const useMiddleware = (path, handler, name = "anonymous") => {
-    const data = {
-        path: undefined,
-        handler: undefined,
-        name: undefined,
-    };
+        if (!config.http.path) {
+            isValid = false;
+            log.error(
+                "Could not install component handler without config.http.path."
+            );
+        }
 
-    if (typeof path === "function") {
-        // useMiddleware(handler, "my-name")
-        data.handler = path;
-        data.name = handler || name;
-    } else {
-        // useMiddleware("/path", handler, "my-name")
-        data.path = path;
-        data.handler = handler;
-        data.name = name;
-    }
+        if (isValid) {
+            if (isConfiguredRef.current) {
+                fastify.route({
+                    ...config.http,
+                    onRequest: component.onRequest,
+                    preParsing: component.preParsing,
+                    preValidation: component.preValidation,
+                    preHandler: component.preHandler,
+                    preSerialization: component.preSerialization,
+                    onSend: component.onSend,
+                    onResponse: component.onResponse,
+                    handler: component.handler,
+                    errorHandler: component.errorHandler,
+                    validatorCompiler: component.validatorCompiler,
+                    serializerCompiler: component.serializerCompiler,
+                    schemaErrorFormatter: component.schemaErrorFormatter,
+                });
+            }
 
-    const readyRef = useKeyRef("ready");
-
-    if (readyRef.current === false) {
-        const waitingMiddlewareRef = useKeyRef("waitingMiddleware");
-
-        log.debug({
-            status: "waiting",
-            middleware: {
-                path: data.path ? data.path : "*",
-                name: data.name,
-            },
-        });
-
-        waitingMiddlewareRef.current.push(data);
-    } else {
-        _addMiddleware(data);
+            routesRef.current.push(component);
+        }
     }
 };
 
 module.exports = {
     init,
     install,
-    useApp,
-    useMiddleware,
-    _addComponent,
-    _addMiddleware,
+    useFastify,
 };

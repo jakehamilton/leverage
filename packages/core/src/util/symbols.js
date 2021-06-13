@@ -1,7 +1,4 @@
-/**
- * @type {unique symbol}
- */
-const HOOKS_DATA = Symbol.for("leverage-hooks-data");
+const HOOKS_DATA = "__hooks_data__";
 
 module.exports = {
     HOOKS_DATA,

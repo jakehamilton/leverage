@@ -1,7 +1,27 @@
-const { hooksSystem, createDefaultData } = require("./hooks-system");
+const mitt = require("mitt");
+
 const { HOOKS_DATA } = require("./util/symbols");
+const { hooksSystem, createDefaultData } = require("./hooks/hooksSystem");
+
+const emitter = mitt();
+
+emitter.once = (event, callback) => {
+    const handler = (...args) => {
+        emitter.off(event, handler);
+        callback(...args);
+    };
+
+    emitter.on(event, handler);
+};
 
 class Manager {
+    emitter = emitter;
+
+    on = this.emitter.on;
+    off = this.emitter.off;
+    once = this.emitter.once;
+    emit = this.emitter.emit;
+
     services = {
         installed: new Map(),
         waiting: new Map(),
@@ -85,6 +105,7 @@ class Manager {
             }
 
             for (const key in unit) {
+                /* istanbul ignore else */
                 if (key !== "__hooks__" && typeof unit[key] === "function") {
                     const callback = unit[key];
                     unit[key] = (...args) => {
@@ -146,6 +167,7 @@ class Manager {
                 }
                 default:
                     // prettier-ignore
+                    /* istanbul ignore */
                     throw new Error(`Expected config.is to be either "service", "plugin", or "component", but got "${type}".`);
             }
         }
@@ -196,6 +218,7 @@ class Manager {
             const isWaiting = this.services.waiting.has(type);
 
             if (isWaiting) {
+                /* istanbul ignore else */
                 if (
                     !this.isInstallable(this.services.waiting.get(type), known)
                 ) {
@@ -311,62 +334,12 @@ class Manager {
     runInstallEffects(unit) {
         for (const effect of unit[HOOKS_DATA].installEffects) {
             hooksSystem.withInstance(unit, () => {
-                const callback = effect();
+                const cleanup = effect();
 
-                if (typeof callback === "function") {
-                    unit[HOOKS_DATA].installEffectCleanups.push(callback);
+                if (typeof cleanup === "function") {
+                    unit[HOOKS_DATA].installEffectCleanups.push(cleanup);
                 }
             });
-        }
-    }
-
-    async runSignalHandlers(unit, message) {
-        for (const handler of unit[HOOKS_DATA].signalHandlers) {
-            await hooksSystem.withInstance(unit, async () => {
-                await handler(message);
-            });
-        }
-    }
-
-    async signal(target, value) {
-        if (typeof target.is !== "string") {
-            throw new Error(
-                `Expected target.is to be a string but got "${target.is}".`
-            );
-        }
-
-        if (typeof target.type !== "string") {
-            throw new Error(
-                `Expected target.type to be a string but got "${target.type}".`
-            );
-        }
-
-        switch (target.is) {
-            case "plugin":
-                if (this.plugins.installed.has(target.type)) {
-                    const plugin = this.plugins.installed.get(target.type);
-
-                    await this.runSignalHandlers(plugin, value);
-                } else {
-                    throw new Error(
-                        `No plugin for target: is="${target.is}" type="${target.type}"`
-                    );
-                }
-                break;
-            case "service":
-                if (this.services.installed.has(target.type)) {
-                    const service = this.services.installed.get(target.type);
-
-                    await this.runSignalHandlers(service, value);
-                } else {
-                    throw new Error(
-                        `No service for target: is="${target.is}" type="${target.type}"`
-                    );
-                }
-                break;
-            case "component":
-                // prettier-ignore
-                throw new Error("Signals are not currently implemented for components.");
         }
     }
 

@@ -1,64 +1,102 @@
-import fastify from "fastify";
-import { FastifyInstance } from "fastify/types/instance";
-import {
-    RouteOptions,
-    RouteShorthandMethod,
-    RouteGenericInterface,
-    DefaultRoute,
-} from "fastify/types/route";
-import {
-    RawServerBase,
-    RawRequestDefaultExpression,
-    RawServerDefault,
-    RawReplyDefaultExpression,
-    ContextConfigDefault,
-} from "fastify/types/utils";
-
 import { NextHandleFunction, SimpleHandleFunction } from "connect";
+import {
+    Unit,
+    Plugin,
+    Component,
+    UnitConfig,
+    UnitIs,
+    EventHandler,
+    Unsubscribe,
+} from "@leverage/core";
+import { Express, NextFunction, Request, Response } from "express";
 
-type Handler = SimpleHandleFunction | NextHandleFunction;
+export type Method = "get" | "put" | "post" | "patch" | "delete" | "options";
 
-type BaseHTTPConfig<
-    RawServer extends RawServerBase = RawServerDefault,
-    RawRequest extends RawRequestDefaultExpression<
-        RawServer
-    > = RawRequestDefaultExpression<RawServer>,
-    RawReply extends RawReplyDefaultExpression<
-        RawServer
-    > = RawReplyDefaultExpression<RawServer>,
-    RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
-    ContextConfig = ContextConfigDefault
-> = RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>;
-
-type HTTPConfigExclusions =
-    | "onRequest"
-    | "preParsing"
-    | "preValidation"
-    | "preHandler"
-    | "preSerialization"
-    | "onSend"
-    | "onResponse"
-    | "handler"
-    | "errorHandler"
-    | "validatorCompiler"
-    | "serializerCompiler"
-    | "schemaErrorFormatter";
-
-export type HTTPConfig = Omit<BaseHTTPConfig, HTTPConfigExclusions> & {
-    path: BaseHTTPConfig["url"];
+export type HTTPConfig = {
+    path?: string;
+    method?: Method;
 };
 
-export function useHTTP(): void;
-export function useHTTP(config: HTTPConfig): void;
+export type HTTPUnitConfig<Is extends UnitIs> = UnitConfig<Is, "http"> & {
+    http: HTTPConfig;
+};
 
-export function useMiddleware(handler: Handler, name?: string): void;
-export function useMiddleware(
-    path: string,
-    handler: Handler,
-    name?: string
-): void;
-export function useMiddleware(
-    paths: Array<string>,
-    handler: Handler,
-    name?: string
-): void;
+export function useHTTP(): HTTPUnitConfig<"component">;
+export function useHTTP(
+    config: Partial<HTTPConfig>
+): HTTPUnitConfig<"component">;
+
+export type Handler = (
+    request: Request,
+    response: Response,
+    next: NextFunction
+) => void;
+
+export function useHTTPDependency(): void;
+
+export interface HTTPPlugin extends Plugin<"plugin"> {
+    install: (unit: Component<"plugin">) => void;
+    useApp: () => Express;
+}
+
+export const http: HTTPPlugin;
+
+export interface HTTPListenEventPayload {
+    port: number;
+}
+
+export interface HTTPStartEventPayload {
+    port: number;
+}
+
+export interface HTTPCloseEventPayload {
+    port: number;
+}
+
+export interface HTTPResetEventPayload {
+    port: number;
+}
+
+declare module "@leverage/core" {
+    export function usePlugin(type: "http"): HTTPPlugin;
+
+    export function useEvent(
+        event: "http:listen",
+        handler: EventHandler<HTTPListenEventPayload>
+    ): Unsubscribe<"http:listen">;
+
+    export function useEvent(
+        event: "http:listen:start",
+        handler: EventHandler<HTTPListenEventPayload>
+    ): Unsubscribe<"http:listen:start">;
+
+    export function useEvent(
+        event: "http:close",
+        handler: EventHandler<HTTPCloseEventPayload>
+    ): Unsubscribe<"http:close">;
+
+    export function useEvent(
+        event: "http:reset",
+        handler: EventHandler<HTTPResetEventPayload>
+    ): Unsubscribe<"http:reset">;
+
+    export function emit(
+        type: "http:listen",
+        event: HTTPListenEventPayload
+    ): void;
+
+    export function emit(
+        type: "http:listen:start",
+        event: HTTPStartEventPayload
+    ): void;
+
+    export function emit(
+        type: "http:close",
+        event: HTTPCloseEventPayload
+    ): void;
+
+    export function emit(
+        type: "http:reset",
+        event: HTTPResetEventPayload
+    ): void;
+}

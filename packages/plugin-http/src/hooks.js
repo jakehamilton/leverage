@@ -1,22 +1,30 @@
+const { useDependencies } = require("@leverage/core");
 const { useConfig, useInstallEffect, usePlugin } = require("@leverage/core");
 
-const useHTTP = (config) => {
-    useConfig({
+const useHTTP = (httpConfig = {}) => {
+    const config = useConfig({
         is: "component",
         type: "http",
-        http: config,
+        http: httpConfig,
+    });
+
+    return config;
+};
+
+const useHTTPDependency = () => {
+    useDependencies({
+        plugins: ["http"],
     });
 };
 
-const useMiddleware = (path, middleware) => {
-    useInstallEffect(() => {
-        const { useMiddleware } = usePlugin("http");
+const useFastify = () => {
+    const { useFastify } = usePlugin("http");
 
-        useMiddleware(path, middleware);
-    });
+    return useFastify();
 };
 
 module.exports = {
     useHTTP,
-    useMiddleware,
+    useHTTPDependency,
+    useFastify,
 };

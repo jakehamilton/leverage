@@ -17,9 +17,9 @@
     "author": "Jake Hamilton <jake.hamilton@hey.com>",
     "license": "Apache-2.0",
     "dependencies": {
-        "fastify": "^3.12.0",
-        "middie": "^5.2.0",
         "@leverage/core": "^4.0.0",
-        "@littlethings/log": "^2.4.1"
+        "@littlethings/log": "^2.4.1",
+        "fastify": "^3.17.0",
+        "middie": "^5.2.0"
     }
 }

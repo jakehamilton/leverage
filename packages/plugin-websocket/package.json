@@ -1,0 +1,22 @@
+{
+    "name": "@leverage/plugin-websocket",
+    "version": "1.0.0",
+    "description": "A Websocket plugin for Leverage",
+    "main": "src/index.js",
+    "scripts": {},
+    "types": "./types.d.ts",
+    "keywords": [
+        "leverage",
+        "websocket",
+        "server",
+        "node"
+    ],
+    "author": "Jake Hamilton <jake.hamilton@hey.com>",
+    "license": "Apache-2.0",
+    "dependencies": {
+        "@leverage/core": "^4.0.0",
+        "@leverage/plugin-http": "^4.0.0",
+        "@littlethings/log": "^2.5.0",
+        "fastify-socket.io": "^2.0.0"
+    }
+}

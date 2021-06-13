@@ -4,8 +4,8 @@
     "description": "Core utilities for Leverage",
     "main": "src/index.js",
     "scripts": {
-        "test": "jest",
-        "test:watch": "jest --watch"
+        "test": "jest --coverage --coverageProvider=babel",
+        "test:watch": "npm run test -- --watchAll"
     },
     "keywords": [
         "leverage",
@@ -19,9 +19,10 @@
     "author": "Jake Hamilton <jake.hamilton@hey.com>",
     "license": "Apache-2.0",
     "dependencies": {
+        "@littlethings/log": "^2.4.0",
         "concubine": "^1.0.2",
         "deepmerge": "^4.2.2",
-        "@littlethings/log": "^2.4.0"
+        "mitt": "^2.1.0"
     },
     "devDependencies": {
         "@types/jest": "^26.0.20",

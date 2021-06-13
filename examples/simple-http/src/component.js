@@ -2,7 +2,7 @@ const { useHTTP } = require("@leverage/plugin-http");
 
 const init = () => {
     useHTTP({
-        path: "/hello",
+        path: "/",
         method: "GET",
     });
 };

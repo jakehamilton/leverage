@@ -1,4 +1,4 @@
-# simple-http
+# http-api
 
 > A simple HTTP example for Leverage
 

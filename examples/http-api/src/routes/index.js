@@ -43,6 +43,14 @@ const html = `
     </head>
     <body>
         <pre>${readme}</pre>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            const socket = io();
+
+            socket.on("ping", () => {
+                alert("pong");
+            });
+        </script>
     </body>
 </html>
 `;
