@@ -1,6 +1,6 @@
 # @leverage/plugin-http
 
-> An HTTP plugin for Leverage.
+> A HTTP plugin for Leverage.
 
 ## Install
 
