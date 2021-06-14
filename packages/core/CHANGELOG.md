@@ -1,5 +1,12 @@
 # Change Log
 
+## 4.0.4
+
+### Chores
+
+- _(deps)_: update locks
+
+
 ## 4.0.3
 
 ### Fixes

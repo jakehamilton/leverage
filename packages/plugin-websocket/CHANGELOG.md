@@ -1,5 +1,12 @@
 # Change Log
 
+## 2.0.2
+
+### Chores
+
+- _(deps)_: update locks
+
+
 ## 2.0.1
 
 ### Fixes

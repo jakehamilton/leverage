@@ -1,5 +1,17 @@
 # Change Log
 
+## 4.0.2
+
+### Fixes
+
+- wrong name for ref
+
+
+### Chores
+
+- _(deps)_: update locks
+
+
 ## 4.0.1
 
 ### Fixes

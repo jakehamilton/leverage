@@ -1,6 +1,6 @@
 {
     "name": "@leverage/plugin-websocket",
-    "version": "2.0.1",
+    "version": "2.0.2",
     "description": "A Websocket plugin for Leverage",
     "main": "src/index.js",
     "scripts": {},
