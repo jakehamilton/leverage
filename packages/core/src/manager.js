@@ -106,7 +106,11 @@ class Manager {
 
             for (const key in unit) {
                 /* istanbul ignore else */
-                if (key !== "__hooks__" && typeof unit[key] === "function") {
+                if (
+                    key !== "__hooks_data__" &&
+                    typeof unit[key] === "function" &&
+                    !unit[key].__wrapped__
+                ) {
                     const callback = unit[key];
                     unit[key] = (...args) => {
                         const result = hooksSystem.withInstance(unit, () => {
@@ -116,6 +120,7 @@ class Manager {
 
                         return result;
                     };
+                    unit[key].__wrapped__ = true;
                 }
             }
 
@@ -467,9 +472,17 @@ class Manager {
                 break;
             }
             case "component": {
-                this.runCleanup(unit);
-
                 if (this.components.installed.has(config.type)) {
+                    if (this.plugins.installed.has(config.type)) {
+                        const plugin = this.getPlugin(config.type);
+
+                        if (typeof plugin.uninstall === "function") {
+                            plugin.uninstall(unit);
+                        }
+                    }
+
+                    this.runCleanup(unit);
+
                     const installed = this.components.installed.get(
                         config.type
                     );
