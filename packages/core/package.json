@@ -13,7 +13,8 @@
         "server"
     ],
     "files": [
-        "src/**/*"
+        "src/**/*",
+        "types.d.ts"
     ],
     "types": "./types.d.ts",
     "author": "Jake Hamilton <jake.hamilton@hey.com>",

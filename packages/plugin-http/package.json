@@ -5,7 +5,8 @@
     "main": "src/index.js",
     "scripts": {},
     "files": [
-        "src/**/*"
+        "src/**/*",
+        "types.d.ts"
     ],
     "keywords": [
         "leverage",

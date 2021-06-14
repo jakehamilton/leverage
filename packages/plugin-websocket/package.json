@@ -18,5 +18,9 @@
         "@leverage/plugin-http": "^4.0.0",
         "@littlethings/log": "^2.5.0",
         "fastify-socket.io": "^2.0.0"
-    }
+    },
+    "files": [
+        "src/**/*",
+        "types.d.ts"
+    ]
 }
