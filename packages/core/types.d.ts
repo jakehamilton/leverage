@@ -1,10 +1,70 @@
-import { HOOKS_DATA } from "./src/util/symbols";
-import manager, { once } from "./src/manager";
 import { Emitter, EventType, Handler, WildcardHandler } from "mitt";
+
+export declare const HOOKS_DATA = "__hooks_data__";
 
 export type UnitIs = "plugin" | "component" | "service";
 
-type Manager = typeof manager;
+export interface Manager {
+    emitter: Emitter;
+
+    on: typeof on;
+    off: typeof off;
+    once: typeof once;
+    emit: typeof emit;
+
+    services: {
+        installed: Map<string, Unit<"service", string>>;
+        waiting: Map<string, Unit<"service", string>>;
+    };
+
+    plugins: {
+        installed: Map<string, Unit<"plugin", string>>;
+        waiting: Map<string, Unit<"plugin", string>>;
+    };
+
+    components: {
+        installed: Map<string, Set<Unit<"component", string>>>;
+        waiting: Map<string, Set<Unit<"component", string>>>;
+    };
+
+    /**
+     * Get a service given its type.
+     */
+    getService<Type extends string>(type: Type): Unit<"service", Type>;
+
+    /**
+     * Get a plugin given its type.
+     */
+    getPlugin<Type extends string>(type: Type): Unit<"plugin", Type>;
+
+    /**
+     * Initialize a unit.
+     */
+    init<Is extends UnitIs, Type extends string>(unit: Unit<Is, Type>): void;
+
+    /**
+     * Validate a unit's config.
+     */
+    validate<Is extends UnitIs, Type extends string>(
+        unit: Unit<Is, Type>
+    ): void;
+
+    /**
+     * Add units to Leverage.
+     */
+    add(...units: Array<Unit<UnitIs, string>>): void;
+
+    /**
+     * Remove units from Leverage.
+     */
+    remove(...units: Array<Unit<UnitIs, string>>): void;
+
+    /**
+     * Remove **all** units from Leverage and reset the manager
+     *  to its initial state.
+     */
+    reset(): void;
+}
 
 export interface UnitDependencies {
     plugins: Array<string>;
