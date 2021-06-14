@@ -1,5 +1,12 @@
 # Change Log
 
+## 4.0.5
+
+### Fixes
+
+- run plugin uninstall methods on unit removal
+
+
 ## 4.0.4
 
 ### Chores
