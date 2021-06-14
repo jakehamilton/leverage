@@ -216,7 +216,7 @@ const install = (component) => {
 
         if (isValid) {
             if (isConfiguredRef.current) {
-                fastify.route({
+                fastifyRef.current.route({
                     ...config.http,
                     onRequest: component.onRequest,
                     preParsing: component.preParsing,
