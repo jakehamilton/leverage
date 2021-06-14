@@ -1,5 +1,14 @@
 # Change Log
 
+## 4.0.3
+
+### Fixes
+
+- _(types)_: make emit payload optional
+
+- _(types)_: add type for reset function
+
+
 ## 4.0.2
 
 ### Fixes
