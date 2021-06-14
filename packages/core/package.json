@@ -1,6 +1,6 @@
 {
     "name": "@leverage/core",
-    "version": "4.0.1",
+    "version": "4.0.2",
     "description": "Core utilities for Leverage",
     "main": "src/index.js",
     "scripts": {

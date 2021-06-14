@@ -1,5 +1,12 @@
 # Change Log
 
+## 4.0.2
+
+### Fixes
+
+- _(types)_: correct errors in dts usage
+
+
 ## 4.0.1
 
 ### Fixes
