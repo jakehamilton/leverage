@@ -216,7 +216,7 @@ export function off(event: "*", handler: WildCardEventHandler): void;
 
 export function once(event: EventType, handler: EventHandler<any>): void;
 
-export function emit<Payload = any>(event: EventType, payload: Payload): void;
+export function emit<Payload = any>(event: EventType, payload?: Payload): void;
 
 interface EventEmitter {
     all: Emitter["all"];
