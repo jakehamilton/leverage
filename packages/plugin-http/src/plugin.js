@@ -57,9 +57,11 @@ const init = () => {
 
     const isConfiguredRef = useKeyRef("isConfigured", false);
 
+    const isListeningRef = useKeyRef("isListening", false);
     const listenConfigRef = useKeyRef("port", null);
 
     const configure = async () => {
+        /** @type {Fastify.FastifyInstance} */
         const fastify = Fastify(fastifyConfigRef.current);
 
         await fastify.register(middie);
@@ -121,6 +123,9 @@ const init = () => {
         });
 
         const listen = () => {
+            console.log("listen");
+            console.log(fastifyRef.current.listen);
+            isListeningRef.current = true;
             listenConfigRef.current = data;
             fastifyRef.current.listen(data.port, () => {
                 log.info({
@@ -135,6 +140,7 @@ const init = () => {
         if (fastifyRef.current) {
             listen();
         } else {
+            console.log("waiting for http:configured event");
             emitter.once("http:configured", () => {
                 listen();
             });
@@ -150,96 +156,160 @@ const init = () => {
             await fastifyRef.current.close();
         }
 
+        isListeningRef.current = false;
+
         log.info({
             event: "http:closed",
         });
 
         emitter.emit("http:closed");
     });
+
+    useEvent("http:reset", (callback) => {
+        emitter.once("http:closed", () => {
+            console.log("http:closed");
+            fastifyRef.current = null;
+            isConfiguredRef.current = false;
+
+            callback();
+
+            emitter.once("http:configured", () => {
+                emitter.emit("http:listen", listenConfigRef.current);
+            });
+
+            emitter.emit("http:configure", fastifyConfigRef.current);
+        });
+
+        emitter.emit("http:close");
+    });
 };
 
 const install = (component) => {
+    const emitter = useEmitter();
     const config = useConfig(component);
     const fastifyRef = useKeyRef("fastify");
     const routesRef = useKeyRef("routes");
     const middlewareRef = useKeyRef("middleware");
     const isConfiguredRef = useKeyRef("isConfigured");
+    const isListeningRef = useKeyRef("isListening");
 
-    if (component.middleware) {
-        if (isConfiguredRef.current) {
-            if (config.http.path) {
-                fastifyRef.current.use(config.http.path, component.middleware);
-            } else {
-                fastifyRef.current.use(component.middleware);
-            }
-        }
-
-        middlewareRef.current.push(component);
-    }
-
-    if (routeHandlerKeys.some((key) => component[key])) {
-        let isValid = true;
-
-        if (!config.http.method) {
-            isValid = false;
-            log.error(
-                "Could not install component handler without config.http.method."
-            );
-        }
-
-        if (Array.isArray(config.http.method)) {
-            if (
-                config.http.method.some(
-                    (method) => !routeMethods.includes(method)
-                )
-            ) {
-                isValid = false;
-                const invalidMethods = config.http.method.filter(
-                    (method) => !routeMethods.includes(method)
-                );
-
-                for (const method of invalidMethods) {
-                    log.error(`No method "${method}" exists for app.`);
+    const addComponent = () => {
+        if (component.middleware) {
+            if (isConfiguredRef.current) {
+                if (config.http.path) {
+                    fastifyRef.current.use(
+                        config.http.path,
+                        component.middleware
+                    );
+                } else {
+                    fastifyRef.current.use(component.middleware);
                 }
             }
-        } else if (!routeMethods.includes(config.http.method)) {
-            isValid = false;
-            log.error(`No method "${config.http.method}" exists for app.`);
+
+            middlewareRef.current.push(component);
         }
 
-        if (!config.http.path) {
-            isValid = false;
-            log.error(
-                "Could not install component handler without config.http.path."
+        if (routeHandlerKeys.some((key) => component[key])) {
+            let isValid = true;
+
+            if (!config.http.method) {
+                isValid = false;
+                log.error(
+                    "Could not install component handler without config.http.method."
+                );
+            }
+
+            if (Array.isArray(config.http.method)) {
+                if (
+                    config.http.method.some(
+                        (method) => !routeMethods.includes(method)
+                    )
+                ) {
+                    isValid = false;
+                    const invalidMethods = config.http.method.filter(
+                        (method) => !routeMethods.includes(method)
+                    );
+
+                    for (const method of invalidMethods) {
+                        log.error(`No method "${method}" exists for app.`);
+                    }
+                }
+            } else if (!routeMethods.includes(config.http.method)) {
+                isValid = false;
+                log.error(`No method "${config.http.method}" exists for app.`);
+            }
+
+            if (!config.http.path) {
+                isValid = false;
+                log.error(
+                    "Could not install component handler without config.http.path."
+                );
+            }
+
+            if (isValid) {
+                if (isConfiguredRef.current) {
+                    fastifyRef.current.route({
+                        ...config.http,
+                        onRequest: component.onRequest,
+                        preParsing: component.preParsing,
+                        preValidation: component.preValidation,
+                        preHandler: component.preHandler,
+                        preSerialization: component.preSerialization,
+                        onSend: component.onSend,
+                        onResponse: component.onResponse,
+                        handler: component.handler,
+                        errorHandler: component.errorHandler,
+                        validatorCompiler: component.validatorCompiler,
+                        serializerCompiler: component.serializerCompiler,
+                        schemaErrorFormatter: component.schemaErrorFormatter,
+                    });
+                }
+
+                routesRef.current.push(component);
+            }
+        }
+    };
+
+    if (isListeningRef.current) {
+        emitter.emit("http:reset", addComponent);
+    } else {
+        addComponent();
+    }
+};
+
+const uninstall = (component) => {
+    console.log("uninstall()");
+    const emitter = useEmitter();
+
+    const fastifyRef = useKeyRef("fastify");
+    const fastifyConfigRef = useKeyRef("fastifyConfig");
+    const fastifyPluginsRef = useKeyRef("fastifyPlugins");
+
+    const routesRef = useKeyRef("routes");
+    const middlewareRef = useKeyRef("middleware");
+
+    const isConfiguredRef = useKeyRef("isConfigured");
+
+    const listenConfigRef = useKeyRef("port");
+
+    emitter.emit("http:reset", () => {
+        if (component.middleware) {
+            middlewareRef.current.splice(
+                middlewareRef.current.indexOf(component),
+                1
             );
         }
 
-        if (isValid) {
-            if (isConfiguredRef.current) {
-                fastifyRef.current.route({
-                    ...config.http,
-                    onRequest: component.onRequest,
-                    preParsing: component.preParsing,
-                    preValidation: component.preValidation,
-                    preHandler: component.preHandler,
-                    preSerialization: component.preSerialization,
-                    onSend: component.onSend,
-                    onResponse: component.onResponse,
-                    handler: component.handler,
-                    errorHandler: component.errorHandler,
-                    validatorCompiler: component.validatorCompiler,
-                    serializerCompiler: component.serializerCompiler,
-                    schemaErrorFormatter: component.schemaErrorFormatter,
-                });
-            }
-
-            routesRef.current.push(component);
+        if (routeHandlerKeys.some((key) => component[key])) {
+            routesRef.current.splice(routesRef.current.indexOf(component), 1);
+            console.log(routesRef.current);
         }
-    }
+    });
 };
 
 module.exports = {
     init,
     install,
+    uninstall,
     useFastify,
 };
