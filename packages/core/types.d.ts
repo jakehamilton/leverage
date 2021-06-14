@@ -200,6 +200,7 @@ export function useUnit<Is extends UnitIs, Type extends string>(): Unit<
 
 export const add: Manager["add"];
 export const remove: Manager["remove"];
+export const reset: Manager["reset"];
 
 export function on<Payload = any>(
     event: EventType,
