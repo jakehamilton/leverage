@@ -1,4 +1,4 @@
-const { add, signal } = require("@leverage/core");
+const { add, emit, once } = require("@leverage/core");
 const { http } = require("@leverage/plugin-http");
 const requireDirAll = require("require-dir-all");
 
@@ -24,26 +24,21 @@ const main = async () => {
 
     add(http, ...middleware, ...services, ...routes);
 
-    await signal(
-        { is: "plugin", type: "http" },
-        {
-            type: "configure",
-            payload: {
-                ignoreTrailingSlash: true,
-            },
-        }
-    );
+    emit("http:configure", {
+        ignoreTrailingSlash: true,
+    });
 
-    await signal(
-        {
-            is: "plugin",
-            type: "http",
-        },
-        {
-            type: "listen",
-            payload: 8080,
-        }
-    );
+    emit("http:listen", {
+        port: 8080,
+    });
+
+    process.on("SIGINT", () => {
+        once("http:closed", () => {
+            process.exit(0);
+        });
+
+        emit("http:close");
+    });
 };
 
 main().catch(console.error);
