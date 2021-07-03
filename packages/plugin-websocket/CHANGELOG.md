@@ -1,5 +1,12 @@
 # Change Log
 
+## 2.0.3
+
+### Fixes
+
+- add missing type for useWebSocket hook
+
+
 ## 2.0.2
 
 ### Chores
