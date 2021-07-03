@@ -43,10 +43,7 @@ const init = () => {
             for (const component of componentsRef.current) {
                 const config = useConfig(component);
 
-                if (
-                    config.websocket.event === "disconnect" ||
-                    config.websocket.event === "connect"
-                ) {
+                if (config.websocket.event === "connect") {
                     ioRef.current.on(config.websocket.event, component.handler);
                 } else {
                     ioRef.current.on(
@@ -90,10 +87,7 @@ const install = (component) => {
     if (ioRef.current) {
         const config = useConfig(component);
 
-        if (
-            config.websocket.event === "disconnect" ||
-            config.websocket.event === "connect"
-        ) {
+        if (config.websocket.event === "connect") {
             ioRef.current.on(config.websocket.event, component.handler);
         } else {
             ioRef.current.on(
