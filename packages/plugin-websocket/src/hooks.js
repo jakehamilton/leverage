@@ -1,7 +1,7 @@
 const { useConfig, usePlugin } = require("@leverage/core");
 
 const useWebSocket = (config) => {
-    useConfig({
+    return useConfig({
         is: "component",
         type: "websocket",
         websocket: config,

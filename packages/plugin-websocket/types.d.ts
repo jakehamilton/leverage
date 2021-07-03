@@ -1,4 +1,4 @@
-import { Component, Plugin } from "@leverage/core";
+import { Component, Plugin, UnitConfig } from "@leverage/core";
 import SocketIO from "socket.io";
 
 export interface WebSocketPlugin extends Plugin<"websocket"> {
@@ -7,6 +7,16 @@ export interface WebSocketPlugin extends Plugin<"websocket"> {
 }
 
 export const websocket: WebSocketPlugin;
+
+export interface WebSocketConfig {
+    event: string;
+}
+
+export interface WebSocketUnitConfig extends UnitConfig {
+    websocket: WebSocketConfig;
+}
+
+export function useWebSocket(config: WebSocketUnitConfig): WebSocketUnitConfig;
 
 export function useIO(): SocketIO.Server;
 
