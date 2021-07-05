@@ -75,7 +75,9 @@ export interface HTTPPlugin extends Plugin<"plugin"> {
 export const http: HTTPPlugin;
 
 export interface HTTPListenEventPayload {
-    port: number;
+    port?: number;
+    host?: string;
+    backlog?: number;
 }
 
 export interface HTTPStartEventPayload {

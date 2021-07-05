@@ -122,7 +122,7 @@ const init = () => {
 
         const listen = () => {
             listenConfigRef.current = data;
-            fastifyRef.current.listen(data.port, () => {
+            fastifyRef.current.listen(data, () => {
                 log.info({
                     emit: "http:listening",
                     ...data,
