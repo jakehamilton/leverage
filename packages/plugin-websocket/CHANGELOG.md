@@ -1,5 +1,12 @@
 # Change Log
 
+## 2.0.4
+
+### Fixes
+
+- listen for disconnect event on each individual socket
+
+
 ## 2.0.3
 
 ### Fixes
