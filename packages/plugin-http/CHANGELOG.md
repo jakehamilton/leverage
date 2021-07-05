@@ -1,5 +1,12 @@
 # Change Log
 
+## 4.0.3
+
+### Fixes
+
+- allow for full listen configuration
+
+
 ## 4.0.2
 
 ### Fixes
