@@ -1,12 +1,18 @@
 const {
-    add,
+    Manager,
     useConfig,
     usePlugin,
     useDependencies,
     useInstallEffect,
 } = require("../../..");
 
+let manager;
+
 describe("useDependencies", () => {
+    beforeEach(() => {
+        manager = new Manager();
+    });
+
     it("should set the dependencies", () => {
         const is = "plugin";
         const type = "http";
@@ -23,7 +29,7 @@ describe("useDependencies", () => {
             },
         };
 
-        add(plugin);
+        manager.add(plugin);
 
         expect(dependencies).toEqual({
             plugins: [dependencyType],
@@ -57,7 +63,7 @@ describe("useDependencies", () => {
             },
         };
 
-        add(plugin, dependency);
+        manager.add(plugin, dependency);
 
         expect(dependencies).toEqual({
             plugins: [dependencyType],
@@ -96,7 +102,7 @@ describe("useDependencies", () => {
             },
         };
 
-        add(plugin, dependency, component);
+        manager.add(plugin, dependency, component);
 
         expect(dependencies).toEqual({
             plugins: [dependencyType],
@@ -136,7 +142,7 @@ describe("useDependencies", () => {
             },
         };
 
-        add(plugin, dependency, component);
+        manager.add(plugin, dependency, component);
 
         expect(dependencies).toEqual({
             plugins: [],
@@ -172,7 +178,7 @@ describe("useDependencies", () => {
                 },
             };
 
-            add(plugin, dependency);
+            manager.add(plugin, dependency);
         }).toThrow();
     });
 
@@ -209,7 +215,7 @@ describe("useDependencies", () => {
                 },
             };
 
-            add(plugin, dependency, component);
+            manager.add(plugin, dependency, component);
         }).toThrow();
     });
 });

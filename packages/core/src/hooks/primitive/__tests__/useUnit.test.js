@@ -1,6 +1,12 @@
-const { add, useConfig, useUnit } = require("../../..");
+const { Manager, useConfig, useUnit } = require("../../..");
+
+let manager;
 
 describe("useUnit", () => {
+    beforeEach(() => {
+        manager = new Manager();
+    });
+
     it("should return the current unit", () => {
         let unit;
 
@@ -12,7 +18,7 @@ describe("useUnit", () => {
             },
         };
 
-        add(plugin);
+        manager.add(plugin);
 
         expect(unit).toBe(plugin);
     });

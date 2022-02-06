@@ -1,6 +1,12 @@
-const { add, useConfig, useIs, useInstallEffect } = require("../../..");
+const { Manager, useConfig, useIs, useInstallEffect } = require("../../..");
+
+let manager;
 
 describe("useIs", () => {
+    beforeEach(() => {
+        manager = new Manager();
+    });
+
     it("should set config.is", () => {
         const is = "plugin";
         const type = "http";
@@ -13,7 +19,7 @@ describe("useIs", () => {
             },
         };
 
-        add(plugin);
+        manager.add(plugin);
 
         expect(config).toEqual({
             is,
@@ -40,7 +46,7 @@ describe("useIs", () => {
             },
         };
 
-        add(plugin);
+        manager.add(plugin);
 
         expect(isValue).toEqual(is);
     });
@@ -65,7 +71,7 @@ describe("useIs", () => {
             },
         };
 
-        add(plugin, component);
+        manager.add(plugin, component);
 
         expect(isValue).toEqual(is);
     });
@@ -92,7 +98,7 @@ describe("useIs", () => {
             },
         };
 
-        add(plugin, component);
+        manager.add(plugin, component);
 
         expect(isValue).toEqual(componentIs);
     });
@@ -112,7 +118,7 @@ describe("useIs", () => {
                 },
             };
 
-            add(plugin);
+            manager.add(plugin);
         }).toThrow();
     });
 
@@ -136,7 +142,7 @@ describe("useIs", () => {
                 },
             };
 
-            add(plugin, component);
+            manager.add(plugin, component);
         }).toThrow();
     });
 });

@@ -1,6 +1,12 @@
-const { add, remove, useConfig, useEffect } = require("../../..");
+const { Manager, useConfig, useEffect } = require("../../..");
+
+let manager;
 
 describe("useEffect", () => {
+    beforeEach(() => {
+        manager = new Manager();
+    });
+
     it("should execute effects", () => {
         const is = "plugin";
         const type = "http";
@@ -21,7 +27,7 @@ describe("useEffect", () => {
             },
         };
 
-        add(plugin, component);
+        manager.add(plugin, component);
 
         expect(effect).toHaveBeenCalled();
     });
@@ -52,7 +58,7 @@ describe("useEffect", () => {
             },
         };
 
-        add(plugin, componentOne, componentTwo);
+        manager.add(plugin, componentOne, componentTwo);
 
         expect(effect).toHaveBeenCalledTimes(2);
     });
@@ -83,7 +89,7 @@ describe("useEffect", () => {
             },
         };
 
-        add(plugin, componentOne, componentTwo);
+        manager.add(plugin, componentOne, componentTwo);
 
         expect(effect).toHaveBeenCalledTimes(1);
     });
@@ -122,7 +128,7 @@ describe("useEffect", () => {
             },
         };
 
-        add(plugin, componentOne, componentTwo, componentThree);
+        manager.add(plugin, componentOne, componentTwo, componentThree);
 
         expect(effect).toHaveBeenCalledTimes(3);
     });
@@ -161,7 +167,7 @@ describe("useEffect", () => {
             },
         };
 
-        add(plugin, componentOne, componentTwo, componentThree);
+        manager.add(plugin, componentOne, componentTwo, componentThree);
 
         expect(cleanup).toHaveBeenCalledTimes(2);
     });
@@ -191,9 +197,9 @@ describe("useEffect", () => {
             },
         };
 
-        add(plugin, component);
+        manager.add(plugin, component);
 
-        remove(component);
+        manager.remove(component);
 
         expect(cleanup).toHaveBeenCalledTimes(1);
     });
@@ -213,7 +219,7 @@ describe("useEffect", () => {
                 },
             };
 
-            add(plugin);
+            manager.add(plugin);
         }).toThrow();
     });
 });

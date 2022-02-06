@@ -1,12 +1,18 @@
 const {
-    add,
+    Manager,
     useConfig,
     useDependencies,
     useService,
     useInstallEffect,
 } = require("../../..");
 
+let manager;
+
 describe("useService", () => {
+    beforeEach(() => {
+        manager = new Manager();
+    });
+
     it("should get a service after init", () => {
         let service;
 
@@ -29,7 +35,7 @@ describe("useService", () => {
             },
         };
 
-        add(http, websocket);
+        manager.add(http, websocket);
 
         expect(service).toBe(websocket);
     });
@@ -47,7 +53,7 @@ describe("useService", () => {
                 },
             };
 
-            add(service);
+            manager.add(service);
         }).toThrow();
     });
 
@@ -63,7 +69,7 @@ describe("useService", () => {
                 },
             };
 
-            add(service);
+            manager.add(service);
         }).toThrow();
     });
 });

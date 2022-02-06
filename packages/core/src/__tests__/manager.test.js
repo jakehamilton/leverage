@@ -1,13 +1,18 @@
-const { add, remove, reset, useConfig } = require("..");
-const manager = require("../manager");
+const { Manager, useConfig } = require("..");
 const { HOOKS_DATA } = require("../util/symbols");
 
 describe("manager", () => {
+    let manager;
+
+    beforeEach(() => {
+        manager = new Manager();
+    });
+
     it("should fail to add units without an init method", () => {
         expect(() => {
             const plugin = {};
 
-            add(plugin);
+            manager.add(plugin);
         }).toThrow();
     });
 
@@ -21,7 +26,7 @@ describe("manager", () => {
                 },
             };
 
-            add(plugin);
+            manager.add(plugin);
         }).toThrow();
     });
 
@@ -35,7 +40,7 @@ describe("manager", () => {
                 },
             };
 
-            add(plugin);
+            manager.add(plugin);
         }).toThrow();
     });
 
@@ -50,7 +55,7 @@ describe("manager", () => {
                 },
             };
 
-            add(plugin);
+            manager.add(plugin);
         }).toThrow();
 
         expect(() => {
@@ -101,7 +106,7 @@ describe("manager", () => {
             },
         };
 
-        add(service, plugin, component);
+        manager.add(service, plugin, component);
 
         expect(manager.services.installed.get(type)).toBe(service);
         expect(manager.plugins.installed.get(type)).toBe(plugin);
@@ -156,7 +161,7 @@ describe("manager", () => {
             },
         };
 
-        add(service, plugin, component, dependency);
+        manager.add(service, plugin, component, dependency);
 
         expect(manager.services.installed.get(type)).toBe(service);
         expect(manager.plugins.installed.get(type)).toBe(plugin);
@@ -211,7 +216,7 @@ describe("manager", () => {
             },
         };
 
-        add(service, plugin, component);
+        manager.add(service, plugin, component);
 
         expect(manager.services.waiting.get(type)).toBe(service);
         expect(manager.plugins.waiting.get(type)).toBe(plugin);
@@ -219,7 +224,7 @@ describe("manager", () => {
             true
         );
 
-        add(dependency);
+        manager.add(dependency);
 
         expect(manager.services.installed.get(type)).toBe(service);
         expect(manager.plugins.installed.get(type)).toBe(plugin);
@@ -240,7 +245,7 @@ describe("manager", () => {
             },
         };
 
-        add(service);
+        manager.add(service);
 
         expect(manager.getService(type)).toBe(service);
     });
@@ -265,7 +270,7 @@ describe("manager", () => {
             },
         };
 
-        add(plugin);
+        manager.add(plugin);
 
         expect(manager.getPlugin(type)).toBe(plugin);
     });
@@ -296,7 +301,7 @@ describe("manager", () => {
                 [type]: callback,
             };
 
-            add(plugin);
+            manager.add(plugin);
 
             expect(plugin[type]).not.toBe(callback);
         }).not.toThrow();
@@ -319,7 +324,7 @@ describe("manager", () => {
                 },
             };
 
-            add(serviceOne, serviceTwo);
+            manager.add(serviceOne, serviceTwo);
         }).toThrow();
     });
 
@@ -340,7 +345,7 @@ describe("manager", () => {
                 },
             };
 
-            add(pluginOne, pluginTwo);
+            manager.add(pluginOne, pluginTwo);
         }).toThrow();
     });
 
@@ -355,7 +360,7 @@ describe("manager", () => {
                 },
             };
 
-            add(component, component);
+            manager.add(component, component);
         }).toThrow();
     });
 
@@ -405,12 +410,12 @@ describe("manager", () => {
             },
         };
 
-        add(service, plugin, component, dependency);
+        manager.add(service, plugin, component, dependency);
 
-        remove(service);
-        remove(plugin);
-        remove(component);
-        remove(dependency);
+        manager.remove(service);
+        manager.remove(plugin);
+        manager.remove(component);
+        manager.remove(dependency);
 
         expect(manager.services.installed.has(type)).toBe(false);
         expect(manager.services.waiting.has(type)).toBe(false);
@@ -474,9 +479,9 @@ describe("manager", () => {
             },
         };
 
-        add(service, plugin, component, dependency);
+        manager.add(service, plugin, component, dependency);
 
-        remove(dependency);
+        manager.remove(dependency);
 
         expect(manager.services.installed.has(type)).toBe(false);
         expect(manager.services.waiting.has(type)).toBe(true);
@@ -537,9 +542,9 @@ describe("manager", () => {
             },
         };
 
-        add(service, plugin, component, dependency);
+        manager.add(service, plugin, component, dependency);
 
-        reset();
+        manager.reset();
 
         expect(manager.services.installed.has(type)).toBe(false);
         expect(manager.services.waiting.has(type)).toBe(false);
@@ -597,7 +602,7 @@ describe("manager", () => {
             },
         };
 
-        add(plugin, service, component);
+        manager.add(plugin, service, component);
 
         expect(manager.services.installed.has(type)).toBe(false);
         expect(manager.services.waiting.has(type)).toBe(true);
@@ -697,21 +702,21 @@ describe("manager", () => {
             },
         }));
 
-        add(...components.slice(0, types.length / 2));
-        add(...services.slice(0, types.length / 2));
-        add(...plugins.slice(0, types.length / 2));
+        manager.add(...components.slice(0, types.length / 2));
+        manager.add(...services.slice(0, types.length / 2));
+        manager.add(...plugins.slice(0, types.length / 2));
 
-        add(
+        manager.add(
             ...components.slice(types.length / 2),
             ...services.slice(types.length / 2),
             ...plugins.slice(types.length / 2)
         );
 
-        remove(...components.slice(0, types.length / 2));
-        remove(...services.slice(0, types.length / 2));
-        remove(...plugins.slice(0, types.length / 2));
+        manager.remove(...components.slice(0, types.length / 2));
+        manager.remove(...services.slice(0, types.length / 2));
+        manager.remove(...plugins.slice(0, types.length / 2));
 
-        remove(
+        manager.remove(
             ...components.slice(types.length / 2),
             ...services.slice(types.length / 2),
             ...plugins.slice(types.length / 2)
