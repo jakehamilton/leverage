@@ -591,4 +591,7 @@ class Manager {
     }
 }
 
-module.exports = new Manager();
+module.exports = {
+    default: new Manager(),
+    Manager,
+};

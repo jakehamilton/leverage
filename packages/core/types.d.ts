@@ -66,6 +66,8 @@ export interface Manager {
     reset(): void;
 }
 
+export class Manager implements Manager {}
+
 export interface UnitDependencies {
     plugins: Array<string>;
     services: Array<string>;

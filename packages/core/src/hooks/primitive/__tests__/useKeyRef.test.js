@@ -1,6 +1,12 @@
-const { add, useConfig, useKeyRef, useInstallEffect } = require("../../..");
+const { Manager, useConfig, useKeyRef, useInstallEffect } = require("../../..");
+
+let manager;
 
 describe("useKeyRef", () => {
+    beforeEach(() => {
+        manager = new Manager();
+    });
+
     it("should create a ref", () => {
         const is = "plugin";
         const type = "http";
@@ -17,7 +23,7 @@ describe("useKeyRef", () => {
             },
         };
 
-        add(plugin);
+        manager.add(plugin);
 
         expect(ref).toEqual({
             current: value,
@@ -40,7 +46,7 @@ describe("useKeyRef", () => {
             },
         };
 
-        add(plugin);
+        manager.add(plugin);
 
         expect(ref).toEqual({
             current: value,
@@ -64,7 +70,7 @@ describe("useKeyRef", () => {
             },
         };
 
-        add(plugin);
+        manager.add(plugin);
 
         expect(refOne).toBe(refTwo);
     });
@@ -89,7 +95,7 @@ describe("useKeyRef", () => {
             },
         };
 
-        add(plugin);
+        manager.add(plugin);
 
         expect(refOne).toBe(refTwo);
     });
@@ -119,7 +125,7 @@ describe("useKeyRef", () => {
             },
         };
 
-        add(plugin, component);
+        manager.add(plugin, component);
 
         expect(refOne).toBe(refTwo);
     });

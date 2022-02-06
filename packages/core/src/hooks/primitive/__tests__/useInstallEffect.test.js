@@ -1,6 +1,12 @@
-const { add, remove, useConfig, useInstallEffect } = require("../../..");
+const { Manager, useConfig, useInstallEffect } = require("../../..");
+
+let manager;
 
 describe("useInstallEffect", () => {
+    beforeEach(() => {
+        manager = new Manager();
+    });
+
     it("should execute install effects", () => {
         const is = "plugin";
         const type = "http";
@@ -13,7 +19,7 @@ describe("useInstallEffect", () => {
             },
         };
 
-        add(plugin);
+        manager.add(plugin);
 
         expect(effect).toHaveBeenCalled();
     });
@@ -30,9 +36,9 @@ describe("useInstallEffect", () => {
             },
         };
 
-        add(plugin);
+        manager.add(plugin);
 
-        remove(plugin);
+        manager.remove(plugin);
 
         expect(cleanup).toHaveBeenCalled();
     });
@@ -53,11 +59,11 @@ describe("useInstallEffect", () => {
                 },
             };
 
-            add(plugin);
+            manager.add(plugin);
 
             expect(effect).toHaveBeenCalled();
 
-            remove(plugin);
+            manager.remove(plugin);
         }).not.toThrow();
     });
 
@@ -77,9 +83,9 @@ describe("useInstallEffect", () => {
                 },
             };
 
-            add(plugin);
+            manager.add(plugin);
 
-            remove(plugin);
+            manager.remove(plugin);
 
             expect(effect).toHaveBeenCalled();
         }).not.toThrow();
@@ -109,9 +115,9 @@ describe("useInstallEffect", () => {
                 },
             };
 
-            add(plugin, component);
+            manager.add(plugin, component);
 
-            remove(component);
+            manager.remove(component);
         }).toThrow();
     });
 });

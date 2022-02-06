@@ -1,12 +1,18 @@
 const {
-    add,
+    Manager,
     useConfig,
     useDependencies,
     usePlugin,
     useInstallEffect,
 } = require("../../..");
 
+let manager;
+
 describe("usePlugin", () => {
+    beforeEach(() => {
+        manager = new Manager();
+    });
+
     it("should get a plugin after init", () => {
         let plugin;
 
@@ -29,7 +35,7 @@ describe("usePlugin", () => {
             },
         };
 
-        add(http, websocket);
+        manager.add(http, websocket);
 
         expect(plugin).toBe(websocket);
     });
@@ -47,7 +53,7 @@ describe("usePlugin", () => {
                 },
             };
 
-            add(plugin);
+            manager.add(plugin);
         }).toThrow();
     });
 
@@ -63,7 +69,7 @@ describe("usePlugin", () => {
                 },
             };
 
-            add(plugin);
+            manager.add(plugin);
         }).toThrow();
     });
 });

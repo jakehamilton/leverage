@@ -1,6 +1,12 @@
-const { add, useConfig, useHooks } = require("../../..");
+const { Manager, useConfig, useHooks } = require("../../..");
+
+let manager;
 
 describe.only("useHooks", () => {
+    beforeEach(() => {
+        manager = new Manager();
+    });
+
     it("should return a withHooks helper", () => {
         let withHooks;
 
@@ -15,7 +21,7 @@ describe.only("useHooks", () => {
             },
         };
 
-        add(unit);
+        manager.add(unit);
 
         expect(withHooks).toBeDefined();
         expect(typeof withHooks).toEqual("function");

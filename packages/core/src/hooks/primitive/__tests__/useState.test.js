@@ -1,6 +1,12 @@
-const { add, useConfig, useState } = require("../../..");
+const { Manager, useConfig, useState } = require("../../..");
+
+let manager;
 
 describe("useState", () => {
+    beforeEach(() => {
+        manager = new Manager();
+    });
+
     it("should start with a default value", () => {
         const is = "plugin";
         const type = "http";
@@ -23,7 +29,7 @@ describe("useState", () => {
             },
         };
 
-        add(plugin, component);
+        manager.add(plugin, component);
 
         expect(state).toEqual(value);
     });
@@ -56,7 +62,7 @@ describe("useState", () => {
             },
         };
 
-        add(plugin, component);
+        manager.add(plugin, component);
 
         expect(state).toEqual(1);
     });
@@ -73,7 +79,7 @@ describe("useState", () => {
                 },
             };
 
-            add(plugin);
+            manager.add(plugin);
         }).toThrow();
     });
 });

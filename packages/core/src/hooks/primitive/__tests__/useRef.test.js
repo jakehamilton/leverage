@@ -1,6 +1,12 @@
-const { add, useConfig, useRef, useInstallEffect } = require("../../..");
+const { Manager, useConfig, useRef, useInstallEffect } = require("../../..");
+
+let manager;
 
 describe("useRef", () => {
+    beforeEach(() => {
+        manager = new Manager();
+    });
+
     it("should create a ref", () => {
         const is = "plugin";
         const type = "http";
@@ -23,7 +29,7 @@ describe("useRef", () => {
             },
         };
 
-        add(plugin, component);
+        manager.add(plugin, component);
 
         expect(ref).toEqual({
             current: value,
@@ -52,7 +58,7 @@ describe("useRef", () => {
             },
         };
 
-        add(plugin, component);
+        manager.add(plugin, component);
 
         expect(ref).toEqual({
             current: value,
@@ -87,7 +93,7 @@ describe("useRef", () => {
             },
         };
 
-        add(plugin, componentOne, componentTwo);
+        manager.add(plugin, componentOne, componentTwo);
 
         expect(refs[0]).toEqual({
             current: value,
@@ -112,7 +118,7 @@ describe("useRef", () => {
                 },
             };
 
-            add(plugin);
+            manager.add(plugin);
         }).toThrow();
     });
 });

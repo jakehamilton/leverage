@@ -1,6 +1,12 @@
-const { add, remove, useConfig, useEmitter, emitter } = require("../../..");
+const { Manager, useConfig, useEmitter, emitter } = require("../../..");
+
+let manager;
 
 describe("useInstallEffect", () => {
+    beforeEach(() => {
+        manager = new Manager();
+    });
+
     it("should execute install effects", () => {
         const is = "plugin";
         const type = "http";
@@ -15,7 +21,7 @@ describe("useInstallEffect", () => {
             },
         };
 
-        add(plugin);
+        manager.add(plugin);
 
         expect(emitterFromHook).toBeDefined();
         expect(emitterFromHook).toBe(emitter);

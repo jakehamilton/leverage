@@ -1,6 +1,12 @@
-const { add, emit, useConfig, useEvent } = require("../../..");
+const { Manager, useConfig, useEvent } = require("../../..");
+
+let manager;
 
 describe("useEvent", () => {
+    beforeEach(() => {
+        manager = new Manager();
+    });
+
     it("should handle a named event", () => {
         const mock = jest.fn();
 
@@ -15,9 +21,9 @@ describe("useEvent", () => {
             },
         };
 
-        add(unit);
+        manager.add(unit);
 
-        emit("act");
+        manager.emit("act");
 
         expect(mock).toHaveBeenCalled();
     });
@@ -36,10 +42,10 @@ describe("useEvent", () => {
             },
         };
 
-        add(unit);
+        manager.add(unit);
 
-        emit("act");
-        emit("other-act");
+        manager.emit("act");
+        manager.emit("other-act");
 
         expect(mock).toHaveBeenCalledTimes(2);
     });
@@ -59,13 +65,13 @@ describe("useEvent", () => {
             },
         };
 
-        add(unit);
+        manager.add(unit);
 
-        emit("act");
+        manager.emit("act");
 
         unsubscribe();
 
-        emit("act");
+        manager.emit("act");
 
         expect(mock).toHaveBeenCalledTimes(1);
     });
@@ -85,9 +91,9 @@ describe("useEvent", () => {
             },
         };
 
-        add(unit);
+        manager.add(unit);
 
-        emit("act");
+        manager.emit("act");
 
         expect(mock).not.toHaveBeenCalled();
     });
