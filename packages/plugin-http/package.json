@@ -21,6 +21,7 @@
         "@leverage/core": "^4.0.0",
         "@littlethings/log": "^2.4.1",
         "fastify": "^3.17.0",
-        "middie": "^5.2.0"
+        "middie": "^5.2.0",
+        "@types/connect": "^3.4.35"
     }
 }

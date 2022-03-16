@@ -12,7 +12,7 @@ export interface WebSocketConfig {
     event: string;
 }
 
-export interface WebSocketUnitConfig extends UnitConfig {
+export interface WebSocketUnitConfig extends UnitConfig<"plugin", "websocket"> {
     websocket: WebSocketConfig;
 }
 

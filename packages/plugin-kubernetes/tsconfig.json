@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "outDir": "./dist",
+        "moduleResolution": "node",
+        "strict": true,
+        "allowSyntheticDefaultImports": true,
+        "declaration": true,
+        "lib": ["ESNext"],
+        "target": "ES2015"
+    },
+    "include": ["src/**/*"],
+    "exclude": ["src/**/*.spec.ts"]
+}

@@ -1,0 +1,40 @@
+{
+    "name": "@leverage/kubernetes",
+    "version": "1.0.0",
+    "description": "Manage Kubernetes manifests with Leverage.",
+    "main": "dist/plugin.cjs.js",
+    "scripts": {
+        "build": "npm run build:lib && npm run build:types",
+        "build:lib": "vite build",
+        "build:types": "tsc -p . --emitDeclarationOnly",
+        "test": "vitest"
+    },
+    "keywords": [
+        "leverage",
+        "kubernetes",
+        "typescript",
+        "generate"
+    ],
+    "author": "Jake Hamilton <jake.hamilton@hey.com>",
+    "license": "Apache-2.0",
+    "exports": {
+        ".": {
+            "import": "./dist/plugin.es.js",
+            "require": "./dist/plugin.cjs.js",
+            "default": "./dist/plugin.umd.js"
+        }
+    },
+    "devDependencies": {
+        "typescript": "^4.6.0-dev.20220205",
+        "vite": "^2.8.0-beta.5",
+        "vitest": "^0.6.0"
+    },
+    "dependencies": {
+        "@senchou/core": "^1.1.0",
+        "@leverage/core": "^4.0.5",
+        "mkdirp": "^1.0.4",
+        "@types/mkdirp": "^1.0.2",
+        "js-yaml": "^4.1.0",
+        "@types/js-yaml": "^4.0.5"
+    }
+}
