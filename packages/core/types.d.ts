@@ -110,6 +110,7 @@ export interface InitializedUnit<Is extends UnitIs, Type extends string>
 
 export interface Plugin<Type extends string> extends Unit<"plugin", Type> {
     install?: (unit: InitializedUnit<"component", Type>) => void;
+    uninstall?: (unit: InitializedUnit<"component", Type>) => void;
 }
 
 export type Component<Type extends string> = Unit<"component", Type>;
@@ -132,7 +133,10 @@ export interface SignalTarget {
 
 export type SetStateCallback<T> = (newValue: T) => void;
 
-export function useConfig(): UnitConfig<UnitIs, string>;
+export function useConfig<Is extends UnitIs, Type extends string>(): UnitConfig<
+    Is,
+    Type
+>;
 export function useConfig<TargetUnit extends InitializedUnit<UnitIs, string>>(
     unit: TargetUnit
 ): TargetUnit["__hooks_data__"]["config"];
@@ -146,7 +150,9 @@ export function useDependencies(): UnitDependencies;
 export function useDependencies(
     dependencies: Partial<UnitDependencies>
 ): UnitDependencies;
-export function useDependencies(Unit): UnitDependencies;
+export function useDependencies<Is extends UnitIs, Type extends string>(
+    unit: Unit<Is, Type>
+): UnitDependencies;
 
 export function useEffect(callback: EffectCallback): void;
 export function useEffect(
@@ -218,7 +224,7 @@ export function off(event: "*", handler: WildCardEventHandler): void;
 
 export function once(event: EventType, handler: EventHandler<any>): void;
 
-export function emit<Payload = any>(event: EventType, payload?: Payload): void;
+export function emit(event: EventType): void;
 
 interface EventEmitter {
     all: Emitter["all"];
