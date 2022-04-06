@@ -70,7 +70,10 @@ export interface KubernetesConfig {
         helm?: {
             name: string;
             chart: string;
-            values?: object;
+            repository?: {
+                name: string;
+                url: string;
+            };
             args?: Array<string>;
         };
         chart?: {

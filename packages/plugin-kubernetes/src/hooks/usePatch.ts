@@ -10,7 +10,7 @@ const usePatch = (config: UsePatchOptions) => {
         is: "component",
         type: "kubernetes",
         kubernetes: {
-            type: "kubernetes",
+            type: "patch",
             patch: {
                 ...config,
             },
