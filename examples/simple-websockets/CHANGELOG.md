@@ -1,5 +1,12 @@
 # Change Log
 
+## 1.1.1
+
+### Chores
+
+- _(deps)_: bump minimist in /examples/simple-websockets
+
+
 ## 1.1.0
 
 ### Features

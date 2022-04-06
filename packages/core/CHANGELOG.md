@@ -1,5 +1,14 @@
 # Change Log
 
+## 4.1.1
+
+### Chores
+
+- _(deps)_: bump minimist from 1.2.5 to 1.2.6 in /packages/core
+
+- _(deps)_: bump ansi-regex from 5.0.0 to 5.0.1 in /packages/core
+
+
 ## 4.1.0
 
 ### Features
