@@ -26,7 +26,7 @@ import {
 } from "./components/template";
 import { KubernetesConfig } from "./config";
 import senchou from "@senchou/core";
-import { render, TemplatedValue } from "@senchou/helm";
+import { TemplatedValue } from "@senchou/helm";
 import { isPatchComponent, PatchComponent } from ".";
 import { renderChart } from "./util/chart";
 
@@ -48,7 +48,7 @@ export type KubernetesRenderOptions =
           type: "kubernetes";
           name?: string;
           selector?: (
-              config: KubernetesConfig["kubernetes"]["kubernetes"]
+              config: NonNullable<KubernetesConfig["kubernetes"]["kubernetes"]>
           ) => boolean;
           callback?: (resources: Array<object>) => void;
       }
@@ -56,7 +56,7 @@ export type KubernetesRenderOptions =
           type: "helm";
           name?: string;
           selector?: (
-              config: KubernetesConfig["kubernetes"]["helm"]
+              config: NonNullable<KubernetesConfig["kubernetes"]["helm"]>
           ) => boolean;
           callback?: (
               resources: Array<{
@@ -69,9 +69,10 @@ export type KubernetesRenderOptions =
           type: "chart";
           name?: string;
           selector?: (
-              config:
+              config: NonNullable<
                   | KubernetesConfig["kubernetes"]["chart"]
                   | KubernetesConfig["kubernetes"]["template"]
+              >
           ) => boolean;
           callback?: (
               outputs: Array<{
@@ -84,9 +85,10 @@ export type KubernetesRenderOptions =
           type: "all";
           name?: string;
           selector?: (
-              config:
+              config: NonNullable<
                   | KubernetesConfig["kubernetes"]["kubernetes"]
                   | KubernetesConfig["kubernetes"]["helm"]
+              >
           ) => boolean;
           callback?: (resources: {
               kubernetes: Array<object>;
@@ -132,7 +134,7 @@ export const init: KubernetesPlugin["init"] = () => {
                         // doesn't appear to work correctly.
                         const config = useConfig<"component", "kubernetes">(
                             component
-                        ).kubernetes!.kubernetes;
+                        ).kubernetes!.kubernetes!;
 
                         if (
                             options.selector === undefined ||
@@ -150,7 +152,7 @@ export const init: KubernetesPlugin["init"] = () => {
                 if (options.name === undefined || options.name === name) {
                     const config = useConfig<"component", "kubernetes">(
                         component
-                    ).kubernetes!.helm;
+                    ).kubernetes!.helm!;
 
                     if (
                         options.selector === undefined ||
@@ -167,7 +169,7 @@ export const init: KubernetesPlugin["init"] = () => {
                 if (options.name === undefined || options.name === name) {
                     const config = useConfig<"component", "kubernetes">(
                         component
-                    ).kubernetes!.chart;
+                    ).kubernetes!.chart!;
 
                     if (
                         options.selector === undefined ||
@@ -234,7 +236,6 @@ export const init: KubernetesPlugin["init"] = () => {
 
                 const tmp = renderChart(
                     chartConfig,
-                    chart.values?.(),
                     templates.current.get(config.chart)
                 );
 
@@ -243,6 +244,10 @@ export const init: KubernetesPlugin["init"] = () => {
                 chartTarget = tmp;
 
                 tmpDirectories.push(tmp);
+            } else if (config.repository !== undefined) {
+                execSync(
+                    `helm repo add ${config.repository.name} ${config.repository.url}`
+                );
             }
 
             const promise = senchou.import
@@ -271,7 +276,6 @@ export const init: KubernetesPlugin["init"] = () => {
 
             const tmp = renderChart(
                 chartConfig,
-                chart.values?.(),
                 templates.current.get(chartConfig.name)
             );
 

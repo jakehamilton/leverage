@@ -1,8 +1,6 @@
 import { Component, UnitIs, Unit, useConfig } from "@leverage/core";
 
-export interface ChartComponent extends Component<"kubernetes"> {
-    values?: () => object;
-}
+export interface ChartComponent extends Component<"kubernetes"> {}
 
 export const isChartComponent = <Is extends UnitIs, Type extends string>(
     unit: Unit<Is, Type>

@@ -5,12 +5,11 @@ import yaml from "js-yaml";
 import mkdirp from "mkdirp";
 import { render } from "@senchou/helm";
 import { useConfig } from "@leverage/core";
-import { HelmMeta, KubernetesConfig } from "../config";
+import { KubernetesConfig } from "../config";
 import { ChartTemplateComponent } from "../components/template";
 
 export const renderChart = (
     config: NonNullable<KubernetesConfig["kubernetes"]["chart"]>,
-    values: object = {},
     templates: Array<ChartTemplateComponent> = []
 ) => {
     const tmp = fs.mkdtempSync(

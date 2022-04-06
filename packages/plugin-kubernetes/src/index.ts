@@ -13,6 +13,8 @@ export { default as useChartTemplate } from "./hooks/useChartTemplate";
 export { default as useKubernetes } from "./hooks/useKubernetes";
 export { default as usePatch } from "./hooks/usePatch";
 
+export { default as render } from "./helpers/render";
+
 export type { KubernetesRenderOptions } from "./plugin";
 export { KubernetesPlugin, UNKNOWN_NAME } from "./plugin";
 
