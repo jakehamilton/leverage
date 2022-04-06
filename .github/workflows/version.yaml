@@ -35,7 +35,7 @@ jobs:
       - name: Configure Node
         uses: actions/setup-node@v1
         with:
-          node-version: "12.x"
+          node-version: "17.x"
       - name: Configure NPM
         run: |
           npm i -g npm@7
