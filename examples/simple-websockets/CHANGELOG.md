@@ -1,5 +1,12 @@
 # Change Log
 
+## 1.1.0
+
+### Features
+
+- start on kubernetes plugin
+
+
 ## 1.0.1
 
 ### Chores

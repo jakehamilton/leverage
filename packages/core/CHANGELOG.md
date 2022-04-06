@@ -1,5 +1,14 @@
 # Change Log
 
+## 4.1.0
+
+### Features
+
+- start on kubernetes plugin
+
+- export Manager class
+
+
 ## 4.0.5
 
 ### Fixes

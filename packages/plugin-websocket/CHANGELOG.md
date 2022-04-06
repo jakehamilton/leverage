@@ -1,5 +1,12 @@
 # Change Log
 
+## 2.1.0
+
+### Features
+
+- start on kubernetes plugin
+
+
 ## 2.0.4
 
 ### Fixes
