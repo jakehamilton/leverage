@@ -15,8 +15,8 @@ export { default as usePatch } from "./hooks/usePatch";
 
 export { default as render } from "./helpers/render";
 
-export type { KubernetesRenderOptions } from "./plugin";
-export { KubernetesPlugin, UNKNOWN_NAME } from "./plugin";
+export type { KubernetesRenderOptions, KubernetesPlugin } from "./plugin";
+export { UNKNOWN_NAME } from "./plugin";
 
 export default plugin;
 

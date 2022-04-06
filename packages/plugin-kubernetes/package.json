@@ -17,6 +17,9 @@
     ],
     "author": "Jake Hamilton <jake.hamilton@hey.com>",
     "license": "Apache-2.0",
+    "publishConfig": {
+        "access": "public"
+    },
     "exports": {
         ".": {
             "import": "./dist/plugin.es.js",

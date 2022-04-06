@@ -9,7 +9,12 @@ export default defineConfig({
             formats: ["es", "umd", "cjs"],
         },
         rollupOptions: {
-            external: ["@senchou/core", "@leverage/core", "@senchou/helm"],
+            external: [
+                "@senchou/core",
+                "@leverage/core",
+                "@senchou/helm",
+                "child_process",
+            ],
         },
     },
 });
