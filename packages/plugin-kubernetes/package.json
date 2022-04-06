@@ -3,6 +3,7 @@
     "version": "1.0.1",
     "description": "Manage Kubernetes manifests with Leverage.",
     "main": "dist/plugin.cjs.js",
+    "types": "./dist/index.d.ts",
     "scripts": {
         "build": "npm run build:lib && npm run build:types",
         "build:lib": "vite build",
@@ -20,6 +21,11 @@
     "publishConfig": {
         "access": "public"
     },
+    "files": [
+        "bin/**/*",
+        "dist/**/*",
+        "CHANGELOG.md"
+    ],
     "exports": {
         ".": {
             "import": "./dist/plugin.es.js",
