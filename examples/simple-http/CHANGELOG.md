@@ -1,5 +1,12 @@
 # Change Log
 
+## 1.1.1
+
+### Chores
+
+- bump dependencies
+
+
 ## 1.1.0
 
 ### Features

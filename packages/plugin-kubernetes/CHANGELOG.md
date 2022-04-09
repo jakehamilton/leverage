@@ -1,5 +1,12 @@
 # Change Log
 
+## 1.1.0
+
+### Features
+
+- allow patching of helm-generated manifests
+
+
 ## 1.0.2
 
 ### Fixes

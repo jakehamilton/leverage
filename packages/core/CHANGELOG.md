@@ -1,5 +1,12 @@
 # Change Log
 
+## 4.1.2
+
+### Chores
+
+- bump dependencies
+
+
 ## 4.1.1
 
 ### Chores
