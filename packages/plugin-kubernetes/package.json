@@ -44,6 +44,7 @@
         "mkdirp": "^1.0.4",
         "@types/mkdirp": "^1.0.2",
         "js-yaml": "^4.1.0",
-        "@types/js-yaml": "^4.0.5"
+        "@types/js-yaml": "^4.0.5",
+        "@senchou/helm": "^1.0.1"
     }
 }

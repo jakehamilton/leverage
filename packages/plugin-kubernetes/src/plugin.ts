@@ -259,7 +259,13 @@ export const init: KubernetesPlugin["init"] = () => {
                 })
                 .then((manifests) => ({
                     name: config.name,
-                    manifests,
+                    manifests: (manifests as Array<object>).map((manifest) => {
+                        for (const patch of patches.current) {
+                            patch.patch?.(manifest);
+                        }
+
+                        return manifest;
+                    }),
                 }));
 
             helmManifestPromises.push(promise);

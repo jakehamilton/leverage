@@ -13,7 +13,7 @@ import kubernetes, {
     useKubernetes,
     usePatch,
 } from "..";
-import { isPod, Pod } from "./util/k8s";
+import { isPod, isServiceAccount, Pod } from "./util/k8s";
 import { ChartTemplateComponent } from "../components/template";
 import { template } from "@senchou/helm";
 
@@ -565,7 +565,7 @@ describe("PluginKubernetes", () => {
                           "app.kubernetes.io/instance": "my-traefik",
                           "app.kubernetes.io/managed-by": "Helm",
                           "app.kubernetes.io/name": "traefik",
-                          "helm.sh/chart": "traefik-10.11.1",
+                          "helm.sh/chart": "traefik-10.19.4",
                         },
                         "name": "my-traefik",
                       },
@@ -578,7 +578,7 @@ describe("PluginKubernetes", () => {
                           "app.kubernetes.io/instance": "my-traefik",
                           "app.kubernetes.io/managed-by": "Helm",
                           "app.kubernetes.io/name": "traefik",
-                          "helm.sh/chart": "traefik-10.11.1",
+                          "helm.sh/chart": "traefik-10.19.4",
                         },
                         "name": "my-traefik",
                       },
@@ -656,7 +656,7 @@ describe("PluginKubernetes", () => {
                           "app.kubernetes.io/instance": "my-traefik",
                           "app.kubernetes.io/managed-by": "Helm",
                           "app.kubernetes.io/name": "traefik",
-                          "helm.sh/chart": "traefik-10.11.1",
+                          "helm.sh/chart": "traefik-10.19.4",
                         },
                         "name": "my-traefik",
                       },
@@ -682,7 +682,7 @@ describe("PluginKubernetes", () => {
                           "app.kubernetes.io/instance": "my-traefik",
                           "app.kubernetes.io/managed-by": "Helm",
                           "app.kubernetes.io/name": "traefik",
-                          "helm.sh/chart": "traefik-10.11.1",
+                          "helm.sh/chart": "traefik-10.19.4",
                         },
                         "name": "my-traefik",
                       },
@@ -713,7 +713,7 @@ describe("PluginKubernetes", () => {
                               "app.kubernetes.io/instance": "my-traefik",
                               "app.kubernetes.io/managed-by": "Helm",
                               "app.kubernetes.io/name": "traefik",
-                              "helm.sh/chart": "traefik-10.11.1",
+                              "helm.sh/chart": "traefik-10.19.4",
                             },
                           },
                           "spec": {
@@ -722,10 +722,10 @@ describe("PluginKubernetes", () => {
                                 "args": [
                                   "--global.checknewversion",
                                   "--global.sendanonymoususage",
-                                  "--entryPoints.metrics.address=:9100/tcp",
-                                  "--entryPoints.traefik.address=:9000/tcp",
-                                  "--entryPoints.web.address=:8000/tcp",
-                                  "--entryPoints.websecure.address=:8443/tcp",
+                                  "--entrypoints.metrics.address=:9100/tcp",
+                                  "--entrypoints.traefik.address=:9000/tcp",
+                                  "--entrypoints.web.address=:8000/tcp",
+                                  "--entrypoints.websecure.address=:8443/tcp",
                                   "--api.dashboard=true",
                                   "--ping=true",
                                   "--metrics.prometheus=true",
@@ -733,7 +733,7 @@ describe("PluginKubernetes", () => {
                                   "--providers.kubernetescrd",
                                   "--providers.kubernetesingress",
                                 ],
-                                "image": "traefik:2.6.0",
+                                "image": "traefik:2.6.3",
                                 "imagePullPolicy": "IfNotPresent",
                                 "livenessProbe": {
                                   "failureThreshold": 3,
@@ -836,7 +836,7 @@ describe("PluginKubernetes", () => {
                               "app.kubernetes.io/instance": "my-traefik",
                               "app.kubernetes.io/managed-by": "Helm",
                               "app.kubernetes.io/name": "traefik",
-                              "helm.sh/chart": "traefik-10.11.1",
+                              "helm.sh/chart": "traefik-10.19.4",
                             },
                             "name": "my-traefik",
                           },
@@ -879,7 +879,7 @@ describe("PluginKubernetes", () => {
                           "app.kubernetes.io/instance": "my-traefik",
                           "app.kubernetes.io/managed-by": "Helm",
                           "app.kubernetes.io/name": "traefik",
-                          "helm.sh/chart": "traefik-10.11.1",
+                          "helm.sh/chart": "traefik-10.19.4",
                         },
                         "name": "my-traefik-dashboard",
                       },
@@ -1392,6 +1392,398 @@ describe("PluginKubernetes", () => {
                   ]
                 `);
 
+                done();
+            },
+        });
+    });
+
+    it("supports patching helm resources", (done) => {
+        const helm: HelmComponent = {
+            init: () => {
+                useHelm({
+                    name: "my-traefik",
+                    chart: "traefik/traefik",
+                    repository: {
+                        name: "traefik",
+                        url: "https://helm.traefik.io/traefik",
+                    },
+                });
+            },
+        };
+
+        const patch: PatchComponent = {
+            init: () => {
+                usePatch({
+                    name: "my-patch",
+                });
+            },
+            patch: (manifest) => {
+                if (isServiceAccount(manifest)) {
+                    manifest.metadata.labels = {
+                        ...manifest.metadata.labels,
+                        "x-patched-by": "leverage",
+                    };
+                }
+            },
+        };
+
+        manager.add(kubernetes, helm, patch);
+
+        manager.emit("kubernetes:render", {
+            type: "helm",
+            callback: (resources) => {
+                expect(resources[0]).toBeTruthy();
+                expect(resources[0].name).toBe("my-traefik");
+                expect(resources[0].manifests).toMatchInlineSnapshot(`
+                  [
+                    {
+                      "apiVersion": "v1",
+                      "kind": "ServiceAccount",
+                      "metadata": {
+                        "annotations": null,
+                        "labels": {
+                          "app.kubernetes.io/instance": "my-traefik",
+                          "app.kubernetes.io/managed-by": "Helm",
+                          "app.kubernetes.io/name": "traefik",
+                          "helm.sh/chart": "traefik-10.19.4",
+                          "x-patched-by": "leverage",
+                        },
+                        "name": "my-traefik",
+                      },
+                    },
+                    {
+                      "apiVersion": "rbac.authorization.k8s.io/v1",
+                      "kind": "ClusterRole",
+                      "metadata": {
+                        "labels": {
+                          "app.kubernetes.io/instance": "my-traefik",
+                          "app.kubernetes.io/managed-by": "Helm",
+                          "app.kubernetes.io/name": "traefik",
+                          "helm.sh/chart": "traefik-10.19.4",
+                        },
+                        "name": "my-traefik",
+                      },
+                      "rules": [
+                        {
+                          "apiGroups": [
+                            "",
+                          ],
+                          "resources": [
+                            "services",
+                            "endpoints",
+                            "secrets",
+                          ],
+                          "verbs": [
+                            "get",
+                            "list",
+                            "watch",
+                          ],
+                        },
+                        {
+                          "apiGroups": [
+                            "extensions",
+                            "networking.k8s.io",
+                          ],
+                          "resources": [
+                            "ingresses",
+                            "ingressclasses",
+                          ],
+                          "verbs": [
+                            "get",
+                            "list",
+                            "watch",
+                          ],
+                        },
+                        {
+                          "apiGroups": [
+                            "extensions",
+                            "networking.k8s.io",
+                          ],
+                          "resources": [
+                            "ingresses/status",
+                          ],
+                          "verbs": [
+                            "update",
+                          ],
+                        },
+                        {
+                          "apiGroups": [
+                            "traefik.containo.us",
+                          ],
+                          "resources": [
+                            "ingressroutes",
+                            "ingressroutetcps",
+                            "ingressrouteudps",
+                            "middlewares",
+                            "middlewaretcps",
+                            "tlsoptions",
+                            "tlsstores",
+                            "traefikservices",
+                            "serverstransports",
+                          ],
+                          "verbs": [
+                            "get",
+                            "list",
+                            "watch",
+                          ],
+                        },
+                      ],
+                    },
+                    {
+                      "apiVersion": "rbac.authorization.k8s.io/v1",
+                      "kind": "ClusterRoleBinding",
+                      "metadata": {
+                        "labels": {
+                          "app.kubernetes.io/instance": "my-traefik",
+                          "app.kubernetes.io/managed-by": "Helm",
+                          "app.kubernetes.io/name": "traefik",
+                          "helm.sh/chart": "traefik-10.19.4",
+                        },
+                        "name": "my-traefik",
+                      },
+                      "roleRef": {
+                        "apiGroup": "rbac.authorization.k8s.io",
+                        "kind": "ClusterRole",
+                        "name": "my-traefik",
+                      },
+                      "subjects": [
+                        {
+                          "kind": "ServiceAccount",
+                          "name": "my-traefik",
+                          "namespace": "default",
+                        },
+                      ],
+                    },
+                    {
+                      "apiVersion": "apps/v1",
+                      "kind": "Deployment",
+                      "metadata": {
+                        "annotations": null,
+                        "labels": {
+                          "app.kubernetes.io/instance": "my-traefik",
+                          "app.kubernetes.io/managed-by": "Helm",
+                          "app.kubernetes.io/name": "traefik",
+                          "helm.sh/chart": "traefik-10.19.4",
+                        },
+                        "name": "my-traefik",
+                      },
+                      "spec": {
+                        "minReadySeconds": 0,
+                        "replicas": 1,
+                        "selector": {
+                          "matchLabels": {
+                            "app.kubernetes.io/instance": "my-traefik",
+                            "app.kubernetes.io/name": "traefik",
+                          },
+                        },
+                        "strategy": {
+                          "rollingUpdate": {
+                            "maxSurge": 1,
+                            "maxUnavailable": 1,
+                          },
+                          "type": "RollingUpdate",
+                        },
+                        "template": {
+                          "metadata": {
+                            "annotations": {
+                              "prometheus.io/path": "/metrics",
+                              "prometheus.io/port": "9100",
+                              "prometheus.io/scrape": "true",
+                            },
+                            "labels": {
+                              "app.kubernetes.io/instance": "my-traefik",
+                              "app.kubernetes.io/managed-by": "Helm",
+                              "app.kubernetes.io/name": "traefik",
+                              "helm.sh/chart": "traefik-10.19.4",
+                            },
+                          },
+                          "spec": {
+                            "containers": [
+                              {
+                                "args": [
+                                  "--global.checknewversion",
+                                  "--global.sendanonymoususage",
+                                  "--entrypoints.metrics.address=:9100/tcp",
+                                  "--entrypoints.traefik.address=:9000/tcp",
+                                  "--entrypoints.web.address=:8000/tcp",
+                                  "--entrypoints.websecure.address=:8443/tcp",
+                                  "--api.dashboard=true",
+                                  "--ping=true",
+                                  "--metrics.prometheus=true",
+                                  "--metrics.prometheus.entrypoint=metrics",
+                                  "--providers.kubernetescrd",
+                                  "--providers.kubernetesingress",
+                                ],
+                                "image": "traefik:2.6.3",
+                                "imagePullPolicy": "IfNotPresent",
+                                "livenessProbe": {
+                                  "failureThreshold": 3,
+                                  "httpGet": {
+                                    "path": "/ping",
+                                    "port": 9000,
+                                  },
+                                  "initialDelaySeconds": 10,
+                                  "periodSeconds": 10,
+                                  "successThreshold": 1,
+                                  "timeoutSeconds": 2,
+                                },
+                                "name": "my-traefik",
+                                "ports": [
+                                  {
+                                    "containerPort": 9100,
+                                    "name": "metrics",
+                                    "protocol": "TCP",
+                                  },
+                                  {
+                                    "containerPort": 9000,
+                                    "name": "traefik",
+                                    "protocol": "TCP",
+                                  },
+                                  {
+                                    "containerPort": 8000,
+                                    "name": "web",
+                                    "protocol": "TCP",
+                                  },
+                                  {
+                                    "containerPort": 8443,
+                                    "name": "websecure",
+                                    "protocol": "TCP",
+                                  },
+                                ],
+                                "readinessProbe": {
+                                  "failureThreshold": 1,
+                                  "httpGet": {
+                                    "path": "/ping",
+                                    "port": 9000,
+                                  },
+                                  "initialDelaySeconds": 10,
+                                  "periodSeconds": 10,
+                                  "successThreshold": 1,
+                                  "timeoutSeconds": 2,
+                                },
+                                "resources": null,
+                                "securityContext": {
+                                  "capabilities": {
+                                    "drop": [
+                                      "ALL",
+                                    ],
+                                  },
+                                  "readOnlyRootFilesystem": true,
+                                  "runAsGroup": 65532,
+                                  "runAsNonRoot": true,
+                                  "runAsUser": 65532,
+                                },
+                                "volumeMounts": [
+                                  {
+                                    "mountPath": "/data",
+                                    "name": "data",
+                                  },
+                                  {
+                                    "mountPath": "/tmp",
+                                    "name": "tmp",
+                                  },
+                                ],
+                              },
+                            ],
+                            "hostNetwork": false,
+                            "securityContext": {
+                              "fsGroup": 65532,
+                            },
+                            "serviceAccountName": "my-traefik",
+                            "terminationGracePeriodSeconds": 60,
+                            "volumes": [
+                              {
+                                "emptyDir": {},
+                                "name": "data",
+                              },
+                              {
+                                "emptyDir": {},
+                                "name": "tmp",
+                              },
+                            ],
+                          },
+                        },
+                      },
+                    },
+                    {
+                      "apiVersion": "v1",
+                      "items": [
+                        {
+                          "apiVersion": "v1",
+                          "kind": "Service",
+                          "metadata": {
+                            "annotations": null,
+                            "labels": {
+                              "app.kubernetes.io/instance": "my-traefik",
+                              "app.kubernetes.io/managed-by": "Helm",
+                              "app.kubernetes.io/name": "traefik",
+                              "helm.sh/chart": "traefik-10.19.4",
+                            },
+                            "name": "my-traefik",
+                          },
+                          "spec": {
+                            "ports": [
+                              {
+                                "name": "web",
+                                "port": 80,
+                                "protocol": "TCP",
+                                "targetPort": "web",
+                              },
+                              {
+                                "name": "websecure",
+                                "port": 443,
+                                "protocol": "TCP",
+                                "targetPort": "websecure",
+                              },
+                            ],
+                            "selector": {
+                              "app.kubernetes.io/instance": "my-traefik",
+                              "app.kubernetes.io/name": "traefik",
+                            },
+                            "type": "LoadBalancer",
+                          },
+                        },
+                      ],
+                      "kind": "List",
+                      "metadata": {
+                        "name": "my-traefik",
+                      },
+                    },
+                    {
+                      "apiVersion": "traefik.containo.us/v1alpha1",
+                      "kind": "IngressRoute",
+                      "metadata": {
+                        "annotations": {
+                          "helm.sh/hook": "post-install,post-upgrade",
+                        },
+                        "labels": {
+                          "app.kubernetes.io/instance": "my-traefik",
+                          "app.kubernetes.io/managed-by": "Helm",
+                          "app.kubernetes.io/name": "traefik",
+                          "helm.sh/chart": "traefik-10.19.4",
+                        },
+                        "name": "my-traefik-dashboard",
+                      },
+                      "spec": {
+                        "entryPoints": [
+                          "traefik",
+                        ],
+                        "routes": [
+                          {
+                            "kind": "Rule",
+                            "match": "PathPrefix(\`/dashboard\`) || PathPrefix(\`/api\`)",
+                            "services": [
+                              {
+                                "kind": "TraefikService",
+                                "name": "api@internal",
+                              },
+                            ],
+                          },
+                        ],
+                      },
+                    },
+                  ]
+                `);
                 done();
             },
         });
