@@ -1,5 +1,12 @@
 # Change Log
 
+## 4.1.3
+
+### Fixes
+
+- add missing export for hooks data symbol
+
+
 ## 4.1.2
 
 ### Chores
