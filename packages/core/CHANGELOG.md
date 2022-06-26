@@ -1,5 +1,12 @@
 # Change Log
 
+## 4.1.4
+
+### Chores
+
+- _(deps)_: bump jsdom from 16.4.0 to 16.7.0 in /packages/core
+
+
 ## 4.1.3
 
 ### Fixes
