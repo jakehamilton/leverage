@@ -1,5 +1,12 @@
 # Change Log
 
+## 1.1.2
+
+### Chores
+
+- _(deps-dev)_: bump vite in /packages/plugin-kubernetes
+
+
 ## 1.1.1
 
 ### Chores
