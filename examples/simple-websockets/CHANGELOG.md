@@ -1,5 +1,12 @@
 # Change Log
 
+## 1.1.3
+
+### Chores
+
+- _(deps)_: bump socket.io-parser in /examples/simple-websockets
+
+
 ## 1.1.2
 
 ### Chores
