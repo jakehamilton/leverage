@@ -16,7 +16,7 @@
         "@leverage/core": "^4.0.0",
         "@leverage/plugin-http": "^4.0.0",
         "cors": "^2.8.5",
-        "fastify": "^3.17.0",
+        "fastify": "^3.29.4",
         "middie": "^5.2.0"
     }
 }
