@@ -15,7 +15,7 @@
     "dependencies": {
         "@leverage/core": "^4.0.0",
         "@leverage/plugin-http": "^4.0.0",
-        "@leverage/plugin-websocket": "^1.0.0",
+        "@leverage/plugin-websocket": "^2.1.1",
         "cors": "^2.8.5",
         "require-dir-all": "^1.0.0"
     }
